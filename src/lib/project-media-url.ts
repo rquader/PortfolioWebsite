@@ -19,7 +19,7 @@ export function resolveProjectMediaUrl(projectId: string, relSrc: string): strin
     ? projectId.slice(0, -'/_index'.length)
     : projectId;
   const filename = relSrc.replace(/^\.\//, '').replace(/^images\//, '');
-  const needle = `/projects/${slug}/images/${filename}`;
+  const needle = `/content/projects/${slug}/images/${filename}`;
 
   for (const [key, url] of Object.entries(mediaUrlByPath)) {
     if (key.includes(needle)) return url;

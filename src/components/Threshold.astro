@@ -7,6 +7,14 @@
 import Photo from './photo/Photo.astro';
 import '../styles/threshold.css';
 
+import fs from 'node:fs';
+import path from 'node:path';
+
+const BASE = import.meta.env.BASE_URL;
+const photoPublicPath = '/images/rafan-speaking-1.jpg';
+const photoDiskPath = path.join(process.cwd(), 'public', photoPublicPath);
+const hasPhoto = fs.existsSync(photoDiskPath);
+
 ---
 <section
   class="threshold"
@@ -40,7 +48,7 @@ import '../styles/threshold.css';
 
   <div class="threshold-photo">
     <Photo
-      src="/images/rafan-speaking-1.jpg"
+      src={`${BASE}${(hasPhoto ? photoPublicPath : '/images/rafan-speaking-1.svg').replace(/^\//, '')}`}
       alt="Rafan Quader speaking at an event"
       treatment="print"
     />

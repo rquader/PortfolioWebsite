@@ -4,7 +4,10 @@
 const pathname = Astro.url.pathname;
 const onProjects = pathname.startsWith('/projects');
 
-const homeHref = onProjects ? '/#threshold' : '#threshold';
+const BASE = import.meta.env.BASE_URL;
+const withBase = (p: string) => `${BASE}${p.replace(/^\//, '')}`;
+
+const homeHref = onProjects ? `${BASE}#threshold` : '#threshold';
 
 type NavLink = {
   slug: string;
@@ -14,11 +17,11 @@ type NavLink = {
 };
 
 const links: NavLink[] = [
-  { slug: 'on-me', label: 'on me', href: onProjects ? '/#on-me' : '#on-me' },
-  { slug: 'on-the-work', label: 'on the work', href: onProjects ? '/#on-the-work' : '#on-the-work' },
-  { slug: 'projects', label: 'projects ↗', href: '/projects', route: true },
-  { slug: 'on-the-trail', label: 'on the trail', href: onProjects ? '/#on-the-trail' : '#on-the-trail' },
-  { slug: 'coda', label: 'on the web', href: onProjects ? '/#coda' : '#coda' },
+  { slug: 'on-me', label: 'on me', href: onProjects ? `${BASE}#on-me` : '#on-me' },
+  { slug: 'on-the-work', label: 'on the work', href: onProjects ? `${BASE}#on-the-work` : '#on-the-work' },
+  { slug: 'projects', label: 'projects ↗', href: withBase('/projects'), route: true },
+  { slug: 'on-the-trail', label: 'on the trail', href: onProjects ? `${BASE}#on-the-trail` : '#on-the-trail' },
+  { slug: 'coda', label: 'on the web', href: onProjects ? `${BASE}#coda` : '#coda' },
 ];
 ---
 <div class="scroll-progress" aria-hidden="true"></div>

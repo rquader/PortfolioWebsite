@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1500" viewBox="0 0 1200 1500">
+  <defs>
+    <linearGradient id="paper" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#f2eadb"/>
+      <stop offset="1" stop-color="#e9ddc7"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="40%" r="70%">
+      <stop offset="0" stop-color="#000" stop-opacity="0.06"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0.18"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="1500" fill="url(#paper)"/>
+  <rect width="1200" height="1500" fill="url(#vignette)"/>
+
+  <g fill="none" stroke="#2b2620" stroke-opacity="0.18" stroke-width="8">
+    <path d="M120 250 H1080"/>
+    <path d="M120 340 H1080"/>
+    <path d="M120 430 H820"/>
+  </g>
+
+  <g fill="#2b2620" fill-opacity="0.70" font-family="ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace">
+    <text x="120" y="640" font-size="44">portrait missing</text>
+    <text x="120" y="710" font-size="30">drop your real photo at:</text>
+    <text x="120" y="760" font-size="30">public/images/rafan-speaking-1.jpg</text>
+    <text x="120" y="820" font-size="26">then update Threshold.astro (or swap this svg).</text>
+  </g>
+</svg>

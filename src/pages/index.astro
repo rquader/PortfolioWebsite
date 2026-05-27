@@ -1,0 +1,22 @@
+---
+// Single-page portfolio entry. The six rooms compose top-to-bottom in
+// natural scroll order. Project deep-dives live at /projects.
+
+import Base from '../layouts/Base.astro';
+import TopNav from '../components/TopNav.astro';
+import Threshold from '../components/Threshold.astro';
+import OnMe from '../components/OnMe.astro';
+import OnTheWork from '../components/OnTheWork.astro';
+import OnTheTrail from '../components/OnTheTrail.astro';
+import Coda from '../components/Coda.astro';
+---
+<Base>
+  <TopNav />
+  <main>
+    <Threshold />
+    <OnMe />
+    <OnTheWork />
+    <OnTheTrail />
+    <Coda />
+  </main>
+</Base>

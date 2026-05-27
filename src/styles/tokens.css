@@ -1,0 +1,235 @@
+/* tokens.css — design tokens (palette, type, layout) as CSS custom
+   properties on :root. Single source of truth for visual design.
+
+   Phase 5 redesign (2026-05-19): the warm-paper-on-ink + FOREST
+   palette is replaced by parchment + autumn-sepia in two modes
+   (light default, dark via toggle in TopNav). Type upgrades to a
+   curated serif pair (Fraunces display + Newsreader text) with the
+   prior system stack as the CSS fallback.
+
+   Mode mechanic: an inline script in Base.astro sets
+   `:root[data-theme="light|dark"]` before first paint, reading
+   `rq-theme` from localStorage (default light). The toggle in
+   TopNav.astro updates that attribute + storage.
+
+   Legacy aliases at the bottom of each mode block map the old token
+   names (--ink-*, --paper-*, --forest-*) to the new semantic tokens
+   so Phase 4 stylesheets keep working unchanged. Cleanup planned in
+   a later phase once every consumer has migrated.
+
+   Spec: [[02 - Architecture]];
+         [[decisions/ADR-007-palette-sepia-shift]];
+         [[decisions/ADR-008-web-fonts-allowed]];
+         docs/specs/2026-05-19-redesign-sepia-softer-design.md.
+*/
+
+:root {
+  /* ============================================================
+     TYPE (mode-invariant)
+  ============================================================ */
+  --face-display:
+    'Fraunces',
+    'New York', 'Iowan Old Style', 'Sitka Text', Charter, Georgia, serif;
+  --face-text:
+    'Newsreader',
+    'New York', 'Iowan Old Style', 'Sitka Text', Charter, Georgia, serif;
+  --face-mono:
+    'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
+
+  /* Legacy alias — Phase 4 stylesheets reference --face-serif. */
+  --face-serif: var(--face-text);
+
+  /* Fraunces variable axes used by display headings. SOFT > 50 reads
+     as a humanist softening of the letterforms. opsz is auto via
+     `font-optical-sizing: auto` in global.css. */
+  --display-soft: 60;
+  --display-wonk: 0;
+
+  --type-name:   clamp(5rem,    12vw, 9rem);
+  --type-h2:     clamp(2.2rem,  4vw,  3.4rem);
+  --type-h3:     clamp(1.3rem,  2vw,  1.6rem);
+  --type-body:   clamp(1.05rem, 1.5vw, 1.25rem);
+  --type-small:  0.875rem;
+  --leading-tight: 1.15;
+  --leading-body:  1.55;
+
+  /* ============================================================
+     LAYOUT (mode-invariant)
+  ============================================================ */
+  --max-content: 38ch;
+  --section-pad: clamp(4rem, 8vw, 6rem);
+  --gutter:      clamp(1rem, 4vw, 3rem);
+  --nav-h:       3.5rem;
+}
+
+/* ============================================================
+   LIGHT mode (default)
+   palette · parchment / walnut / terracotta
+============================================================ */
+
+:root,
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --bg-0: #F5EAD4;          /* parchment — body bg */
+  --bg-1: #ECDDC0;          /* lifted surfaces (cards, panels) */
+  --bg-2: #E3D2B0;          /* hover/active */
+
+  --text-0: #3A2615;        /* primary text — walnut */
+  --text-1: #5C3C20;        /* secondary text */
+  --text-2: #8A6A48;        /* tertiary / metadata */
+
+  --accent:        #7A3E1C; /* terracotta (primary) */
+  --accent-warm:   #A04A2A; /* burnt sienna */
+  --accent-bright: #C66A3C; /* light terracotta */
+  --accent-glow:   #D8853E; /* ochre */
+  --accent-pale:   #E0B266; /* amber */
+
+  /* Tree autumn palette — branches a touch lighter than text so they
+     read as walnut not ink; leaves harmonize with --accent + glow.
+     Light-mode revision: branches dropped from #5C3C20 to #7A4D2C
+     (closer to the accent terracotta), leaf range tightened so the
+     tree feels of-a-piece with the page rather than against it.
+     palettes.ts mirrors these as the SEPIA_LIGHT Palette. */
+  --tree-branch:    #7A4D2C;
+  --tree-leaf-1:    #8C4A22;
+  --tree-leaf-2:    #B05A2A;
+  --tree-leaf-3:    #C66A3C;
+  --tree-leaf-4:    #D8853E;
+  --tree-leaf-5:    #E0B266;
+  --tree-accent:    #6B2E0E;
+  --tree-canopy-dot: rgba(122, 62, 28, 0.16);
+  --tree-particle:  rgba(160, 74, 42, 0.5);
+
+  /* Per-section accents (used by --companion-color via scroll-spy
+     + by focus rings, cursor companion, accent-on-the-work border). */
+  --accent-default:          var(--accent);
+  --accent-threshold:        var(--accent);
+  --accent-on-me:            var(--accent-glow);
+  --accent-on-the-work:      var(--accent-warm);
+  --accent-on-the-artifacts: var(--accent);
+  --accent-on-the-trail:     var(--accent-bright);
+  --accent-coda:             var(--accent);
+
+  --selection-bg: var(--accent);
+  --selection-fg: var(--bg-0);
+
+  /* === Legacy aliases — keep Phase 4 stylesheets working === */
+  --ink-0: var(--bg-0);
+  --ink-1: var(--bg-1);
+  --ink-2: var(--bg-2);
+  --paper-0: var(--text-0);
+  --paper-1: var(--text-1);
+  --paper-2: var(--text-2);
+  --forest-bg:      var(--bg-0);
+  --forest-t0:      var(--tree-branch);
+  --forest-t1:      var(--tree-leaf-1);
+  --forest-t2:      var(--tree-leaf-2);
+  --forest-t3:      var(--tree-leaf-3);
+  --forest-t4:      var(--tree-leaf-4);
+  --forest-accent:  var(--accent);
+
+  /* Companion (recolored per-section below) */
+  --companion-color: var(--accent-default);
+
+  /* Print (small printed-photo treatment for the threshold author shot).
+     Goal: present the photograph honestly — full frame, gesture and
+     speaking context preserved — with palette integration done at the
+     EDGE (hairline ring + soft drop shadow), not via pixel-altering
+     filters or masks. True pixels at rest; brightness-only on hover. */
+  --photo-print-rest: none;
+  --photo-print-hover: brightness(1.06);
+  --photo-print-radius: 6px;
+  --photo-print-ring: color-mix(in srgb, var(--accent) 30%, transparent);
+  --photo-print-shadow:
+    0 1px 0 color-mix(in srgb, var(--text-0) 8%, transparent),
+    0 14px 28px -16px color-mix(in srgb, var(--text-0) 38%, transparent);
+}
+
+/* ============================================================
+   DARK mode
+   palette · deep walnut / warm cream / amber
+============================================================ */
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg-0: #1F1812;
+  --bg-1: #2A201A;
+  --bg-2: #362921;
+
+  --text-0: #ECDEC5;
+  --text-1: #C9B796;
+  --text-2: #9A856A;
+
+  --accent:        #E08A52; /* amber */
+  --accent-warm:   #C46B45;
+  --accent-bright: #F0A668; /* honey */
+  --accent-glow:   #E8C078;
+  --accent-pale:   #B89060;
+
+  /* Dark-mode tree: branches lifted further from bg so they're
+     visible without screaming; leaves keep their warm glow. */
+  --tree-branch:    #B8916A;
+  --tree-leaf-1:    #C46B45;
+  --tree-leaf-2:    #E08A52;
+  --tree-leaf-3:    #F0A668;
+  --tree-leaf-4:    #E8C078;
+  --tree-leaf-5:    #D9B27A;
+  --tree-accent:    #F2B582;
+  --tree-canopy-dot: rgba(240, 166, 104, 0.22);
+  --tree-particle:  rgba(224, 138, 82, 0.55);
+
+  --accent-default:          var(--accent);
+  --accent-threshold:        var(--accent);
+  --accent-on-me:            var(--accent-glow);
+  --accent-on-the-work:      var(--accent-warm);
+  --accent-on-the-artifacts: var(--accent);
+  --accent-on-the-trail:     var(--accent-bright);
+  --accent-coda:             var(--accent);
+
+  --selection-bg: var(--accent);
+  --selection-fg: var(--bg-0);
+
+  /* Legacy aliases (dark mode) */
+  --ink-0: var(--bg-0);
+  --ink-1: var(--bg-1);
+  --ink-2: var(--bg-2);
+  --paper-0: var(--text-0);
+  --paper-1: var(--text-1);
+  --paper-2: var(--text-2);
+  --forest-bg:      var(--bg-0);
+  --forest-t0:      var(--tree-branch);
+  --forest-t1:      var(--tree-leaf-1);
+  --forest-t2:      var(--tree-leaf-2);
+  --forest-t3:      var(--tree-leaf-3);
+  --forest-t4:      var(--tree-leaf-4);
+  --forest-accent:  var(--accent);
+
+  --companion-color: var(--accent-default);
+
+  /* Dark mode — print treatment. The photo's own dark stage backdrop
+     naturally blends with the dark room. The hairline accent ring
+     defines the photo's edge so it doesn't dissolve completely.
+     Subject is still readable in the source photo at native exposure
+     against the dark site, so no rest-state lift is needed; hover
+     still brightens for the "look closer" cue. */
+  --photo-print-rest: none;
+  --photo-print-hover: brightness(1.1);
+  --photo-print-radius: 6px;
+  --photo-print-ring: color-mix(in srgb, var(--accent) 48%, transparent);
+  --photo-print-shadow:
+    0 1px 0 rgba(0, 0, 0, 0.5),
+    0 16px 34px -16px rgba(0, 0, 0, 0.78);
+}
+
+/* ============================================================
+   PER-SECTION COMPANION-COLOR ROUTING (works in both modes)
+============================================================ */
+
+:root[data-section="threshold"]        { --companion-color: var(--accent-threshold); }
+:root[data-section="on-me"]            { --companion-color: var(--accent-on-me); }
+:root[data-section="on-the-work"]      { --companion-color: var(--accent-on-the-work); }
+:root[data-section="on-the-artifacts"] { --companion-color: var(--accent-on-the-artifacts); }
+:root[data-section="on-the-trail"]     { --companion-color: var(--accent-on-the-trail); }
+:root[data-section="coda"]             { --companion-color: var(--accent-coda); }

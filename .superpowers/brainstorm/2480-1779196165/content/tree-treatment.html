@@ -1,0 +1,303 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Newsreader:opsz,wght@6..72,300..700&display=swap" rel="stylesheet">
+
+<style>
+  .treat-grid { display: grid; gap: 1.75rem; grid-template-columns: 1fr; }
+  .treat-card {
+    border: 2px solid transparent;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    background: #1A1410;
+  }
+  .treat-card:hover { transform: translateY(-2px); }
+  .treat-card.selected {
+    border-color: #C66A3C;
+    box-shadow: 0 12px 36px -8px rgba(198,106,60,0.4);
+  }
+  .treat-card .modes { display: grid; grid-template-columns: 1fr 1fr; }
+  .treat-mode {
+    padding: 1.5rem 1.6rem 1.25rem;
+    font-family: 'Newsreader', Georgia, serif;
+    position: relative;
+    min-height: 320px;
+    overflow: hidden;
+  }
+  .mode-label {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.55;
+    margin-bottom: 0.5rem;
+    position: relative; z-index: 2;
+  }
+  .hero {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: "SOFT" 60;
+    font-weight: 350;
+    font-size: 2.3rem;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.4rem;
+    position: relative; z-index: 2;
+  }
+  .hero span { display: block; }
+  .tag {
+    font-size: 0.85rem;
+    line-height: 1.45;
+    max-width: 30ch;
+    opacity: 0.85;
+    position: relative; z-index: 2;
+  }
+
+  /* Tree SVG sits behind text */
+  .tree-svg { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .leaves-svg { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+
+  /* Frame variant */
+  .tree-frame {
+    position: absolute;
+    right: 1.2rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38%;
+    aspect-ratio: 3/4;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18);
+  }
+  .tree-frame.light-frame { background: #0E1B17; border: 1px solid rgba(58,38,21,0.25); }
+  .tree-frame.dark-frame  { background: #0E1B17; border: 1px solid rgba(236,222,197,0.15); }
+
+  /* "Open the tree" button mock */
+  .open-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    margin-top: 0.85rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    border: 1px solid currentColor;
+    opacity: 0.7;
+    position: relative; z-index: 2;
+  }
+
+  /* Palette A — colors */
+  .light { background: #F5EAD4; color: #3A2615; }
+  .light .hero { color: #7A3E1C; }
+  .dark  { background: #1F1812; color: #ECDEC5; }
+  .dark  .hero { color: #E08A52; }
+
+  .footer-bar {
+    background: #15110D;
+    color: #D6C8AE;
+    padding: 0.9rem 1.6rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .treat-name { color: #E8C99A; text-transform: lowercase; letter-spacing: 0.08em; }
+  .blurb { opacity: 0.7; font-style: italic; }
+</style>
+
+<h2>Tree backdrop · light-mode treatment</h2>
+<p class="subtitle">Palette A locked. The current FOREST tree (cool greens/teals) won't sit right on parchment. Three treatments — each shown in light + dark.</p>
+
+<div class="treat-grid options">
+
+  <!-- A: Re-palette to autumn-sepia -->
+  <div class="option treat-card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="treat-mode light">
+        <svg class="tree-svg" viewBox="0 0 320 320" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+          <!-- trunk + branches in walnut, leaves in terracotta/amber -->
+          <g stroke="#5C3C20" stroke-linecap="round" fill="none" opacity="0.55">
+            <path d="M160,320 L160,180" stroke-width="3.5"/>
+            <path d="M160,180 L120,130" stroke-width="2.6"/>
+            <path d="M160,180 L200,130" stroke-width="2.6"/>
+            <path d="M120,130 L92,98" stroke-width="1.9"/>
+            <path d="M120,130 L140,90" stroke-width="1.9"/>
+            <path d="M200,130 L180,90" stroke-width="1.9"/>
+            <path d="M200,130 L228,98" stroke-width="1.9"/>
+            <path d="M92,98 L78,72" stroke-width="1.3"/>
+            <path d="M92,98 L102,68" stroke-width="1.3"/>
+            <path d="M140,90 L130,62" stroke-width="1.3"/>
+            <path d="M140,90 L154,60" stroke-width="1.3"/>
+            <path d="M180,90 L168,60" stroke-width="1.3"/>
+            <path d="M180,90 L192,62" stroke-width="1.3"/>
+            <path d="M228,98 L218,68" stroke-width="1.3"/>
+            <path d="M228,98 L242,72" stroke-width="1.3"/>
+          </g>
+          <g opacity="0.7">
+            <circle cx="78" cy="72" r="3.6" fill="#C66A3C"/>
+            <circle cx="102" cy="68" r="3.2" fill="#D8853E"/>
+            <circle cx="130" cy="62" r="3.6" fill="#A04A2A"/>
+            <circle cx="154" cy="60" r="3.2" fill="#E0B266"/>
+            <circle cx="168" cy="60" r="3.4" fill="#C66A3C"/>
+            <circle cx="192" cy="62" r="3.2" fill="#A04A2A"/>
+            <circle cx="218" cy="68" r="3.4" fill="#D8853E"/>
+            <circle cx="242" cy="72" r="3.6" fill="#C66A3C"/>
+            <circle cx="120" cy="118" r="2.4" fill="#E0B266"/>
+            <circle cx="200" cy="118" r="2.4" fill="#A04A2A"/>
+            <circle cx="160" cy="170" r="2.2" fill="#D8853E"/>
+          </g>
+          <!-- drifting leaves -->
+          <circle cx="50" cy="200" r="2.5" fill="#C66A3C" opacity="0.5"/>
+          <circle cx="260" cy="240" r="2" fill="#A04A2A" opacity="0.4"/>
+          <circle cx="40" cy="280" r="1.8" fill="#D8853E" opacity="0.45"/>
+        </svg>
+        <div class="mode-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Tree re-paletted: walnut branches, terracotta + amber leaves. Drifting page-leaves follow the same family.</p>
+      </div>
+      <div class="treat-mode dark">
+        <svg class="tree-svg" viewBox="0 0 320 320" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+          <g stroke="#A88160" stroke-linecap="round" fill="none" opacity="0.5">
+            <path d="M160,320 L160,180" stroke-width="3.5"/>
+            <path d="M160,180 L120,130" stroke-width="2.6"/>
+            <path d="M160,180 L200,130" stroke-width="2.6"/>
+            <path d="M120,130 L92,98" stroke-width="1.9"/>
+            <path d="M120,130 L140,90" stroke-width="1.9"/>
+            <path d="M200,130 L180,90" stroke-width="1.9"/>
+            <path d="M200,130 L228,98" stroke-width="1.9"/>
+            <path d="M92,98 L78,72" stroke-width="1.3"/>
+            <path d="M92,98 L102,68" stroke-width="1.3"/>
+            <path d="M140,90 L130,62" stroke-width="1.3"/>
+            <path d="M140,90 L154,60" stroke-width="1.3"/>
+            <path d="M180,90 L168,60" stroke-width="1.3"/>
+            <path d="M180,90 L192,62" stroke-width="1.3"/>
+            <path d="M228,98 L218,68" stroke-width="1.3"/>
+            <path d="M228,98 L242,72" stroke-width="1.3"/>
+          </g>
+          <g opacity="0.8">
+            <circle cx="78" cy="72" r="3.6" fill="#E08A52"/>
+            <circle cx="102" cy="68" r="3.2" fill="#F0A668"/>
+            <circle cx="130" cy="62" r="3.6" fill="#C46B45"/>
+            <circle cx="154" cy="60" r="3.2" fill="#E8C078"/>
+            <circle cx="168" cy="60" r="3.4" fill="#E08A52"/>
+            <circle cx="192" cy="62" r="3.2" fill="#C46B45"/>
+            <circle cx="218" cy="68" r="3.4" fill="#F0A668"/>
+            <circle cx="242" cy="72" r="3.6" fill="#E08A52"/>
+            <circle cx="120" cy="118" r="2.4" fill="#E8C078"/>
+            <circle cx="200" cy="118" r="2.4" fill="#C46B45"/>
+            <circle cx="160" cy="170" r="2.2" fill="#F0A668"/>
+          </g>
+          <circle cx="50" cy="200" r="2.5" fill="#E08A52" opacity="0.6"/>
+          <circle cx="260" cy="240" r="2" fill="#C46B45" opacity="0.5"/>
+          <circle cx="40" cy="280" r="1.8" fill="#F0A668" opacity="0.55"/>
+        </svg>
+        <div class="mode-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Same tree, warmer-glow palette for the dark variant.</p>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span class="treat-name">A · re-palette to autumn-sepia (both modes)</span>
+      <span class="blurb">honors the redesign · keeps the primitive's role intact</span>
+    </div>
+  </div>
+
+  <!-- B: Tree in a frame -->
+  <div class="option treat-card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="treat-mode light">
+        <div class="tree-frame light-frame">
+          <svg viewBox="0 0 200 260" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="width:100%;height:100%;display:block;">
+            <g stroke="#4A8884" stroke-linecap="round" fill="none" opacity="0.6">
+              <path d="M100,260 L100,140" stroke-width="3"/>
+              <path d="M100,140 L70,100" stroke-width="2.4"/>
+              <path d="M100,140 L130,100" stroke-width="2.4"/>
+              <path d="M70,100 L50,72" stroke-width="1.6"/>
+              <path d="M70,100 L86,68" stroke-width="1.6"/>
+              <path d="M130,100 L114,68" stroke-width="1.6"/>
+              <path d="M130,100 L150,72" stroke-width="1.6"/>
+            </g>
+            <g>
+              <circle cx="50" cy="72" r="3.4" fill="#87DCB8"/>
+              <circle cx="86" cy="68" r="3.2" fill="#B0EBD2"/>
+              <circle cx="114" cy="68" r="3.2" fill="#87DCB8"/>
+              <circle cx="150" cy="72" r="3.4" fill="#B0EBD2"/>
+              <circle cx="100" cy="125" r="2" fill="#6BB4A6"/>
+            </g>
+          </svg>
+        </div>
+        <div class="mode-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">FOREST tree preserved unchanged, lives in a defined window on the threshold. The rest of the page is parchment.</p>
+        <span class="open-btn">↗ open the tree</span>
+      </div>
+      <div class="treat-mode dark">
+        <div class="tree-frame dark-frame">
+          <svg viewBox="0 0 200 260" preserveAspectRatio="xMidYMax meet" aria-hidden="true" style="width:100%;height:100%;display:block;">
+            <g stroke="#4A8884" stroke-linecap="round" fill="none" opacity="0.7">
+              <path d="M100,260 L100,140" stroke-width="3"/>
+              <path d="M100,140 L70,100" stroke-width="2.4"/>
+              <path d="M100,140 L130,100" stroke-width="2.4"/>
+              <path d="M70,100 L50,72" stroke-width="1.6"/>
+              <path d="M70,100 L86,68" stroke-width="1.6"/>
+              <path d="M130,100 L114,68" stroke-width="1.6"/>
+              <path d="M130,100 L150,72" stroke-width="1.6"/>
+            </g>
+            <g>
+              <circle cx="50" cy="72" r="3.4" fill="#87DCB8"/>
+              <circle cx="86" cy="68" r="3.2" fill="#B0EBD2"/>
+              <circle cx="114" cy="68" r="3.2" fill="#87DCB8"/>
+              <circle cx="150" cy="72" r="3.4" fill="#B0EBD2"/>
+              <circle cx="100" cy="125" r="2" fill="#6BB4A6"/>
+            </g>
+          </svg>
+        </div>
+        <div class="mode-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Same frame in dark mode. The tree is "a window into another world."</p>
+        <span class="open-btn">↗ open the tree</span>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span class="treat-name">B · tree in a contained frame</span>
+      <span class="blurb">FOREST stays · less ambient · more "displayed artifact"</span>
+    </div>
+  </div>
+
+  <!-- C: Drop from threshold, keep tree-mode only -->
+  <div class="option treat-card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="treat-mode light">
+        <div class="mode-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">No tree backdrop on the threshold. Page reads as parchment + serif type. Page-leaves still drift, re-paletted to autumn.</p>
+        <span class="open-btn">↗ open the tree</span>
+        <svg class="leaves-svg" viewBox="0 0 320 320" preserveAspectRatio="none" aria-hidden="true">
+          <circle cx="60" cy="240" r="2" fill="#C66A3C" opacity="0.5"/>
+          <circle cx="260" cy="190" r="1.6" fill="#A04A2A" opacity="0.4"/>
+          <circle cx="280" cy="280" r="2.2" fill="#D8853E" opacity="0.55"/>
+          <circle cx="40" cy="170" r="1.8" fill="#C66A3C" opacity="0.5"/>
+        </svg>
+      </div>
+      <div class="treat-mode dark">
+        <div class="mode-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Same in dark — clean threshold, no tree backdrop. Clicking the button opens tree-mode overlay (full-bleed, autumn palette).</p>
+        <span class="open-btn">↗ open the tree</span>
+        <svg class="leaves-svg" viewBox="0 0 320 320" preserveAspectRatio="none" aria-hidden="true">
+          <circle cx="60" cy="240" r="2" fill="#E08A52" opacity="0.6"/>
+          <circle cx="260" cy="190" r="1.6" fill="#C46B45" opacity="0.5"/>
+          <circle cx="280" cy="280" r="2.2" fill="#F0A668" opacity="0.6"/>
+          <circle cx="40" cy="170" r="1.8" fill="#E08A52" opacity="0.55"/>
+        </svg>
+      </div>
+    </div>
+    <div class="footer-bar">
+      <span class="treat-name">C · move it — tree only inside tree-mode overlay</span>
+      <span class="blurb">cleaner threshold · loses ambient signature · keeps the click affordance</span>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:2rem;">My recommendation: <strong>A</strong>. The tree is the site's signature; re-paletting honors the redesign without losing it. The "page-leaves" drift gets the same family. For "Manim animations in general" (drift-field, network-nodes, future scenes) — same rule: each scene gets a sepia palette equivalent, no exceptions.</p>
+
+<p class="subtitle">Pick one — or tell me in the terminal if you want a hybrid (e.g., A in dark, C in light).</p>

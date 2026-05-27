@@ -1,0 +1,167 @@
+<h2>Which "Obsidian Accordion" do you mean?</h2>
+<p class="subtitle">
+  The term has at least four distinct visual patterns inside Obsidian itself. Pick the one closest to
+  what you have in mind — we'll iterate from there.
+</p>
+
+<style>
+  .obs-card {
+    background: #1e1e1e;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    padding: 12px 14px;
+    font-family: "ui-monospace", "SF Mono", Menlo, monospace;
+    font-size: 13px;
+    color: #d4cfc4;
+    line-height: 1.55;
+    min-height: 240px;
+  }
+  .obs-card .row { padding: 2px 0; }
+  .obs-card .indent { padding-left: 14px; }
+  .obs-card .indent2 { padding-left: 28px; }
+  .obs-card .indent3 { padding-left: 42px; }
+  .obs-card .triangle { display: inline-block; width: 14px; color: #8a8478; }
+  .obs-card .group { color: #c8b88b; }
+  .obs-card .leaf { color: #b8b0a0; }
+  .obs-card .body { color: #948c7e; font-style: italic; }
+  .obs-card.cardbg {
+    background: #f5efde;
+    color: #3a342a;
+    border: 1px solid #d8cfb8;
+  }
+  .obs-card.cardbg .triangle { color: #8a7c5a; }
+  .obs-card.cardbg .group { color: #5a4d33; font-weight: 600; }
+  .obs-card.cardbg .leaf { color: #4a4232; }
+  .obs-card.cardbg .body { color: #6b6453; }
+  .callout {
+    border-left: 3px solid #6ba2d4;
+    background: rgba(107, 162, 212, 0.08);
+    padding: 6px 10px;
+    margin: 4px 0;
+    border-radius: 3px;
+  }
+  .callout.warn { border-color: #d4a06b; background: rgba(212, 160, 107, 0.08); }
+  .callout.tip  { border-color: #8bc4a0; background: rgba(139, 196, 160, 0.08); }
+  .callout-head { font-weight: 600; color: #c8d8e8; }
+  .callout.warn .callout-head { color: #e8c8a0; }
+  .callout.tip  .callout-head { color: #b8e0c8; }
+  .tab-folder {
+    background: #f5efde;
+    color: #3a342a;
+    padding: 8px 12px;
+    border: 1px solid #c8bfa3;
+    border-bottom: none;
+    margin-bottom: -1px;
+    position: relative;
+    border-radius: 4px 4px 0 0;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 13px;
+  }
+  .tab-folder::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 12px;
+    width: 40px;
+    height: 6px;
+    background: #f5efde;
+    border: 1px solid #c8bfa3;
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+  }
+  .tab-panel {
+    background: #ece4d0;
+    border: 1px solid #c8bfa3;
+    padding: 10px 12px;
+    border-radius: 0 4px 4px 4px;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 12px;
+    color: #5a4d33;
+  }
+</style>
+
+<div class="cards">
+
+  <!-- A: Sidebar folder tree -->
+  <div class="card" data-choice="sidebar" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="obs-card">
+        <div class="row"><span class="triangle">▾</span><span class="group">field</span></div>
+        <div class="row indent"><span class="triangle">▸</span><span class="leaf">architecture</span></div>
+        <div class="row indent"><span class="triangle">▾</span><span class="leaf">decisions</span></div>
+        <div class="row indent2"><span class="body">ADR-001 swiftui vs uikit</span></div>
+        <div class="row indent2"><span class="body">ADR-002 storage layer</span></div>
+        <div class="row"><span class="triangle">▸</span><span class="group">credits</span></div>
+        <div class="row"><span class="triangle">▸</span><span class="group">journal</span></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · Sidebar folder tree</h3>
+      <p>Obsidian's left file explorer: nested folders with triangles. Reads as <em>directory</em>. Compact, hierarchical, scannable.</p>
+    </div>
+  </div>
+
+  <!-- B: Callout-style collapsible -->
+  <div class="card" data-choice="callout" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="obs-card">
+        <div class="callout">
+          <div class="callout-head">▾ note · architecture</div>
+          <div class="body">the swiftui/uikit boundary…</div>
+        </div>
+        <div class="callout tip">
+          <div class="callout-head">▸ tip · what i'd try next</div>
+        </div>
+        <div class="callout warn">
+          <div class="callout-head">▸ warning · known bugs</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · Callout collapse</h3>
+      <p>Obsidian's <code>&gt; [!note]+ Title</code> blocks: colored left rule, an icon-typed header, collapsible body. Reads as <em>aside</em>.</p>
+    </div>
+  </div>
+
+  <!-- C: Current details/disclosure -->
+  <div class="card" data-choice="details" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="obs-card cardbg">
+        <div class="row"><span class="triangle">▾</span><span class="group">field (3)</span></div>
+        <div class="row indent"><span class="triangle">▸</span><span class="leaf">architecture</span></div>
+        <div class="row indent"><span class="triangle">▾</span><span class="leaf">decisions</span></div>
+        <div class="row indent2"><span class="body">¶ I picked SwiftUI because…</span></div>
+        <div class="row indent2"><span class="body">¶ but the navigation stack…</span></div>
+        <div class="row"><span class="triangle">▸</span><span class="group">credits (1)</span></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · Inline disclosure (what you have now)</h3>
+      <p>What <code>ProjectNotes.astro</code> already renders. <code>&lt;details&gt;</code> groups by top-level folder, expandable to inline-rendered markdown. Reads as <em>working notes</em>.</p>
+    </div>
+  </div>
+
+  <!-- D: Stacked tab folders (manila folder vibe) -->
+  <div class="card" data-choice="tabs" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="tab-folder">overview</div>
+      <div class="tab-folder">architecture</div>
+      <div class="tab-folder" style="background:#ece4d0">decisions ▾</div>
+      <div class="tab-panel">
+        ¶ I picked SwiftUI because…<br/>
+        ¶ but the navigation stack…
+      </div>
+      <div class="tab-folder">credits</div>
+    </div>
+    <div class="card-body">
+      <h3>D · Stacked tab folders</h3>
+      <p>Manila-folder metaphor from your earlier concept doc. Each row is a tabbed paper folder; one opens at a time into a paper panel. Reads as <em>archive</em>.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top: 18px;">
+  Click the one closest to your mental image. (Or tell me in the terminal — "it's a mix of A and B,"
+  "none of these, more like X," etc.)
+</p>

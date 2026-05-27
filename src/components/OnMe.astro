@@ -1,0 +1,75 @@
+---
+// On Me — bio with synesthesia hover-coloring on selected words.
+---
+<section class="section on-me" id="on-me" data-section-id="on-me">
+  <div class="section-inner">
+    <h2 data-color-letters data-inertial-text>on me</h2>
+    <div class="bio">
+      <p class="bio-lead">
+        As a student beginning in <strong>Computer Science</strong>, one thing I can say in
+        <em>high confidence</em>:
+        <span data-syn-word>massive change</span> is not only imminent but in fast motion.
+      </p>
+      <p>
+        In that change, people can, like much other change, push towards a
+        <span data-syn-word>better world</span> or break it down as we know it. For me, that
+        makes my goal discovering the fields I am most interested in and joining initiatives
+        utilizing this program to participate in <span data-syn-word>meaningful</span>
+        endeavors, build things, or simply message <span data-syn-word>Claude Code</span>.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .on-me .bio {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    max-width: 38rem;
+  }
+
+  .on-me .bio p {
+    margin: 0;
+    font-family: var(--face-text);
+    font-size: clamp(1.02rem, 0.35vw + 0.98rem, 1.12rem);
+    line-height: 1.72;
+    letter-spacing: 0.01em;
+    color: var(--text-1);
+  }
+
+  .on-me .bio-lead {
+    font-family: var(--face-display);
+    font-variation-settings: 'SOFT' 75, 'WONK' 0;
+    font-size: clamp(1.08rem, 0.45vw + 1rem, 1.2rem);
+    line-height: 1.65;
+    color: var(--text-0);
+  }
+
+  .on-me .bio strong {
+    font-weight: 600;
+    color: var(--text-0);
+  }
+
+  .on-me .bio em {
+    font-style: italic;
+    font-variation-settings: 'SOFT' 90;
+    color: color-mix(in srgb, var(--text-0) 88%, var(--accent));
+  }
+
+  :root[data-theme="dark"] .on-me {
+    background-color: rgb(
+      calc(20 + var(--syn-r, 200) * 0.06),
+      calc(18 + var(--syn-g, 180) * 0.06),
+      calc(16 + var(--syn-b, 160) * 0.06)
+    );
+    transition: background-color 1.2s ease;
+  }
+  :root[data-theme="dark"] .on-me.syn-tinted {
+    background-color: rgb(
+      calc(30 + var(--syn-r) * 0.22),
+      calc(27 + var(--syn-g) * 0.22),
+      calc(24 + var(--syn-b) * 0.22)
+    );
+  }
+</style>

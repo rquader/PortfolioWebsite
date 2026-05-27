@@ -1,0 +1,147 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300..900&family=Newsreader:opsz,wght@6..72,200..800&family=Fraunces:opsz,wght@9..144,100..900&family=EB+Garamond:wght@400..800&family=Crimson+Pro:wght@200..900&display=swap" rel="stylesheet">
+
+<style>
+  .font-grid { display: grid; gap: 1.5rem; }
+  .font-card {
+    background: #F5EAD4;
+    color: #3A2615;
+    padding: 2rem 2.25rem;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    position: relative;
+  }
+  .font-card:hover { transform: translateY(-2px); border-color: rgba(122,62,28,0.25); }
+  .font-card.selected {
+    border-color: #7A3E1C;
+    box-shadow: 0 8px 30px -10px rgba(122,62,28,0.35);
+  }
+  .font-card .label {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #7A3E1C;
+    margin-bottom: 0.25rem;
+  }
+  .font-card .meta {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.72rem;
+    color: rgba(58,38,21,0.55);
+    margin-top: 1.25rem;
+  }
+  .hero-name {
+    font-size: clamp(3rem, 7vw, 5rem);
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    color: #6B2E0E;
+    margin-bottom: 0.85rem;
+    font-weight: 400;
+  }
+  .hero-name span { display: block; }
+  .tagline {
+    font-size: 1.05rem;
+    line-height: 1.45;
+    max-width: 42ch;
+    color: rgba(58,38,21,0.88);
+    margin-bottom: 1.1rem;
+  }
+  .section-h {
+    font-size: 1.4rem;
+    color: #3A2615;
+    margin-bottom: 0.4rem;
+    font-weight: 400;
+    letter-spacing: -0.005em;
+  }
+  .body {
+    font-size: 0.98rem;
+    line-height: 1.55;
+    color: rgba(58,38,21,0.85);
+    max-width: 56ch;
+  }
+
+  /* Per-card font assignments */
+  .card-a, .card-a * { font-family: 'Source Serif 4', 'New York', Georgia, serif; font-optical-sizing: auto; }
+  .card-a .hero-name { font-weight: 350; }
+  .card-a .section-h { font-weight: 500; }
+
+  .card-b, .card-b * { font-family: 'Newsreader', 'New York', Georgia, serif; font-optical-sizing: auto; }
+  .card-b .hero-name { font-weight: 350; font-style: italic; }
+  .card-b .section-h { font-weight: 500; }
+
+  .card-c .hero-name { font-family: 'Fraunces', Georgia, serif; font-optical-sizing: auto; font-variation-settings: "SOFT" 50, "WONK" 0; font-weight: 350; }
+  .card-c .section-h { font-family: 'Fraunces', Georgia, serif; font-weight: 500; font-variation-settings: "SOFT" 80; }
+  .card-c .tagline, .card-c .body { font-family: 'Newsreader', 'New York', Georgia, serif; font-optical-sizing: auto; }
+
+  .card-d, .card-d * { font-family: 'EB Garamond', 'New York', Georgia, serif; }
+  .card-d .hero-name { font-weight: 400; }
+  .card-d .section-h { font-weight: 500; font-style: italic; }
+
+  .card-e, .card-e * { font-family: 'New York', 'Iowan Old Style', 'Sitka Text', Charter, Georgia, serif; }
+  .card-e .hero-name { font-weight: 400; }
+  .card-e .section-h { font-weight: 500; }
+  .card-e .body::first-letter {
+    font-size: 2.6em;
+    float: left;
+    line-height: 0.85;
+    padding-right: 0.08em;
+    color: #7A3E1C;
+  }
+</style>
+
+<h2>Font samples · sepia/light direction</h2>
+<p class="subtitle">Same hero, tagline, and short prose in five type approaches. Click a card to select.</p>
+
+<div class="font-grid options" style="grid-template-columns: 1fr;">
+
+  <div class="option font-card card-a" data-choice="a" onclick="toggleSelect(this)">
+    <div class="label">A · Source Serif 4 (variable, one family)</div>
+    <h1 class="hero-name"><span>rafan</span><span>quader</span></h1>
+    <p class="tagline">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science, nudging humanity (well, hopefully at least some of it) forward!</p>
+    <h3 class="section-h">on me</h3>
+    <p class="body">Adobe's open-source serif, designed for screen reading. Variable axes for weight + optical size give a wide range without shipping multiple files. Quiet, modern, neutral — the closest "this could be a book" feel of the five.</p>
+    <div class="meta">Strategy 1 · ~50 KB woff2 · neutral / quiet</div>
+  </div>
+
+  <div class="option font-card card-b" data-choice="b" onclick="toggleSelect(this)">
+    <div class="label">B · Newsreader (variable, one family)</div>
+    <h1 class="hero-name"><span>rafan</span><span>quader</span></h1>
+    <p class="tagline">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science, nudging humanity (well, hopefully at least some of it) forward!</p>
+    <h3 class="section-h">on me</h3>
+    <p class="body">Production Type's screen-reading serif, with the most opinionated italics of the bunch and an optical-size axis tuned for both small body and large headlines. Slightly more personality than Source Serif. Humanist, warm.</p>
+    <div class="meta">Strategy 1 · ~55 KB woff2 · humanist / warmer</div>
+  </div>
+
+  <div class="option font-card card-c" data-choice="c" onclick="toggleSelect(this)">
+    <div class="label">C · Fraunces (display) + Newsreader (text) — pair</div>
+    <h1 class="hero-name"><span>rafan</span><span>quader</span></h1>
+    <p class="tagline">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science, nudging humanity (well, hopefully at least some of it) forward!</p>
+    <h3 class="section-h">on me</h3>
+    <p class="body">Fraunces has SOFT and WONK axes for true display expression; Newsreader handles the long-form. The combination signals "designed thing" without being loud. Strongest aesthetic upgrade. Adds a second file to load.</p>
+    <div class="meta">Strategy 2 · ~85 KB woff2 · expressive / designed</div>
+  </div>
+
+  <div class="option font-card card-d" data-choice="d" onclick="toggleSelect(this)">
+    <div class="label">D · EB Garamond (classical, one family)</div>
+    <h1 class="hero-name"><span>rafan</span><span>quader</span></h1>
+    <p class="tagline">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science, nudging humanity (well, hopefully at least some of it) forward!</p>
+    <h3 class="section-h">on me</h3>
+    <p class="body">Georg Duffner's revival of Claude Garamond's roman. Maximum literary register; reads as "old book." Lower x-height makes body text feel small at the same point size, so headings need more weight to balance. Choose only if you want overtly classical.</p>
+    <div class="meta">Strategy 1 · ~60 KB woff2 · classical / literary</div>
+  </div>
+
+  <div class="option font-card card-e" data-choice="e" onclick="toggleSelect(this)">
+    <div class="label">E · System serif (tuned), no web fonts</div>
+    <h1 class="hero-name"><span>rafan</span><span>quader</span></h1>
+    <p class="tagline">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science, nudging humanity (well, hopefully at least some of it) forward!</p>
+    <h3 class="section-h">on me</h3>
+    <p class="body">On a Mac this is "New York"; on Windows "Sitka Text" or "Iowan Old Style"; elsewhere Georgia. Already what the site uses. The upgrade here is discipline — drop cap, better tracking, tighter optical-size at headline sizes. Zero KB. Working Agreement stays intact.</p>
+    <div class="meta">Strategy 3 · 0 KB · honors existing agreement</div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:2rem;">Click your pick. If you're between two, tell me both in the terminal and I'll narrow.</p>

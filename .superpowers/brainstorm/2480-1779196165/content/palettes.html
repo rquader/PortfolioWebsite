@@ -1,0 +1,234 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Newsreader:opsz,wght@6..72,300..700&display=swap" rel="stylesheet">
+
+<style>
+  .palette-grid { display: grid; gap: 1.75rem; grid-template-columns: 1fr; }
+  .palette-card {
+    border: 2px solid transparent;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    background: #1A1410;
+  }
+  .palette-card:hover { transform: translateY(-2px); }
+  .palette-card.selected {
+    border-color: #C66A3C;
+    box-shadow: 0 12px 36px -8px rgba(198,106,60,0.4);
+  }
+  .palette-card .modes { display: grid; grid-template-columns: 1fr 1fr; }
+  .palette-mode {
+    padding: 1.5rem 1.6rem 1.25rem;
+    font-family: 'Newsreader', Georgia, serif;
+    font-optical-sizing: auto;
+  }
+  .mode-label {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.55;
+    margin-bottom: 0.5rem;
+  }
+  .hero {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: "SOFT" 60, "WONK" 0;
+    font-optical-sizing: auto;
+    font-weight: 350;
+    font-size: 2.6rem;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.55rem;
+  }
+  .hero span { display: block; }
+  .tag {
+    font-size: 0.88rem;
+    line-height: 1.45;
+    max-width: 32ch;
+    opacity: 0.88;
+    margin-bottom: 0.9rem;
+  }
+  .chips { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.4rem; }
+  .chip {
+    width: 1.4rem; height: 1.4rem; border-radius: 4px;
+    border: 1px solid rgba(0,0,0,0.18);
+  }
+  .chip-mono { font-family: 'SF Mono', Menlo, monospace; font-size: 0.62rem; opacity: 0.65; }
+  .palette-footer {
+    background: #15110D;
+    color: #D6C8AE;
+    padding: 0.9rem 1.6rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .palette-name {
+    color: #E8C99A;
+    text-transform: lowercase;
+    letter-spacing: 0.08em;
+  }
+  .blurb { opacity: 0.7; font-style: italic; }
+
+  /* === A · Parchment / Walnut / Terracotta === */
+  .a-light { background: #F5EAD4; color: #3A2615; }
+  .a-light .hero { color: #7A3E1C; }
+  .a-dark  { background: #1F1812; color: #ECDEC5; }
+  .a-dark  .hero { color: #E08A52; }
+
+  /* === B · Bone / Ink / Burnt Sienna === */
+  .b-light { background: #EFE7D3; color: #2B1F12; }
+  .b-light .hero { color: #A04A2A; }
+  .b-dark  { background: #1B1410; color: #EBE0C9; }
+  .b-dark  .hero { color: #C46B45; }
+
+  /* === C · Cream / Cocoa / Amber === */
+  .c-light { background: #F8EFD8; color: #3D2A14; }
+  .c-light .hero { color: #B07A2C; }
+  .c-dark  { background: #1D1408; color: #EDDDB8; }
+  .c-dark  .hero { color: #E0B266; }
+
+  /* === D · Linen / Clay / Burnished Gold === */
+  .d-light { background: #EEE5CE; color: #3A2A1E; }
+  .d-light .hero { color: #8A6A3A; }
+  .d-dark  { background: #1A1410; color: #E6D9BC; }
+  .d-dark  .hero { color: #D6B26A; }
+</style>
+
+<h2>Palette · sepia direction, light + dark</h2>
+<p class="subtitle">Each card shows light mode (left) and dark mode (right). Type set in Fraunces + Newsreader to preview the actual aesthetic.</p>
+
+<div class="palette-grid options" data-multiselect>
+
+  <!-- A -->
+  <div class="option palette-card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="palette-mode a-light">
+        <div class="mode-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science…</p>
+        <div class="chips">
+          <span class="chip" style="background:#F5EAD4;"></span>
+          <span class="chip" style="background:#3A2615;"></span>
+          <span class="chip" style="background:#7A3E1C;"></span>
+          <span class="chip-mono">#F5EAD4 · #3A2615 · #7A3E1C</span>
+        </div>
+      </div>
+      <div class="palette-mode a-dark">
+        <div class="mode-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science…</p>
+        <div class="chips">
+          <span class="chip" style="background:#1F1812;"></span>
+          <span class="chip" style="background:#ECDEC5;"></span>
+          <span class="chip" style="background:#E08A52;"></span>
+          <span class="chip-mono">#1F1812 · #ECDEC5 · #E08A52</span>
+        </div>
+      </div>
+    </div>
+    <div class="palette-footer">
+      <span class="palette-name">A · parchment / walnut / terracotta</span>
+      <span class="blurb">warm and alive · most "sepia"</span>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="option palette-card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="palette-mode b-light">
+        <div class="mode-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science…</p>
+        <div class="chips">
+          <span class="chip" style="background:#EFE7D3;"></span>
+          <span class="chip" style="background:#2B1F12;"></span>
+          <span class="chip" style="background:#A04A2A;"></span>
+          <span class="chip-mono">#EFE7D3 · #2B1F12 · #A04A2A</span>
+        </div>
+      </div>
+      <div class="palette-mode b-dark">
+        <div class="mode-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science…</p>
+        <div class="chips">
+          <span class="chip" style="background:#1B1410;"></span>
+          <span class="chip" style="background:#EBE0C9;"></span>
+          <span class="chip" style="background:#C46B45;"></span>
+          <span class="chip-mono">#1B1410 · #EBE0C9 · #C46B45</span>
+        </div>
+      </div>
+    </div>
+    <div class="palette-footer">
+      <span class="palette-name">B · bone / ink / burnt sienna</span>
+      <span class="blurb">printed-novel quiet · less saturated</span>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="option palette-card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="palette-mode c-light">
+        <div class="mode-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science…</p>
+        <div class="chips">
+          <span class="chip" style="background:#F8EFD8;"></span>
+          <span class="chip" style="background:#3D2A14;"></span>
+          <span class="chip" style="background:#B07A2C;"></span>
+          <span class="chip-mono">#F8EFD8 · #3D2A14 · #B07A2C</span>
+        </div>
+      </div>
+      <div class="palette-mode c-dark">
+        <div class="mode-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science…</p>
+        <div class="chips">
+          <span class="chip" style="background:#1D1408;"></span>
+          <span class="chip" style="background:#EDDDB8;"></span>
+          <span class="chip" style="background:#E0B266;"></span>
+          <span class="chip-mono">#1D1408 · #EDDDB8 · #E0B266</span>
+        </div>
+      </div>
+    </div>
+    <div class="palette-footer">
+      <span class="palette-name">C · cream / cocoa / amber</span>
+      <span class="blurb">warm-cream bright · golden</span>
+    </div>
+  </div>
+
+  <!-- D -->
+  <div class="option palette-card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="palette-mode d-light">
+        <div class="mode-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science…</p>
+        <div class="chips">
+          <span class="chip" style="background:#EEE5CE;"></span>
+          <span class="chip" style="background:#3A2A1E;"></span>
+          <span class="chip" style="background:#8A6A3A;"></span>
+          <span class="chip-mono">#EEE5CE · #3A2A1E · #8A6A3A</span>
+        </div>
+      </div>
+      <div class="palette-mode d-dark">
+        <div class="mode-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <p class="tag">Computer Science @ SJSU. Aspiring to participate in meaningful applications of Computer Science…</p>
+        <div class="chips">
+          <span class="chip" style="background:#1A1410;"></span>
+          <span class="chip" style="background:#E6D9BC;"></span>
+          <span class="chip" style="background:#D6B26A;"></span>
+          <span class="chip-mono">#1A1410 · #E6D9BC · #D6B26A</span>
+        </div>
+      </div>
+    </div>
+    <div class="palette-footer">
+      <span class="palette-name">D · linen / clay / burnished gold</span>
+      <span class="blurb">refined and restrained</span>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:2rem;">Click your pick (or two if you want to compare details). Tell me in the terminal which feels right, or if you want a variation.</p>

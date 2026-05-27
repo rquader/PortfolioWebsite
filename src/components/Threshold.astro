@@ -1,0 +1,128 @@
+---
+// Threshold — the opening section. Hero name + tagline + speaking photo
+// + recursive tree canvas + first-load tree click-hint sticker.
+//
+// Spec: [[Concept - Threshold Hero]]; specs/2026-05-22-gallery-v2-photo-sticker-design.md
+
+import Photo from './photo/Photo.astro';
+import '../styles/threshold.css';
+
+---
+<section
+  class="threshold"
+  id="threshold"
+  data-section-id="threshold"
+  aria-label="introduction"
+>
+  <canvas
+    id="tree-threshold"
+    class="threshold-tree"
+    aria-hidden="true"
+    role="button"
+    tabindex="0"
+    aria-label="open the recursive tree"
+  ></canvas>
+
+  <div class="threshold-content">
+    <h1 class="name" data-color-letters>
+      <span class="name-line" data-inertial-text>rafan</span>
+      <span class="name-line" data-inertial-text>quader</span>
+    </h1>
+    <p class="tagline tagline-primary">Computer Science @ SJSU</p>
+    <p class="tagline tagline-secondary" aria-label="focus areas">
+      <span>Research</span>
+      <span class="tagline-dot" aria-hidden="true">·</span>
+      <span>Claude Code</span>
+      <span class="tagline-dot" aria-hidden="true">·</span>
+      <span>Education</span>
+    </p>
+  </div>
+
+  <div class="threshold-photo">
+    <Photo
+      src="/images/rafan-speaking-1.jpg"
+      alt="Rafan Quader speaking at an event"
+      treatment="print"
+    />
+  </div>
+
+  <button
+    class="tree-hint"
+    type="button"
+    data-tree-open
+    aria-label="open the recursive tree"
+  >
+    ↘ click the tree
+  </button>
+
+  <a class="scroll-cue" href="#on-me" aria-label="scroll to content">
+    <span aria-hidden="true">↓</span>
+  </a>
+</section>
+
+<aside class="tree-mode-ui" aria-hidden="true" aria-label="recursive tree controls">
+  <button class="tree-mode-close" type="button" aria-label="exit tree mode">×</button>
+  <span class="tree-mode-hint" aria-hidden="true">esc</span>
+
+  <div class="tree-mode-card" role="group" aria-label="tree parameters" data-label-mode="cs">
+    <button class="tree-mode-reset" type="button" aria-label="reset to defaults" title="reset">↺</button>
+    <label class="tree-mode-slider">
+      <span class="tree-mode-label">
+        <button
+          type="button"
+          class="tree-mode-label-toggle"
+          data-label
+          data-label-cs="depth"
+          data-label-bot="generations"
+          aria-label="click to switch between cs and botanical names"
+        >depth</button>
+         · <span data-value="depth">8</span>
+      </span>
+      <input class="tree-mode-range" type="range" min="5" max="10" step="1" value="8" data-knob="depth" aria-label="depth" />
+    </label>
+    <label class="tree-mode-slider">
+      <span class="tree-mode-label">
+        <button
+          type="button"
+          class="tree-mode-label-toggle"
+          data-label
+          data-label-cs="angle"
+          data-label-bot="spread"
+          aria-label="click to switch between cs and botanical names"
+        >angle</button>
+         · <span data-value="angle">27°</span>
+      </span>
+      <input class="tree-mode-range" type="range" min="14" max="40" step="1" value="27" data-knob="angle" aria-label="angle" />
+    </label>
+    <label class="tree-mode-slider">
+      <span class="tree-mode-label">
+        <button
+          type="button"
+          class="tree-mode-label-toggle"
+          data-label
+          data-label-cs="ratio"
+          data-label-bot="taper"
+          aria-label="click to switch between cs and botanical names"
+        >ratio</button>
+         · <span data-value="ratio">74%</span>
+      </span>
+      <input class="tree-mode-range" type="range" min="60" max="85" step="1" value="74" data-knob="ratio" aria-label="ratio" />
+    </label>
+  </div>
+</aside>
+
+<script>
+  import { mountTree } from '../lib/backdrop/tree';
+  import { initTreeMode } from '../lib/primitives/tree-mode';
+
+  const canvas = document.getElementById('tree-threshold') as HTMLCanvasElement | null;
+  if (canvas) {
+    const handle = mountTree(canvas, {
+      palette: 'sepia',
+      opacity: 0.05,
+      swayScale: 0.6,
+      numParticles: 24,
+    });
+    initTreeMode(canvas, handle);
+  }
+</script>

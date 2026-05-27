@@ -1,0 +1,82 @@
+---
+// On The Trail — coursework, tools, resume.
+---
+<section
+  class="section on-the-trail"
+  id="on-the-trail"
+  data-section-id="on-the-trail"
+>
+  <div class="section-inner">
+    <h2 data-color-letters data-inertial-text>on the trail</h2>
+
+    <div class="trail-groups">
+      <div class="group">
+        <h3>coursework so far</h3>
+        <ul>
+          <li>Data Structures &amp; Algorithms</li>
+          <li>Discrete Math</li>
+          <li>Intro to Data Structures</li>
+          <li>Talking Back to Research: Critical Skills for Leaders</li>
+        </ul>
+      </div>
+
+      <div class="group">
+        <h3>tools</h3>
+        <ul>
+          <li>Java</li>
+          <li>Git</li>
+          <li>Claude Code / Cursor</li>
+          <li>Obsidian</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="resume-link">
+      <a class="trail-resume-btn" href="/Rafan_Quader_Resume.pdf" target="_blank" rel="noopener">
+        resume (PDF)
+      </a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .trail-groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    max-width: 56rem;
+    margin-bottom: 2rem;
+  }
+  .trail-groups ul {
+    list-style: none;
+    padding: 0;
+  }
+  .trail-groups li {
+    padding: 0.3rem 0;
+    color: var(--paper-1);
+    font-size: var(--type-body);
+    border-bottom: 1px solid var(--ink-1);
+  }
+  .resume-link {
+    margin: 0;
+  }
+  .trail-resume-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.95rem;
+    font-family: var(--face-mono);
+    font-size: var(--type-small);
+    color: var(--bg-0);
+    background: var(--accent);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+  .trail-resume-btn:hover,
+  .trail-resume-btn:focus-visible {
+    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--accent) 92%, var(--text-0));
+    outline: none;
+  }
+</style>

@@ -1,0 +1,102 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Photo from '../photo/Photo.astro';
+import ProjectMediaAsset from './ProjectMediaAsset.astro';
+import ProjectMediaCarousel from './ProjectMediaCarousel.astro';
+import ProjectMediaStack from './ProjectMediaStack.astro';
+import { resolveProjectMediaUrl } from '../../lib/project-media-url';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+const {
+  cover_image,
+  cover_video,
+  media_items,
+  media_mode,
+  media_default,
+  title,
+  wip,
+  wip_note,
+} = project.data;
+const wipNote = wip_note ?? '';
+
+const hasMediaItems = media_items && media_items.length > 0;
+const resolvedMode = hasMediaItems
+  ? media_mode ?? (media_items!.length > 1 ? 'carousel' : 'single')
+  : null;
+
+function slugFor(id: string): string {
+  return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
+}
+const slug = slugFor(project.id);
+---
+<div class="project-media-wrap" data-project-slug={slug}>
+  {
+    hasMediaItems ? (
+      resolvedMode === 'carousel' ? (
+        <ProjectMediaCarousel
+          projectId={project.id}
+          title={title}
+          items={media_items!}
+          defaultIndex={media_default ?? 0}
+        />
+      ) : resolvedMode === 'stack' ? (
+        <ProjectMediaStack
+          projectId={project.id}
+          title={title}
+          items={media_items!}
+        />
+      ) : (
+        <div class="project-media project-media-single">
+          <ProjectMediaAsset
+            projectId={project.id}
+            src={media_items![0]!.src}
+            alt={`${title} — ${media_items![0]!.label ?? 'cover'}`}
+            eager
+            lightbox
+          />
+        </div>
+      )
+    ) : cover_video ? (
+      <video
+        class="project-media project-media-video"
+        controls
+        playsinline
+        muted
+        preload="metadata"
+        src={cover_video}
+        poster={cover_image ? resolveProjectMediaUrl(project.id, cover_image) : undefined}
+        aria-label={`cover video for ${title}`}
+      />
+    ) : cover_image ? (
+      <div class="project-media project-media-image">
+        <Photo
+          src={resolveProjectMediaUrl(project.id, cover_image)}
+          alt={`${title} cover image`}
+          treatment="plain"
+          lightbox
+        />
+      </div>
+    ) : (
+      <div class="project-media project-media-empty" aria-label="screenshots coming soon">
+        <span class="project-media-empty-label">media coming soon</span>
+      </div>
+    )
+  }
+  {
+    wip && wipNote && (
+      <button
+        type="button"
+        class="wip-sticker"
+        data-wip-trigger
+        data-wip-note={wipNote}
+        aria-label="work in progress — read note"
+      >
+        WIP
+      </button>
+    )
+  }
+</div>

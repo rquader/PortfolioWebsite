@@ -1,0 +1,60 @@
+---
+/**
+ * @file ProjectLinks.astro
+ *
+ * Modular link-button row for a project chapter. Renders one small
+ * monospace button per URL the project actually has — github, live
+ * site, download, app store, demo, paper. Adding a new link type is
+ * one row in LINK_TYPES plus a schema field in content/config.ts.
+ *
+ * Spec: [[specs/2026-05-24-projects-page-redesign-design#4.2]].
+ */
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+
+const { project } = Astro.props;
+
+/**
+ * The registry. To add a new link type:
+ *   1. add a `<thing>_url` field to the projects schema in config.ts
+ *   2. add a row here with its glyph and label
+ *
+ * Order here is the on-screen order.
+ */
+const LINK_TYPES = [
+  { key: 'github_url',    icon: '↗', label: 'github'    },
+  { key: 'web_url',       icon: '⊕', label: 'live site' },
+  { key: 'download_url',  icon: '⤓', label: 'download'  },
+  { key: 'app_store_url', icon: '⌬', label: 'app store' },
+  { key: 'demo_url',      icon: '▶', label: 'demo'      },
+  { key: 'paper_url',     icon: '¶', label: 'paper'     },
+] as const;
+
+type LinkKey = (typeof LINK_TYPES)[number]['key'];
+
+const present = LINK_TYPES.filter(
+  ({ key }) => typeof (project.data as Record<LinkKey, unknown>)[key] === 'string',
+);
+---
+{
+  present.length > 0 && (
+    <div class="project-links" role="list">
+      {present.map(({ key, icon, label }) => (
+        <a
+          class="project-link"
+          role="listitem"
+          href={(project.data as Record<LinkKey, string | undefined>)[key]}
+          target="_blank"
+          rel="noopener"
+        >
+          <span class="project-link-icon" aria-hidden="true">{icon}</span>
+          <span class="project-link-label">{label}</span>
+        </a>
+      ))}
+    </div>
+  )
+}

@@ -1,0 +1,449 @@
+/* threshold.css — the opening section.
+   Hero name + tagline + portrait slot + recursive tree backdrop.
+   Tree-mode: click → fullscreen tree + paper card with sliders.
+   Spec: [[Concept - Threshold Hero]];
+         [[specs/2026-05-18-tree-leaves-folders-design#4.1-tree-mode-update]]. */
+
+.threshold {
+  position: relative;
+  min-height: 100dvh;
+  padding: clamp(5rem, 10vh, 8rem) var(--gutter) clamp(4rem, 8vh, 6rem);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.threshold-tree {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  opacity: 0;
+  animation: tree-fade-in 1.4s ease-out 0.2s forwards;
+  /* Clickable to open tree-mode. Hero content sits above (z-index 2)
+     so clicks on the name/tagline land there; empty areas reach the
+     canvas. */
+  cursor: zoom-in;
+  transition: opacity 0.45s ease;
+
+  /* Photo clearing: a soft radial "no-tree" zone in the upper-right
+     where .threshold-photo lives. The tree fades to transparent inside
+     the clearing so branches don't get amputated by the photo's edge.
+     Mask: opaque (black) = draw tree, transparent = hide tree.
+     Center + radius are kept loose so small viewport changes still
+     keep the clearing aligned with the photo's position. Reasoning:
+     specs/2026-05-22-gallery-v2-photo-sticker-design.md §4.3 (rev5). */
+  --tree-photo-clearing: radial-gradient(
+    ellipse 19% 19% at 88% 22%,
+    transparent 0%,
+    transparent 38%,
+    rgba(0, 0, 0, 0.55) 62%,
+    rgba(0, 0, 0, 0.92) 82%,
+    black 100%
+  );
+  -webkit-mask-image: var(--tree-photo-clearing);
+          mask-image: var(--tree-photo-clearing);
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-size: 100% 100%;
+          mask-size: 100% 100%;
+}
+/* Brighten tree residue on threshold hover — but not when the pointer
+   is on the portrait (avoids fighting the photo hover state). */
+.threshold:hover:not(:has(.threshold-photo:hover)) .threshold-tree {
+  opacity: 0.85;
+}
+@media (prefers-reduced-motion: reduce) {
+  .threshold:hover:not(:has(.threshold-photo:hover)) .threshold-tree {
+    opacity: 1;
+  }
+}
+@keyframes tree-fade-in {
+  to { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .threshold-tree {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+.threshold-content {
+  position: relative;
+  z-index: 2;
+  max-width: min(100%, 56rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3vh, 2.5rem);
+  margin-top: clamp(2rem, 8vh, 5rem);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+
+.name {
+  font-family: var(--face-display);
+  font-variation-settings: 'SOFT' var(--display-soft), 'WONK' var(--display-wonk);
+  font-optical-sizing: auto;
+  font-size: var(--type-name);
+  letter-spacing: -0.025em;
+  line-height: 0.9;
+  font-weight: 350;
+  color: var(--text-0);
+}
+.name-line { display: block; }
+
+.tagline {
+  font-family: var(--face-text);
+  font-optical-sizing: auto;
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+  max-width: var(--max-content);
+  color: var(--text-1);
+  margin: 0;
+}
+.tagline-primary {
+  color: var(--text-0);
+}
+.tagline-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35em 0.5em;
+  font-size: var(--type-small);
+  color: var(--text-2);
+  letter-spacing: 0.02em;
+}
+.tagline-dot {
+  opacity: 0.55;
+  font-family: var(--face-mono);
+}
+
+/* Author print — top-right, companion-scale. Full-frame photograph
+   (no crop, no mask) so the speaking gesture and podium/mic context
+   stay visible. Small enough that the dark stage backdrop does NOT
+   read as a mass on parchment.
+   Spec: specs/2026-05-22-gallery-v2-photo-sticker-design.md §4.3 (rev4). */
+.threshold-photo {
+  position: absolute;
+  top: clamp(4.5rem, 12vh, 7rem);
+  right: clamp(1.25rem, 5vw, 3rem);
+  width: clamp(168px, 18vw, 224px);
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.scroll-cue {
+  position: absolute;
+  bottom: clamp(1rem, 3vh, 2rem);
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--paper-2);
+  text-decoration: none;
+  opacity: 0.6;
+  z-index: 2;
+  animation: threshold-scroll-cue 3s ease-in-out infinite;
+  transition: opacity 0.4s ease;
+}
+.scroll-cue:hover,
+.scroll-cue:focus-visible {
+  opacity: 1;
+  outline: none;
+}
+@keyframes threshold-scroll-cue {
+  0%, 100% { transform: translate(-50%, 0); opacity: 0.4; }
+  50%      { transform: translate(-50%, 4px); opacity: 0.75; }
+}
+
+@media (max-width: 640px) {
+  .threshold-photo {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: clamp(148px, 36vw, 200px);
+    margin: clamp(1.5rem, 4vh, 2.5rem) 0 0 auto;
+  }
+  /* On narrow viewports the photo lives below the tagline (not floating
+     in the upper-right), so the canvas no longer needs a clearing — it
+     would just look like a smudge in empty space. */
+  .threshold-tree {
+    -webkit-mask-image: none;
+            mask-image: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue { animation: none; }
+}
+
+/* ---- Tree mode ----
+   Click the tree → body[data-tree-mode="on"] gates the entire
+   transition: hero content fades, scroll-cue fades, portrait fades,
+   tree canvas goes position:fixed full-viewport at full opacity, and
+   the paper card slides up bottom-center.
+   Spec: [[specs/2026-05-18-tree-leaves-folders-design#4.1-tree-mode-update]]. */
+
+body[data-tree-mode="on"] {
+  overflow: hidden;
+}
+
+body[data-tree-mode="on"] .threshold-content {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.97) translateY(-6px);
+}
+body[data-tree-mode="on"] .threshold-photo,
+body[data-tree-mode="on"] .tree-hint,
+body[data-tree-mode="on"] .scroll-cue {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body[data-tree-mode="on"] .threshold-tree {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: 50;
+  cursor: zoom-out;
+  /* In tree-mode the photo is hidden — drop the clearing so the tree
+     reads at full opacity edge-to-edge. */
+  -webkit-mask-image: none;
+          mask-image: none;
+}
+
+/* Hide other rooms while in tree-mode so the tree feels truly "open" —
+   if the user scrolled into the threshold mid-page, the body lock pins
+   them here, but they shouldn't peek at the next section behind the
+   canvas. */
+body[data-tree-mode="on"] main > .section:not(.threshold),
+body[data-tree-mode="on"] .top-nav,
+body[data-tree-mode="on"] .scroll-progress {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+
+.tree-mode-ui {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+}
+body[data-tree-mode="on"] .tree-mode-ui {
+  pointer-events: auto;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.4s ease 0.25s, visibility 0s linear 0.25s;
+}
+
+/* Slim horizontal "knobs" strip. Lives bottom-center; lowered opacity
+   when not interacted with so it doesn't compete with the tree;
+   becomes opaque on hover/focus-within. Single row, very small. */
+.tree-mode-card {
+  position: absolute;
+  bottom: clamp(0.8rem, 3vh, 1.8rem);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: clamp(0.6rem, 1.4vw, 1.1rem);
+  padding: 0.4rem 0.75rem;
+  background: rgba(232, 222, 197, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(232, 222, 197, 0.5);
+  border-radius: 999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  font-family: var(--face-mono);
+  color: var(--ink-0);
+  max-width: min(94vw, 42rem);
+  flex-wrap: nowrap;
+  opacity: 0;
+  transform: translateX(-50%) translateY(12px);
+  /* Resting opacity is lower so the card recedes; full opacity on
+     hover/focus-within so you know it's interactive. */
+  --rest-opacity: 0.42;
+  transition: opacity 0.3s ease;
+}
+body[data-tree-mode="on"] .tree-mode-card {
+  animation: tree-mode-card-up 0.4s ease 0.25s forwards;
+}
+.tree-mode-card:hover,
+.tree-mode-card:focus-within {
+  opacity: 1 !important;
+}
+@keyframes tree-mode-card-up {
+  to {
+    opacity: var(--rest-opacity);
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.tree-mode-slider {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+  flex: 0 1 auto;
+}
+.tree-mode-label {
+  font-family: var(--face-mono);
+  font-size: 0.7rem;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  text-transform: lowercase;
+}
+.tree-mode-label [data-value] {
+  color: var(--text-0);
+  font-weight: 600;
+  margin-left: 0.15em;
+}
+/* Click-to-toggle label (CS ⇄ botanical). Sits inline inside the
+   slider label; presents as a quietly underlined word that turns
+   accent on hover. */
+.tree-mode-label-toggle {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-bottom: 1px dotted color-mix(in srgb, var(--accent) 55%, transparent);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.tree-mode-label-toggle:hover,
+.tree-mode-label-toggle:focus-visible {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  outline: none;
+}
+.tree-mode-card[data-label-mode="bot"] .tree-mode-label-toggle {
+  font-style: italic;
+}
+
+/* Custom range input — thin track + paper-tone knob. Narrow per
+   slider so three fit on one line. */
+.tree-mode-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 1rem;
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  width: clamp(4.5rem, 8vw, 7rem);
+}
+.tree-mode-range::-webkit-slider-runnable-track {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 1px;
+}
+.tree-mode-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--paper-0);
+  border: 1px solid var(--ink-0);
+  margin-top: -4.5px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.tree-mode-range:hover::-webkit-slider-thumb,
+.tree-mode-range:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.25);
+}
+.tree-mode-range::-moz-range-track {
+  height: 1px;
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 1px;
+}
+.tree-mode-range::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--paper-0);
+  border: 1px solid var(--ink-0);
+  cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+.tree-mode-range:focus-visible {
+  outline: none;
+}
+
+.tree-mode-reset {
+  background: none;
+  border: none;
+  font-family: var(--face-mono);
+  color: var(--ink-2);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 0.2rem 0.45rem;
+  border-radius: 999px;
+  line-height: 1;
+}
+.tree-mode-reset:hover,
+.tree-mode-reset:focus-visible {
+  color: var(--ink-0);
+  background: rgba(0, 0, 0, 0.08);
+  outline: none;
+}
+
+.tree-mode-close {
+  position: absolute;
+  top: clamp(1rem, 3vh, 2rem);
+  right: clamp(1rem, 3vw, 2rem);
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: rgba(232, 222, 197, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--ink-0);
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.tree-mode-close:hover,
+.tree-mode-close:focus-visible {
+  background: var(--paper-0);
+  outline: none;
+  transform: scale(1.08);
+}
+
+.tree-mode-hint {
+  position: absolute;
+  top: calc(clamp(1rem, 3vh, 2rem) + 2.9rem);
+  right: calc(clamp(1rem, 3vw, 2rem) + 0.4rem);
+  font-family: var(--face-mono);
+  font-size: 0.7rem;
+  color: var(--paper-1);
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 8px rgba(0, 0, 0, 0.6);
+  text-transform: lowercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-tree-mode="on"] .threshold-content,
+  body[data-tree-mode="on"] .threshold-tree,
+  .tree-mode-ui,
+  .tree-mode-card {
+    transition: none;
+    animation: none;
+  }
+  body[data-tree-mode="on"] .tree-mode-card {
+    opacity: 1;
+    transform: translateX(-50%);
+  }
+}

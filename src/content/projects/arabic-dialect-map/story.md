@@ -1,0 +1,1 @@
+Having started to use Claude Code in DDD, I had become more comfortable with the tool. Arabic is a language that is greatly fascinating to me, especially due to the great population of people who speak it along with another language. As a result, we developed how the many dialects interact and their cross-intelligibility.

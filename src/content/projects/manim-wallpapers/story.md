@@ -1,0 +1,1 @@
+Having developed so much already, I began to get inspired by 3Blue1Brown's incredible videos and design, utilizing his own Python library, Manim. Utilizing Claude Code and going back and forth, I was able to put together a great set of wonderful wallpapers utilizing Manim.

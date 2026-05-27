@@ -1,0 +1,1 @@
+For my personal use, I wanted to put together an Adhkar Counter, a little app to see my adhkar be counted down. After some messing around, it was pretty easy to put together in Swift, which made it very lightweight.

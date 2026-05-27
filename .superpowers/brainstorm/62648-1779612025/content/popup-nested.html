@@ -1,0 +1,219 @@
+<h2>Handling nested folders · field / decisions / ADR-001</h2>
+<p class="subtitle">
+  Two snapshots of the same popup as you step through the <code>field</code> tab. Left snapshot is
+  on a top-level note in <code>field</code>. Right snapshot is on a note nested in
+  <code>field/decisions/</code>. Notice the breadcrumb and the position indicator — those are the
+  only two things that change.
+</p>
+
+<style>
+  .demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+  @media (max-width: 1200px) { .demo-row { grid-template-columns: 1fr; } }
+  .frame { border-radius: 6px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); background: #1a1410; min-height: 620px; position: relative; }
+  .frame-label {
+    font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 12px;
+    background: rgba(255,255,255,0.04); color: #c8b88b; border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative; z-index: 30;
+  }
+
+  .page-bg {
+    position: absolute; inset: 30px 0 0 0;
+    background: #F5EAD4; padding: 20px 24px; font-family: Georgia, serif; color: #3A2615;
+  }
+  .bg-title { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 22px; margin: 0; }
+  .bg-sub   { font-style: italic; font-size: 11px; margin: 2px 0 14px; color: #5C3C20; }
+  .bg-rule  { height: 1px; margin: 8px 0 12px; background: rgba(122, 62, 28, 0.18); }
+  .bg-row   { display: grid; grid-template-columns: 1.05fr 1fr; gap: 14px; align-items: center; }
+  .bg-cover { aspect-ratio: 16 / 10; border-radius: 3px; background: linear-gradient(135deg, #C66A3C 0%, #7A3E1C 60%, #3A2615 100%); }
+  .bg-text  { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: #5C3C20; }
+  .bg-h     { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 18px; margin: 0; color: #3A2615; }
+
+  .paper-grain {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.32 0 0 0 0 0.18 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+  }
+
+  .backdrop { position: absolute; inset: 30px 0 0 0; background: rgba(31, 24, 18, 0.28); z-index: 10; }
+
+  .folio {
+    position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+    width: 76%; max-width: 540px; height: calc(100% - 80px);
+    background: #F0E4CC;
+    border-radius: 6px;
+    box-shadow: 0 24px 60px -20px rgba(31, 24, 18, 0.45), 0 1px 0 rgba(255,255,255,0.5) inset;
+    display: flex; flex-direction: column;
+    z-index: 20; overflow: hidden;
+    color: #3A2615;
+  }
+  .folio .head { padding: 16px 22px 12px; border-bottom: 1px solid rgba(122, 62, 28, 0.14); background: #E8D9B8; }
+  .folio .crumb-top { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; color: #8A6A48; letter-spacing: 0.04em; }
+  .folio .ttl { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 20px; margin: 3px 0 0; }
+  .close-x {
+    position: absolute; top: 14px; right: 14px;
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 0; background: transparent; cursor: pointer;
+    color: #5C3C20; font-size: 16px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5;
+  }
+  .close-x:hover { background: rgba(122, 62, 28, 0.08); }
+
+  .tabs { display: flex; gap: 2px; padding: 8px 20px 0; border-bottom: 1px solid rgba(122, 62, 28, 0.14); background: #ECDFC0; }
+  .tab { padding: 7px 14px 6px; border-radius: 4px 4px 0 0; font-family: ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.04em; cursor: pointer; border: 1px solid transparent; border-bottom: none; background: transparent; color: #5C3C20; }
+  .tab.on { background: #F0E4CC; border-color: rgba(122, 62, 28, 0.14); color: #3A2615; font-weight: 600; margin-bottom: -1px; }
+
+  .body { padding: 16px 26px 22px; overflow-y: auto; flex: 1; position: relative; font-family: "Iowan Old Style", Georgia, serif; }
+  .stepper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: #5C3C20; }
+  .stepper .arrow { padding: 4px 10px; border-radius: 3px; cursor: pointer; opacity: 0.85; }
+  .stepper .arrow.disabled { opacity: 0.35; cursor: default; }
+  .stepper .arrow:hover:not(.disabled) { opacity: 1; background: rgba(122, 62, 28, 0.06); }
+  .stepper .pos { opacity: 0.55; text-align: center; }
+  .stepper .pos .sep { opacity: 0.5; padding: 0 4px; }
+  .stepper .pos .deep { color: #7A3E1C; font-weight: 600; }
+
+  /* breadcrumb above note title — only shows when nested deeper than the tab folder */
+  .note-crumb {
+    display: inline-flex; align-items: center;
+    font-family: ui-monospace, Menlo, monospace; font-size: 10.5px;
+    color: #8A6A48; letter-spacing: 0.04em; margin: 6px 0 4px;
+    padding: 2px 6px; border-radius: 3px; background: rgba(122, 62, 28, 0.06);
+  }
+  .note-crumb .sep { margin: 0 6px; opacity: 0.6; }
+  .note-crumb .leaf { color: #7A3E1C; font-weight: 600; }
+
+  .body h1 { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 22px; margin: 0 0 12px; }
+  .body p { font-size: 13.5px; line-height: 1.7; margin: 0 0 11px; }
+  .body h2 { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 16px; margin: 16px 0 6px; padding-bottom: 4px; border-bottom: 1px solid rgba(122, 62, 28, 0.15); }
+  .placeholder-mark { background: rgba(122, 62, 28, 0.08); padding: 0 4px; border-radius: 2px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #7A3E1C; }
+</style>
+
+<div class="demo-row">
+
+  <!-- SNAPSHOT 1 · top-level note in field -->
+  <div class="frame">
+    <div class="frame-label">snapshot 1 · field / architecture.md  (depth 1)</div>
+
+    <div class="page-bg">
+      <h1 class="bg-title">Projects</h1>
+      <p class="bg-sub">[PLACEHOLDER]</p>
+      <div class="bg-rule"></div>
+      <div class="bg-row">
+        <div class="bg-cover"></div>
+        <div class="bg-text">
+          <h3 class="bg-h">AdhkarCounter</h3>
+          <p style="margin:0;font-style:italic;font-size:11px">a quiet counter…</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="backdrop"></div>
+    <div class="folio">
+      <div class="paper-grain"></div>
+      <button class="close-x">×</button>
+
+      <div class="head">
+        <div class="crumb-top">working notes</div>
+        <h1 class="ttl">AdhkarCounter</h1>
+      </div>
+
+      <div class="tabs">
+        <button class="tab on">field</button>
+        <button class="tab">decisions</button>
+        <button class="tab">journal</button>
+        <button class="tab">credits</button>
+      </div>
+
+      <div class="body">
+        <div class="stepper">
+          <span class="arrow disabled">◂</span>
+          <span class="pos">1 of 5 · field</span>
+          <span class="arrow">▸ audio rendering</span>
+        </div>
+        <!-- no note-crumb here — depth 1, redundant with tab -->
+        <h1>Architecture</h1>
+        <p><span class="placeholder-mark">[PLACEHOLDER — opening paragraph of architecture.md.]</span></p>
+        <h2>Storage</h2>
+        <p><span class="placeholder-mark">[PLACEHOLDER — section body.]</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SNAPSHOT 2 · nested note in field/decisions -->
+  <div class="frame">
+    <div class="frame-label">snapshot 2 · field / decisions / ADR-001-storage.md  (depth 2)</div>
+
+    <div class="page-bg">
+      <h1 class="bg-title">Projects</h1>
+      <p class="bg-sub">[PLACEHOLDER]</p>
+      <div class="bg-rule"></div>
+      <div class="bg-row">
+        <div class="bg-cover"></div>
+        <div class="bg-text">
+          <h3 class="bg-h">AdhkarCounter</h3>
+          <p style="margin:0;font-style:italic;font-size:11px">a quiet counter…</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="backdrop"></div>
+    <div class="folio">
+      <div class="paper-grain"></div>
+      <button class="close-x">×</button>
+
+      <div class="head">
+        <div class="crumb-top">working notes</div>
+        <h1 class="ttl">AdhkarCounter</h1>
+      </div>
+
+      <div class="tabs">
+        <button class="tab on">field</button>
+        <button class="tab">decisions</button>
+        <button class="tab">journal</button>
+        <button class="tab">credits</button>
+      </div>
+
+      <div class="body">
+        <div class="stepper">
+          <span class="arrow">◂ audio rendering</span>
+          <span class="pos">3 of 5 <span class="sep">·</span> field <span class="sep">›</span> <span class="deep">decisions</span></span>
+          <span class="arrow">ADR-002 ui ▸</span>
+        </div>
+        <span class="note-crumb">field <span class="sep">›</span> <span class="leaf">decisions</span></span>
+        <h1>ADR-001 · Storage</h1>
+        <p><span class="placeholder-mark">[PLACEHOLDER — context paragraph. Why this decision came up.]</span></p>
+        <h2>Options considered</h2>
+        <p><span class="placeholder-mark">[PLACEHOLDER — the tradeoff section, per your ADR-style preference.]</span></p>
+        <h2>Decision</h2>
+        <p><span class="placeholder-mark">[PLACEHOLDER — what was chosen and why.]</span></p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top: 26px;">
+  <h3>The rules · what does what</h3>
+  <ul style="margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.65;">
+    <li><strong>Tabs stay top-level only</strong> · field, decisions, journal, credits. Sub-folders never become tabs.</li>
+    <li><strong>Stepper walks every note at any depth</strong> in that tab's folder, ordered by <code>sort_order</code> then alphabetical path. With 3 files at depth 1 and 2 files in <code>field/decisions/</code>, that's 5 total inside the <code>field</code> tab.</li>
+    <li><strong>Position indicator</strong> grows a path tail when the current note is nested · "<code>3 of 5 · field</code>" at depth 1, "<code>3 of 5 · field › decisions</code>" at depth 2.</li>
+    <li><strong>Note breadcrumb chip</strong> · only appears above the note title when the note is nested below the tab folder. At depth 1 it's redundant with the tab, so it's hidden. Keeps the depth-1 case (most common) uncluttered.</li>
+    <li><strong>End-of-folder</strong> · left arrow on first note is grayed out (disabled), right arrow on last note is grayed out. No wrap-around — matches the linear-reading mental model.</li>
+    <li><strong>Deeper nesting</strong> · works the same · "field › decisions › 2026 › Q2" if you ever go that deep. We can truncate the middle with "…" if the chain exceeds 3 segments to keep the chip readable.</li>
+  </ul>
+</div>
+
+<div class="section" style="margin-top: 14px;">
+  <h3>Code change implied</h3>
+  <p style="font-size: 13.5px; line-height: 1.65; margin: 4px 0;">
+    Current <code>ProjectNotes.astro</code> at line 27 flattens nested paths into the top group name and discards the rest. The new logic preserves the full path:
+    <code>field/decisions/ADR-001</code> → <code>{ tab: "field", subPath: ["decisions"], leaf: "ADR-001" }</code>.
+    The flattened list per tab is built from that, sorted, and handed to the stepper.
+  </p>
+</div>
+
+<p class="subtitle" style="margin-top: 14px;">
+  Sound right? If yes, I think we're done with the design — next step would be writing the spec and getting your review.
+</p>

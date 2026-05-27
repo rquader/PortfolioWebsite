@@ -1,0 +1,334 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Newsreader:opsz,wght@6..72,300..700&display=swap" rel="stylesheet">
+
+<style>
+  body { font-family: 'Newsreader', Georgia, serif; }
+  .panel {
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    background: #1A1410;
+  }
+  .panel-pair { display: grid; grid-template-columns: 1fr 1fr; }
+  .pane {
+    position: relative;
+    min-height: 360px;
+    padding: 1.6rem 1.7rem 1.3rem;
+    overflow: hidden;
+  }
+  .pane-label {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.55;
+    margin-bottom: 0.5rem;
+    position: relative; z-index: 2;
+  }
+  .hero {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: "SOFT" 60;
+    font-weight: 350;
+    font-size: 2.5rem;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.4rem;
+    position: relative; z-index: 2;
+  }
+  .hero span { display: block; }
+  .tag {
+    font-size: 0.86rem;
+    line-height: 1.45;
+    max-width: 32ch;
+    opacity: 0.85;
+    position: relative; z-index: 2;
+  }
+  .open-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    margin-top: 0.85rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    border: 1px solid currentColor;
+    opacity: 0.7;
+    position: relative; z-index: 2;
+  }
+  .residue { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+
+  .light { background: #F5EAD4; color: #3A2615; }
+  .light .hero { color: #7A3E1C; }
+  .dark  { background: #1F1812; color: #ECDEC5; }
+  .dark  .hero { color: #E08A52; }
+
+  .panel-footer {
+    background: #15110D;
+    color: #D6C8AE;
+    padding: 0.85rem 1.6rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .panel-name { color: #E8C99A; letter-spacing: 0.08em; }
+  .panel-blurb { opacity: 0.7; font-style: italic; }
+
+  /* Tree-mode overlay */
+  .tree-mode-overlay {
+    position: relative;
+    background: #1F1812;
+    color: #ECDEC5;
+    min-height: 380px;
+    overflow: hidden;
+  }
+  .tm-card {
+    position: absolute;
+    bottom: 1.6rem;
+    right: 1.6rem;
+    background: rgba(15,11,8,0.78);
+    border: 1px solid rgba(224,138,82,0.25);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.72rem;
+    color: #ECDEC5;
+    z-index: 3;
+    backdrop-filter: blur(8px);
+  }
+  .tm-card .knob { display: flex; align-items: center; gap: 0.6rem; margin: 0.25rem 0; }
+  .tm-card .knob .name { width: 4rem; opacity: 0.7; }
+  .tm-card .knob .bar  { flex: 1; height: 2px; background: rgba(236,222,197,0.18); position: relative; border-radius: 1px; }
+  .tm-card .knob .bar::after { content: ""; position: absolute; left: 0; top: -3px; width: 8px; height: 8px; border-radius: 50%; background: #E08A52; }
+  .tm-card .knob .val  { width: 2.4rem; text-align: right; color: #E08A52; }
+  .tm-close {
+    position: absolute; top: 1rem; right: 1.2rem;
+    color: #E08A52; font-size: 1.2rem; opacity: 0.75; z-index: 3;
+  }
+
+  /* Residue level demo cards */
+  .residue-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  .residue-cell {
+    position: relative;
+    background: #F5EAD4;
+    color: #3A2615;
+    border-radius: 8px;
+    min-height: 200px;
+    padding: 1rem 1.1rem;
+    overflow: hidden;
+  }
+  .residue-cell h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 1.1rem;
+    margin-bottom: 0.2rem;
+    color: #7A3E1C;
+    font-weight: 400;
+    position: relative; z-index: 2;
+  }
+  .residue-cell .params {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.65rem;
+    opacity: 0.65;
+    position: relative; z-index: 2;
+  }
+
+  .small-mono { font-family: 'SF Mono', Menlo, monospace; font-size: 0.7rem; opacity: 0.75; }
+</style>
+
+<h2>The proposed treatment · "residue threshold + window into the tree"</h2>
+<p class="subtitle">Threshold shows the tree's effect, not the tree. Open it to see + edit. Close it — residue reflects what you tuned.</p>
+
+<!-- 1. Threshold with residue, light + dark -->
+<div class="panel">
+  <div class="panel-pair">
+    <div class="pane light">
+      <svg class="residue" viewBox="0 0 400 360" preserveAspectRatio="none" aria-hidden="true">
+        <!-- Faint canopy ghosts as 5pt dots (where leaves originate) -->
+        <g opacity="0.18">
+          <circle cx="120" cy="58" r="3" fill="#7A3E1C"/>
+          <circle cx="160" cy="48" r="3" fill="#7A3E1C"/>
+          <circle cx="200" cy="44" r="3" fill="#7A3E1C"/>
+          <circle cx="240" cy="48" r="3" fill="#7A3E1C"/>
+          <circle cx="280" cy="58" r="3" fill="#7A3E1C"/>
+        </g>
+        <!-- Drifting leaves from canopy positions -->
+        <g>
+          <polygon points="115,120 117,127 122,124 117,121" fill="#C66A3C" opacity="0.55"/>
+          <polygon points="158,160 162,167 167,162 162,158" fill="#A04A2A" opacity="0.5"/>
+          <polygon points="195,200 199,207 204,202 199,198" fill="#D8853E" opacity="0.55"/>
+          <polygon points="234,150 238,157 243,152 238,148" fill="#C66A3C" opacity="0.45"/>
+          <polygon points="275,210 279,217 284,212 279,208" fill="#E0B266" opacity="0.5"/>
+          <polygon points="105,250 109,257 114,252 109,248" fill="#C66A3C" opacity="0.4"/>
+          <polygon points="285,295 289,302 294,297 289,293" fill="#A04A2A" opacity="0.5"/>
+          <polygon points="180,320 184,327 189,322 184,318" fill="#D8853E" opacity="0.45"/>
+          <polygon points="55,200 59,207 64,202 59,198" fill="#C66A3C" opacity="0.4"/>
+          <polygon points="345,160 349,167 354,162 349,158" fill="#A04A2A" opacity="0.4"/>
+          <polygon points="320,240 324,247 329,242 324,238" fill="#E0B266" opacity="0.45"/>
+        </g>
+      </svg>
+      <div class="pane-label">light · threshold</div>
+      <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+      <p class="tag">No full tree drawn. Sparse leaves drift down from where the canopy would be — the tree's residue.</p>
+      <span class="open-btn">↗ open the tree</span>
+    </div>
+    <div class="pane dark">
+      <svg class="residue" viewBox="0 0 400 360" preserveAspectRatio="none" aria-hidden="true">
+        <g opacity="0.22">
+          <circle cx="120" cy="58" r="3" fill="#E08A52"/>
+          <circle cx="160" cy="48" r="3" fill="#E08A52"/>
+          <circle cx="200" cy="44" r="3" fill="#E08A52"/>
+          <circle cx="240" cy="48" r="3" fill="#E08A52"/>
+          <circle cx="280" cy="58" r="3" fill="#E08A52"/>
+        </g>
+        <g>
+          <polygon points="115,120 117,127 122,124 117,121" fill="#E08A52" opacity="0.7"/>
+          <polygon points="158,160 162,167 167,162 162,158" fill="#C46B45" opacity="0.65"/>
+          <polygon points="195,200 199,207 204,202 199,198" fill="#F0A668" opacity="0.7"/>
+          <polygon points="234,150 238,157 243,152 238,148" fill="#E08A52" opacity="0.55"/>
+          <polygon points="275,210 279,217 284,212 279,208" fill="#E8C078" opacity="0.65"/>
+          <polygon points="105,250 109,257 114,252 109,248" fill="#E08A52" opacity="0.5"/>
+          <polygon points="285,295 289,302 294,297 289,293" fill="#C46B45" opacity="0.6"/>
+          <polygon points="180,320 184,327 189,322 184,318" fill="#F0A668" opacity="0.55"/>
+          <polygon points="55,200 59,207 64,202 59,198" fill="#E08A52" opacity="0.5"/>
+          <polygon points="345,160 349,167 354,162 349,158" fill="#C46B45" opacity="0.55"/>
+          <polygon points="320,240 324,247 329,242 324,238" fill="#E8C078" opacity="0.55"/>
+        </g>
+      </svg>
+      <div class="pane-label">dark · threshold</div>
+      <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+      <p class="tag">Same residue, warm-glow palette. The leaves catch warmer light against deep walnut.</p>
+      <span class="open-btn">↗ open the tree</span>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <span class="panel-name">1 · the threshold (default state)</span>
+    <span class="panel-blurb">no tree drawn · leaves drift from canopy positions · ambient</span>
+  </div>
+</div>
+
+<!-- 2. Tree-mode overlay -->
+<div class="panel">
+  <div class="tree-mode-overlay">
+    <span class="tm-close">×</span>
+    <svg viewBox="0 0 600 380" preserveAspectRatio="xMidYMax meet" style="width:100%;height:100%;display:block;position:absolute;inset:0;z-index:1;" aria-hidden="true">
+      <g stroke="#A88160" stroke-linecap="round" fill="none" opacity="0.65">
+        <path d="M300,380 L300,240" stroke-width="4.5"/>
+        <path d="M300,240 L240,180" stroke-width="3.4"/>
+        <path d="M300,240 L360,180" stroke-width="3.4"/>
+        <path d="M240,180 L200,130" stroke-width="2.4"/>
+        <path d="M240,180 L260,120" stroke-width="2.4"/>
+        <path d="M360,180 L340,120" stroke-width="2.4"/>
+        <path d="M360,180 L400,130" stroke-width="2.4"/>
+        <path d="M200,130 L170,90" stroke-width="1.6"/>
+        <path d="M200,130 L210,80" stroke-width="1.6"/>
+        <path d="M260,120 L250,75" stroke-width="1.6"/>
+        <path d="M260,120 L280,80" stroke-width="1.6"/>
+        <path d="M340,120 L320,80" stroke-width="1.6"/>
+        <path d="M340,120 L350,75" stroke-width="1.6"/>
+        <path d="M400,130 L390,80" stroke-width="1.6"/>
+        <path d="M400,130 L430,90" stroke-width="1.6"/>
+      </g>
+      <g opacity="0.85">
+        <polygon points="170,90 174,98 179,93 174,86" fill="#E08A52"/>
+        <polygon points="210,80 214,88 219,83 214,76" fill="#F0A668"/>
+        <polygon points="250,75 254,83 259,78 254,71" fill="#C46B45"/>
+        <polygon points="280,80 284,88 289,83 284,76" fill="#E8C078"/>
+        <polygon points="320,80 324,88 329,83 324,76" fill="#E08A52"/>
+        <polygon points="350,75 354,83 359,78 354,71" fill="#C46B45"/>
+        <polygon points="390,80 394,88 399,83 394,76" fill="#F0A668"/>
+        <polygon points="430,90 434,98 439,93 434,86" fill="#E08A52"/>
+      </g>
+      <!-- a few drifting leaves -->
+      <polygon points="100,260 104,268 109,263 104,256" fill="#E08A52" opacity="0.6"/>
+      <polygon points="500,300 504,308 509,303 504,296" fill="#F0A668" opacity="0.55"/>
+    </svg>
+    <div class="tm-card">
+      <div class="knob"><span class="name">depth</span><span class="bar"></span><span class="val">8</span></div>
+      <div class="knob"><span class="name">angle</span><span class="bar"></span><span class="val">27°</span></div>
+      <div class="knob"><span class="name">shrink</span><span class="bar"></span><span class="val">74%</span></div>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <span class="panel-name">2 · tree-mode (after click)</span>
+    <span class="panel-blurb">full tree · re-paletted to autumn · same sliders · esc/× to close</span>
+  </div>
+</div>
+
+<!-- 3. Residue updates after closing -->
+<div class="panel">
+  <div style="padding: 1.4rem 1.6rem 1.6rem; background: #1A1410; color: #ECDEC5;">
+    <p class="small-mono" style="margin-bottom: 0.5rem;">→ on close, params persist in localStorage. residue scales:</p>
+    <div class="residue-grid">
+      <div class="residue-cell">
+        <svg class="residue" viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true">
+          <g opacity="0.18">
+            <circle cx="80" cy="38" r="2.5" fill="#7A3E1C"/>
+            <circle cx="120" cy="38" r="2.5" fill="#7A3E1C"/>
+          </g>
+          <polygon points="78,80 81,85 84,82 81,78" fill="#C66A3C" opacity="0.45"/>
+          <polygon points="118,130 121,135 124,132 121,128" fill="#A04A2A" opacity="0.4"/>
+          <polygon points="95,170 98,175 101,172 98,168" fill="#D8853E" opacity="0.4"/>
+        </svg>
+        <h4>sparse</h4>
+        <div class="params">depth 5 · angle 18° · shrink 65%</div>
+      </div>
+      <div class="residue-cell">
+        <svg class="residue" viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true">
+          <g opacity="0.18">
+            <circle cx="55" cy="38" r="2.5" fill="#7A3E1C"/>
+            <circle cx="85" cy="32" r="2.5" fill="#7A3E1C"/>
+            <circle cx="115" cy="32" r="2.5" fill="#7A3E1C"/>
+            <circle cx="145" cy="38" r="2.5" fill="#7A3E1C"/>
+          </g>
+          <polygon points="50,80 53,85 56,82 53,78" fill="#C66A3C" opacity="0.55"/>
+          <polygon points="90,120 93,125 96,122 93,118" fill="#A04A2A" opacity="0.5"/>
+          <polygon points="130,100 133,105 136,102 133,98" fill="#E0B266" opacity="0.55"/>
+          <polygon points="160,150 163,155 166,152 163,148" fill="#C66A3C" opacity="0.5"/>
+          <polygon points="75,160 78,165 81,162 78,158" fill="#D8853E" opacity="0.5"/>
+          <polygon points="110,180 113,185 116,182 113,178" fill="#A04A2A" opacity="0.45"/>
+        </svg>
+        <h4>default</h4>
+        <div class="params">depth 8 · angle 27° · shrink 74%</div>
+      </div>
+      <div class="residue-cell">
+        <svg class="residue" viewBox="0 0 200 200" preserveAspectRatio="none" aria-hidden="true">
+          <g opacity="0.18">
+            <circle cx="30" cy="42" r="2.5" fill="#7A3E1C"/>
+            <circle cx="58" cy="34" r="2.5" fill="#7A3E1C"/>
+            <circle cx="85" cy="28" r="2.5" fill="#7A3E1C"/>
+            <circle cx="115" cy="28" r="2.5" fill="#7A3E1C"/>
+            <circle cx="142" cy="34" r="2.5" fill="#7A3E1C"/>
+            <circle cx="170" cy="42" r="2.5" fill="#7A3E1C"/>
+          </g>
+          <polygon points="22,70 25,75 28,72 25,68" fill="#C66A3C" opacity="0.55"/>
+          <polygon points="42,100 45,105 48,102 45,98" fill="#A04A2A" opacity="0.55"/>
+          <polygon points="68,135 71,140 74,137 71,133" fill="#E0B266" opacity="0.55"/>
+          <polygon points="92,80 95,85 98,82 95,78" fill="#D8853E" opacity="0.55"/>
+          <polygon points="115,160 118,165 121,162 118,158" fill="#C66A3C" opacity="0.55"/>
+          <polygon points="138,110 141,115 144,112 141,108" fill="#A04A2A" opacity="0.55"/>
+          <polygon points="162,90 165,95 168,92 165,88" fill="#E0B266" opacity="0.55"/>
+          <polygon points="175,170 178,175 181,172 178,168" fill="#C66A3C" opacity="0.5"/>
+          <polygon points="55,180 58,185 61,182 58,178" fill="#D8853E" opacity="0.55"/>
+          <polygon points="100,180 103,185 106,182 103,178" fill="#A04A2A" opacity="0.5"/>
+          <polygon points="155,180 158,185 161,182 158,178" fill="#C66A3C" opacity="0.5"/>
+        </svg>
+        <h4>lush</h4>
+        <div class="params">depth 10 · angle 35° · shrink 82%</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel-footer">
+    <span class="panel-name">3 · residue scales with tree params</span>
+    <span class="panel-blurb">leaf count + spread + size derived from depth/angle/shrink</span>
+  </div>
+</div>
+
+<h3 style="font-family:'Fraunces',serif;font-weight:400;margin-top:1.5rem;">How it works (briefly)</h3>
+<ul style="font-family:'Newsreader',Georgia,serif;max-width:64ch;line-height:1.55;">
+  <li><strong>Canopy positions</strong> are computed from the tree algorithm. Each leaf in the canopy becomes a <em>spawn point</em> for residue.</li>
+  <li><strong>Residue</strong> is the existing leaf primitive, but spawn points are tied to the tree's canopy (not random). Particle count derives from <code>2<sup>depth</sup> × spread_factor(angle)</code>.</li>
+  <li>On <strong>tree-mode close</strong>, the new params are written to <code>localStorage</code> and the residue recomputes its spawn positions + density.</li>
+  <li>On <strong>first load</strong> (no localStorage), default residue ≈ depth-8, angle-27°, shrink-74% (the current tree defaults).</li>
+  <li><strong>Reduced motion / mobile</strong>: leaves are static-rendered (no drift), residue still scales with params.</li>
+</ul>
+
+<p class="subtitle" style="margin-top:1.5rem;">Does this match what you had in mind? Tell me in the terminal — say "yes, lock it" or call out anything off.</p>

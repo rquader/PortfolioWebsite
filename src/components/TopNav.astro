@@ -1,0 +1,208 @@
+---
+// TopNav — fixed top-nav with anchor links (home) or cross-route links.
+
+const pathname = Astro.url.pathname;
+const onProjects = pathname.startsWith('/projects');
+
+const homeHref = onProjects ? '/#threshold' : '#threshold';
+
+type NavLink = {
+  slug: string;
+  label: string;
+  href: string;
+  route?: boolean;
+};
+
+const links: NavLink[] = [
+  { slug: 'on-me', label: 'on me', href: onProjects ? '/#on-me' : '#on-me' },
+  { slug: 'on-the-work', label: 'on the work', href: onProjects ? '/#on-the-work' : '#on-the-work' },
+  { slug: 'projects', label: 'projects ↗', href: '/projects', route: true },
+  { slug: 'on-the-trail', label: 'on the trail', href: onProjects ? '/#on-the-trail' : '#on-the-trail' },
+  { slug: 'coda', label: 'on the web', href: onProjects ? '/#coda' : '#coda' },
+];
+---
+<div class="scroll-progress" aria-hidden="true"></div>
+<nav class="top-nav" aria-label="primary">
+  <a class="top-nav-home" href={homeHref} data-nav-link="threshold">rq</a>
+  <ul>
+    {
+      links.map(({ slug, label, href, route }) => (
+        <li>
+          <a
+            href={href}
+            data-nav-link={slug}
+            class:list={{ 'is-current': route && onProjects }}
+            {...route && onProjects ? { 'aria-current': 'page' } : {}}
+          >
+            {label}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  <div class="top-nav-actions">
+    <a
+      class="top-nav-github"
+      href="https://github.com/rquader"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      github ↗
+    </a>
+    <button
+    class="theme-toggle"
+    type="button"
+    data-theme-toggle
+    aria-label="switch color scheme"
+    aria-pressed="false"
+  >
+    <span class="t-light" aria-hidden="true">light</span>
+    <span class="t-sep" aria-hidden="true">·</span>
+    <span class="t-dark" aria-hidden="true">dark</span>
+  </button>
+  </div>
+</nav>
+
+<style>
+  .top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: clamp(0.5rem, 2vw, 1rem);
+    padding: 0 var(--gutter);
+    z-index: 50;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--bg-0) 90%, transparent) 0%,
+      color-mix(in srgb, var(--bg-0) 60%, transparent) 70%,
+      transparent 100%
+    );
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+  .top-nav a,
+  .top-nav button {
+    pointer-events: auto;
+  }
+
+  .top-nav-home {
+    font-family: var(--face-display);
+    font-variation-settings: 'SOFT' 60, 'WONK' 0;
+    font-size: 1.15rem;
+    color: var(--text-0);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    font-weight: 500;
+  }
+
+  .top-nav ul {
+    display: flex;
+    gap: clamp(0.75rem, 2vw, 1.75rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+  }
+  .top-nav ul a {
+    font-family: var(--face-text);
+    font-size: var(--type-small);
+    color: var(--text-2);
+    text-decoration: none;
+    padding: 0.3rem 0;
+    text-decoration-line: none;
+    text-decoration-style: wavy;
+    text-decoration-thickness: 1.5px;
+    text-underline-offset: 6px;
+    transition: color 0.3s ease, text-decoration-color 0.3s ease;
+  }
+  .top-nav ul a:hover,
+  .top-nav ul a:focus-visible {
+    color: var(--text-0);
+    outline: none;
+  }
+  .top-nav ul a.is-current {
+    color: var(--text-0);
+    text-decoration-line: underline;
+    text-decoration-color: var(--companion-color);
+  }
+
+  .top-nav-actions {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.35rem, 1.5vw, 0.75rem);
+    flex-shrink: 0;
+  }
+
+  .top-nav-github {
+    font-family: var(--face-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    color: var(--bg-0);
+    background: var(--accent);
+    text-decoration: none;
+    padding: 0.35rem 0.65rem;
+    border-radius: 4px;
+    transition: transform 0.15s ease, background 0.15s ease;
+    white-space: nowrap;
+  }
+  .top-nav-github:hover,
+  .top-nav-github:focus-visible {
+    transform: translateY(-1px);
+    background: color-mix(in srgb, var(--accent) 92%, var(--text-0));
+    outline: none;
+  }
+
+  .theme-toggle {
+    font-family: var(--face-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    background: transparent;
+    border: 0;
+    padding: 0.22rem 0.45rem;
+    cursor: pointer;
+    color: var(--text-2);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2em;
+    border-radius: 999px;
+    transition: background 0.25s ease, color 0.25s ease;
+    line-height: 1;
+  }
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    color: var(--text-0);
+    outline: none;
+  }
+  .theme-toggle .t-light,
+  .theme-toggle .t-dark {
+    transition: color 0.3s ease;
+  }
+  .theme-toggle .t-sep {
+    opacity: 0.35;
+    margin: 0;
+  }
+  :root[data-theme="light"] .theme-toggle .t-light { color: var(--accent); }
+  :root[data-theme="dark"]  .theme-toggle .t-dark  { color: var(--accent); }
+  :root[data-theme="light"] .theme-toggle .t-dark  { opacity: 0.45; }
+  :root[data-theme="dark"]  .theme-toggle .t-light { opacity: 0.45; }
+
+  @media (max-width: 720px) {
+    .top-nav ul { display: none; }
+    .top-nav {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+    }
+    .top-nav-actions {
+      justify-self: end;
+    }
+  }
+</style>

@@ -1,0 +1,1 @@
+Back before I developed InstaDM, I wanted to solve a single problem: Instagram was addicting — photos, reels, stories — and could disconnect me from DMs and group chats that matter. For this reason, InstaDM focuses on messages only so you can stay reachable without the rest of the app.

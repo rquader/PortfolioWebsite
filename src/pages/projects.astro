@@ -1,0 +1,150 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import TopNav from '../components/TopNav.astro';
+import ProjectChapter from '../components/project/ProjectChapter.astro';
+import ProjectModeToggle from '../components/project/ProjectModeToggle.astro';
+import ProjectNotesPopup from '../components/project/ProjectNotesPopup.astro';
+
+const projects = (await getCollection('projects')).sort(
+  (a, b) => a.data.sort_order - b.data.sort_order,
+);
+
+const allFiles = await getCollection('projectFiles');
+const allStories = await getCollection('projectStories');
+
+function slugFor(id: string): string {
+  return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
+}
+function storySlug(id: string): string {
+  return id.endsWith('/story') ? id.slice(0, -'/story'.length) : id;
+}
+
+const filesBySlug = new Map<string, CollectionEntry<'projectFiles'>[]>();
+for (const f of allFiles) {
+  const top = f.id.split('/')[0]!;
+  if (!filesBySlug.has(top)) filesBySlug.set(top, []);
+  filesBySlug.get(top)!.push(f);
+}
+
+const storyBySlug = new Map<string, CollectionEntry<'projectStories'>>();
+for (const s of allStories) {
+  storyBySlug.set(storySlug(s.id), s);
+}
+---
+<Base
+  title="Projects — Rafan Quader"
+  description="The things I've built, with the working notes attached."
+>
+  <TopNav />
+  <main class="projects-page">
+    <header class="projects-header">
+      <h1 class="projects-title" data-color-letters data-inertial-text>Projects</h1>
+
+      {/* Page intro — shared in both modes; toggle only swaps chapter bodies + footer outro */}
+      <p class="projects-intro">
+        Working on DDD, learning about Computer Science in school, and scrolling
+        LinkedIn helped me gain a better understanding of the industry today and
+        its often transactional nature. For me, beyond the impact of DDD, each of
+        my projects — from an Arabic Dialect Map to a message-only Instagram macOS
+        app — have been developed for a primary purpose for myself especially. You
+        can select <strong>info</strong> for information on each project straight
+        and individually. You can select <strong>story</strong> to go through a story
+        in the code.
+      </p>
+      <div class="projects-intro-rule" aria-hidden="true"></div>
+
+      <p class="projects-intro projects-intro-notes">
+        For most of these projects, you can also access sanitized versions of my primarily
+        (if not entirely) AI-generated Obsidian notes. I can use these notes to better
+        understand a project's architecture and as context for AI agents!
+      </p>
+
+      {/* Toggle moved here — centered below the intro on its own row, with a
+         hairline rule above and below so it reads as a deliberate switch
+         between two registers rather than a chrome control in the corner. */}
+      <div class="projects-toggle-row">
+        <div class="projects-toggle-rule" aria-hidden="true"></div>
+        <ProjectModeToggle />
+        <div class="projects-toggle-rule" aria-hidden="true"></div>
+      </div>
+    </header>
+
+    {
+      projects.length > 0 ? (
+        <div class="projects-list">
+          {projects.map((p, i) => {
+            const slug = slugFor(p.id);
+            const notesCount = (filesBySlug.get(slug) ?? []).length;
+            const story = storyBySlug.get(slug) ?? null;
+            return (
+              <ProjectChapter
+                project={p}
+                story={story}
+                notesCount={notesCount}
+                index={i}
+                isLast={i === projects.length - 1}
+              />
+            );
+          })}
+        </div>
+      ) : (
+        <p class="projects-empty">
+          [PLACEHOLDER — no projects yet. Drop a folder under
+          <code>src/content/projects/&lt;slug&gt;/</code> via the content pipeline.]
+        </p>
+      )
+    }
+
+    <footer class="projects-footer">
+      {/* Outro — dual slots, same toggle */}
+      <div class="project-body-slot" data-mode-content="info">
+        <p class="projects-outro">
+          Traceability, cross-session context sharing, and these ideas have been
+          prevalent on LinkedIn in recent years. For me, I have solved this simply by
+          putting together Obsidian docs for my projects — helping not only make them
+          traceable, but also making it clearer to understand the directions the AI
+          was taking, the app itself, and its development process. Obsidian notes for
+          most programs below are available via <strong>open notes</strong> on each
+          project.
+        </p>
+      </div>
+      <div class="project-body-slot" data-mode-content="story">
+        <p class="projects-outro">
+          That's the thread so far — each build teaching the next. More to come.
+        </p>
+      </div>
+    </footer>
+  </main>
+
+  {
+    /* One popup per project — SSR-rendered hidden, opened by the chapter's
+       Notes button via `#notes/<slug>` hash. Controller in
+       notes-popup-controller.ts wires open/close + tab/stepper state. */
+    projects.map((p) => (
+      <ProjectNotesPopup project={p} allFiles={filesBySlug.get(slugFor(p.id)) ?? []} />
+    ))
+  }
+
+  <div
+    id="wip-dialog"
+    class="wip-dialog"
+    data-open="false"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="wip-dialog-title"
+    aria-hidden="true"
+    hidden
+  >
+    <div class="wip-dialog-card">
+      <h2 id="wip-dialog-title">work in progress</h2>
+      <p id="wip-dialog-body" class="wip-dialog-body"></p>
+      <button type="button" class="wip-dialog-close">close</button>
+    </div>
+  </div>
+</Base>
+
+<script>
+  import { initWipDialog } from '../lib/primitives/wip-dialog';
+  initWipDialog();
+</script>

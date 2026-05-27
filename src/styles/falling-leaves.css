@@ -1,0 +1,33 @@
+/* falling-leaves.css — page-wide leaf backdrop.
+   The canvas sits behind everything, including the threshold tree
+   (which lives at z-index: -1 within its section). pointer-events:none
+   so it never interferes with clicks.
+
+   Spec: [[specs/2026-05-18-tree-leaves-folders-design#4.1]]. */
+
+.page-leaves-bg {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100dvh;
+  z-index: -2;
+  pointer-events: none;
+  /* Subtle fade-in on first paint so the leaves don't pop in. */
+  opacity: 0;
+  animation: page-leaves-fade-in 1.6s ease-out forwards;
+}
+
+@keyframes page-leaves-fade-in {
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-leaves-bg {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@media print {
+  .page-leaves-bg { display: none !important; }
+}

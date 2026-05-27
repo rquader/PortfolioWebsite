@@ -1,0 +1,132 @@
+---
+/**
+ * @file ProjectNotesPopup.astro
+ *
+ * Centered "folio" popup for one project's working notes. Two-pane:
+ *
+ *   ┌─ head     "working notes" + project title + close
+ *   │  main
+ *   │  ├─ sidebar   recursive folder TREE (mirrors the on-disk
+ *   │  │            architecture; folders collapse, notes select)
+ *   │  └─ pane      breadcrumb · the active note's markdown · prev/next
+ *   └─
+ *
+ * Every note body is SSR-rendered once (open is instant, no fetch) and
+ * visibility is swapped client-side. The tree sidebar replaces the old
+ * top-level-folder tab strip so nested folders are navigable at any
+ * depth.
+ *
+ * Spec: [[decisions/ADR-020-notes-popup-folder-tree]].
+ */
+
+import { render, type CollectionEntry } from 'astro:content';
+import { buildNotesTree } from '../../lib/notes-graph';
+import ProjectNotesTree from './ProjectNotesTree.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  allFiles: readonly CollectionEntry<'projectFiles'>[];
+}
+
+const { project, allFiles } = Astro.props;
+const tree = buildNotesTree(project, allFiles);
+
+// SSR-render every note body once, in depth-first reading order. The
+// popup swaps which one is visible client-side.
+const renderedNotes = await Promise.all(
+  tree.order.map(async (note) => ({
+    fileId: note.fileId,
+    title: note.title,
+    path: note.path,
+    Content: (await render(note.file)).Content,
+  })),
+);
+
+const firstNoteId = tree.order[0]?.fileId ?? '';
+---
+{
+  tree.totalCount > 0 && (
+    <div
+      class="notes-popup"
+      data-notes-popup
+      data-project-slug={tree.slug}
+      data-active-note={firstNoteId}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={`notes-popup-title-${tree.slug}`}
+      aria-hidden="true"
+      hidden
+    >
+      <div class="notes-popup-backdrop" data-notes-backdrop aria-hidden="true" />
+      <div class="notes-popup-folio" role="document">
+        <div class="notes-popup-grain" aria-hidden="true" />
+
+        <button
+          type="button"
+          class="notes-popup-close"
+          data-notes-close
+          aria-label="close notes (esc)"
+        >
+          ×
+        </button>
+
+        <header class="notes-popup-head">
+          <p class="notes-popup-crumb">working notes</p>
+          <h2 class="notes-popup-title" id={`notes-popup-title-${tree.slug}`}>
+            {project.data.title}
+          </h2>
+        </header>
+
+        <div class="notes-popup-main">
+          <aside class="notes-popup-sidebar" aria-label="note folders">
+            <ProjectNotesTree node={tree.root} />
+          </aside>
+
+          <div class="notes-popup-pane">
+            <p class="notes-popup-breadcrumb" data-note-breadcrumb aria-label="note location" />
+
+            <div class="notes-popup-scroll" data-notes-scroll>
+              {renderedNotes.map((note) => (
+                <article
+                  class="notes-popup-note"
+                  data-note-id={note.fileId}
+                  data-note-title={note.title}
+                  data-note-path={note.path.join('/')}
+                  hidden
+                >
+                  <div class="rp-content notes-popup-note-body">
+                    <note.Content />
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <div class="notes-popup-stepper">
+              <button type="button" class="notes-popup-step" data-step="prev" aria-label="previous note">
+                <span class="notes-popup-step-arrow" aria-hidden="true">◂</span>
+                <span class="notes-popup-step-label" data-step-prev-label>—</span>
+              </button>
+              <p class="notes-popup-pos" data-step-pos>—</p>
+              <button type="button" class="notes-popup-step" data-step="next" aria-label="next note">
+                <span class="notes-popup-step-label" data-step-next-label>—</span>
+                <span class="notes-popup-step-arrow" aria-hidden="true">▸</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+<script>
+  // Astro hoists module scripts and de-duplicates them — this runs
+  // exactly once per page even if multiple popup components render.
+  import { initNotesPopups } from '../../lib/notes-popup-controller';
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNotesPopups, { once: true });
+  } else {
+    initNotesPopups();
+  }
+</script>

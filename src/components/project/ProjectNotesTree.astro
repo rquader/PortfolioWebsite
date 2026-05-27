@@ -1,0 +1,60 @@
+---
+/**
+ * @file ProjectNotesTree.astro
+ *
+ * Recursive folder-tree sidebar for one project's notes. Renders a
+ * FolderNode: its notes as selectable buttons, then its sub-folders as
+ * collapsible groups that recurse into this same component.
+ *
+ * Emits buttons only — the note bodies live in ProjectNotesPopup's
+ * content pane. The controller (notes-popup-controller.ts) wires
+ * selection, folder expand/collapse, and active-state.
+ *
+ * Folders render expanded by default so the full architecture is
+ * visible at a glance; the controller can collapse them on click.
+ */
+import type { FolderNode } from '../../lib/notes-graph';
+import { countNotes } from '../../lib/notes-graph';
+import Self from './ProjectNotesTree.astro';
+
+interface Props {
+  node: FolderNode;
+  depth?: number;
+}
+
+const { node, depth = 0 } = Astro.props;
+---
+<ul class="notes-tree-list" data-depth={depth} role={depth === 0 ? 'tree' : 'group'}>
+  {node.notes.map((n) => (
+    <li class="notes-tree-item" role="none">
+      <button
+        type="button"
+        class="notes-tree-note"
+        role="treeitem"
+        data-tree-note={n.fileId}
+        title={n.title}
+      >
+        <span class="notes-tree-dot" aria-hidden="true">·</span>
+        <span class="notes-tree-note-label">{n.title}</span>
+      </button>
+    </li>
+  ))}
+  {node.folders.map((f) => (
+    <li class="notes-tree-folder" data-folder-path={f.path.join('/')} data-expanded="true" role="none">
+      <button
+        type="button"
+        class="notes-tree-folder-toggle"
+        role="treeitem"
+        aria-expanded="true"
+        data-folder-toggle={f.path.join('/')}
+      >
+        <span class="notes-tree-caret" aria-hidden="true">▾</span>
+        <span class="notes-tree-folder-name">{f.name}</span>
+        <span class="notes-tree-folder-count">{countNotes(f)}</span>
+      </button>
+      <div class="notes-tree-children">
+        <Self node={f} depth={depth + 1} />
+      </div>
+    </li>
+  ))}
+</ul>

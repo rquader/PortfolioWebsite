@@ -1,0 +1,95 @@
+---
+/**
+ * @file ProjectModeToggle.astro
+ *
+ * Story / Info segmented control. Lives in the page header and
+ * toggles `[data-page-mode="info"|"story"]` on the <html> element;
+ * CSS in projects.css hides/shows the matching body slot per
+ * project chapter (no re-render — both slots are SSR'd).
+ *
+ * State priority (read on hydrate): URL `?mode=…` → localStorage
+ * `rq-projects-mode` → default `info`. On click, state is written
+ * back to both the URL (replaceState — no history pollution) and
+ * localStorage.
+ *
+ * Spec: [[specs/2026-05-24-projects-page-redesign-design#4.4]].
+ */
+---
+<div class="mode-toggle" role="radiogroup" aria-label="page mode" data-mode-toggle>
+  <button class="mode-toggle-btn" role="radio" aria-checked="true" data-mode="info">info</button>
+  <button class="mode-toggle-btn" role="radio" aria-checked="false" data-mode="story">story</button>
+</div>
+
+<script>
+  type Mode = 'info' | 'story';
+  const STORAGE_KEY = 'rq-projects-mode';
+
+  function isMode(v: string | null): v is Mode {
+    return v === 'info' || v === 'story';
+  }
+
+  function resolveInitial(): Mode {
+    const fromUrl = new URL(window.location.href).searchParams.get('mode');
+    if (isMode(fromUrl)) return fromUrl;
+    try {
+      const fromStore = localStorage.getItem(STORAGE_KEY);
+      if (isMode(fromStore)) return fromStore;
+    } catch {
+      /* private mode / SSR */
+    }
+    return 'info';
+  }
+
+  function apply(mode: Mode, root: HTMLElement): void {
+    document.documentElement.dataset.pageMode = mode;
+    for (const btn of root.querySelectorAll<HTMLButtonElement>('[data-mode]')) {
+      const isOn = btn.dataset.mode === mode;
+      btn.setAttribute('aria-checked', isOn ? 'true' : 'false');
+    }
+  }
+
+  function writeUrl(mode: Mode): void {
+    const url = new URL(window.location.href);
+    if (mode === 'info') {
+      url.searchParams.delete('mode');
+    } else {
+      url.searchParams.set('mode', mode);
+    }
+    window.history.replaceState({}, '', url.toString());
+  }
+
+  function writeStore(mode: Mode): void {
+    try {
+      localStorage.setItem(STORAGE_KEY, mode);
+    } catch {
+      /* private mode — ignore */
+    }
+  }
+
+  function init(): void {
+    const root = document.querySelector<HTMLElement>('[data-mode-toggle]');
+    if (!root) return;
+    const initial = resolveInitial();
+    apply(initial, root);
+    // Make sure the URL reflects the resolved state when the user
+    // arrived via localStorage default — but only if it differs.
+    if (initial !== 'info') writeUrl(initial);
+
+    root.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement | null;
+      const btn = target?.closest<HTMLButtonElement>('[data-mode]');
+      if (!btn) return;
+      const mode = btn.dataset.mode ?? null;
+      if (!isMode(mode)) return;
+      apply(mode, root);
+      writeUrl(mode);
+      writeStore(mode);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init, { once: true });
+  } else {
+    init();
+  }
+</script>

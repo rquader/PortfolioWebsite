@@ -1,0 +1,359 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Newsreader:opsz,wght@6..72,300..700&display=swap" rel="stylesheet">
+
+<style>
+  body { font-family: 'Newsreader', Georgia, serif; }
+  h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 400; font-variation-settings: 'SOFT' 60; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  .card {
+    border: 2px solid transparent;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #1A1410;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card.selected {
+    border-color: #C66A3C;
+    box-shadow: 0 12px 36px -8px rgba(198,106,60,0.4);
+  }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; }
+  .pane {
+    position: relative;
+    min-height: 280px;
+    padding: 1.2rem;
+    overflow: hidden;
+  }
+  .light { background: #F5EAD4; color: #3A2615; }
+  .dark  { background: #1F1812; color: #ECDEC5; }
+  .pane-label {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.45;
+    margin-bottom: 0.3rem;
+    position: relative; z-index: 3;
+  }
+  .hero {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'SOFT' 60;
+    font-size: 1.55rem;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.4rem;
+    color: inherit;
+    position: relative; z-index: 3;
+    font-weight: 350;
+  }
+  .light .hero { color: #7A3E1C; }
+  .dark  .hero { color: #E08A52; }
+  .hero span { display: block; }
+  .tree { position: absolute; inset: 0; z-index: 1; }
+  .footer {
+    background: #15110D;
+    color: #D6C8AE;
+    padding: 0.7rem 1.2rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.66rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .name { color: #E8C99A; letter-spacing: 0.06em; }
+  .blurb { opacity: 0.65; font-style: italic; }
+
+  .chips { display: flex; gap: 0.25rem; margin-top: 0.45rem; position: relative; z-index: 3; }
+  .chip { width: 0.9rem; height: 0.9rem; border-radius: 3px; border: 1px solid rgba(0,0,0,0.12); }
+
+  /* Current (just for reference at top) */
+  .current-strip {
+    background: #1A1410;
+    color: #ECDEC5;
+    border-radius: 10px;
+    padding: 0.8rem 1.2rem;
+    margin-bottom: 1.5rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    opacity: 0.85;
+  }
+</style>
+
+<h2>Tree palette · refined options</h2>
+<p class="subtitle">4 directions. Each card shows light + dark, with a stylized tree in the proposed palette + chips for the leaf range.</p>
+
+<div class="current-strip">
+  current (just-shipped): light branches <span style="color:#7A4D2C">#7A4D2C</span> · leaves run <span style="color:#8C4A22">#8C4A22</span>→<span style="color:#E0B266">#E0B266</span> · dark branches <span style="color:#B8916A">#B8916A</span>
+</div>
+
+<div class="grid options">
+
+  <!-- A · refined-current (terracotta-monochromatic) -->
+  <div class="option card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="pane light">
+        <svg class="tree" viewBox="0 0 220 240" preserveAspectRatio="xMidYMax meet">
+          <g stroke="#7A4D2C" stroke-linecap="round" fill="none" opacity="0.85">
+            <path d="M110,240 L110,150" stroke-width="3"/>
+            <path d="M110,150 L75,100" stroke-width="2.2"/>
+            <path d="M110,150 L145,100" stroke-width="2.2"/>
+            <path d="M75,100 L52,65" stroke-width="1.5"/>
+            <path d="M75,100 L88,55" stroke-width="1.5"/>
+            <path d="M145,100 L132,55" stroke-width="1.5"/>
+            <path d="M145,100 L168,65" stroke-width="1.5"/>
+          </g>
+          <g><polygon points="52,65 55,72 58,67 55,62" fill="#8C4A22"/>
+             <polygon points="88,55 91,62 94,57 91,52" fill="#B05A2A"/>
+             <polygon points="132,55 135,62 138,57 135,52" fill="#C66A3C"/>
+             <polygon points="168,65 171,72 174,67 171,62" fill="#D8853E"/>
+             <polygon points="110,128 113,135 116,130 113,124" fill="#E0B266"/></g>
+        </svg>
+        <div class="pane-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#7A4D2C"></span>
+          <span class="chip" style="background:#8C4A22"></span>
+          <span class="chip" style="background:#B05A2A"></span>
+          <span class="chip" style="background:#C66A3C"></span>
+          <span class="chip" style="background:#D8853E"></span>
+          <span class="chip" style="background:#E0B266"></span>
+        </div>
+      </div>
+      <div class="pane dark">
+        <svg class="tree" viewBox="0 0 220 240" preserveAspectRatio="xMidYMax meet">
+          <g stroke="#B8916A" stroke-linecap="round" fill="none" opacity="0.75">
+            <path d="M110,240 L110,150" stroke-width="3"/>
+            <path d="M110,150 L75,100" stroke-width="2.2"/>
+            <path d="M110,150 L145,100" stroke-width="2.2"/>
+            <path d="M75,100 L52,65" stroke-width="1.5"/>
+            <path d="M75,100 L88,55" stroke-width="1.5"/>
+            <path d="M145,100 L132,55" stroke-width="1.5"/>
+            <path d="M145,100 L168,65" stroke-width="1.5"/>
+          </g>
+          <g><polygon points="52,65 55,72 58,67 55,62" fill="#C46B45"/>
+             <polygon points="88,55 91,62 94,57 91,52" fill="#E08A52"/>
+             <polygon points="132,55 135,62 138,57 135,52" fill="#F0A668"/>
+             <polygon points="168,65 171,72 174,67 171,62" fill="#E8C078"/>
+             <polygon points="110,128 113,135 116,130 113,124" fill="#D9B27A"/></g>
+        </svg>
+        <div class="pane-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#B8916A"></span>
+          <span class="chip" style="background:#C46B45"></span>
+          <span class="chip" style="background:#E08A52"></span>
+          <span class="chip" style="background:#F0A668"></span>
+          <span class="chip" style="background:#E8C078"></span>
+          <span class="chip" style="background:#D9B27A"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="name">A · current (terracotta-monochrome)</span>
+      <span class="blurb">harmonized with --accent · least busy</span>
+    </div>
+  </div>
+
+  <!-- B · mixed-autumn (red+gold+brown — autumn-peak) -->
+  <div class="option card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="pane light">
+        <svg class="tree" viewBox="0 0 220 240" preserveAspectRatio="xMidYMax meet">
+          <g stroke="#6B4423" stroke-linecap="round" fill="none" opacity="0.88">
+            <path d="M110,240 L110,150" stroke-width="3"/>
+            <path d="M110,150 L75,100" stroke-width="2.2"/>
+            <path d="M110,150 L145,100" stroke-width="2.2"/>
+            <path d="M75,100 L52,65" stroke-width="1.5"/>
+            <path d="M75,100 L88,55" stroke-width="1.5"/>
+            <path d="M145,100 L132,55" stroke-width="1.5"/>
+            <path d="M145,100 L168,65" stroke-width="1.5"/>
+          </g>
+          <g><polygon points="52,65 55,72 58,67 55,62" fill="#8B2C0A"/>
+             <polygon points="88,55 91,62 94,57 91,52" fill="#B8542E"/>
+             <polygon points="132,55 135,62 138,57 135,52" fill="#D88B2E"/>
+             <polygon points="168,65 171,72 174,67 171,62" fill="#E5B547"/>
+             <polygon points="110,128 113,135 116,130 113,124" fill="#8E5A1F"/></g>
+        </svg>
+        <div class="pane-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#6B4423"></span>
+          <span class="chip" style="background:#8B2C0A"></span>
+          <span class="chip" style="background:#B8542E"></span>
+          <span class="chip" style="background:#D88B2E"></span>
+          <span class="chip" style="background:#E5B547"></span>
+          <span class="chip" style="background:#8E5A1F"></span>
+        </div>
+      </div>
+      <div class="pane dark">
+        <svg class="tree" viewBox="0 0 220 240" preserveAspectRatio="xMidYMax meet">
+          <g stroke="#A57A55" stroke-linecap="round" fill="none" opacity="0.8">
+            <path d="M110,240 L110,150" stroke-width="3"/>
+            <path d="M110,150 L75,100" stroke-width="2.2"/>
+            <path d="M110,150 L145,100" stroke-width="2.2"/>
+            <path d="M75,100 L52,65" stroke-width="1.5"/>
+            <path d="M75,100 L88,55" stroke-width="1.5"/>
+            <path d="M145,100 L132,55" stroke-width="1.5"/>
+            <path d="M145,100 L168,65" stroke-width="1.5"/>
+          </g>
+          <g><polygon points="52,65 55,72 58,67 55,62" fill="#C2452A"/>
+             <polygon points="88,55 91,62 94,57 91,52" fill="#E27040"/>
+             <polygon points="132,55 135,62 138,57 135,52" fill="#F0A05A"/>
+             <polygon points="168,65 171,72 174,67 171,62" fill="#F6D27A"/>
+             <polygon points="110,128 113,135 116,130 113,124" fill="#C28A48"/></g>
+        </svg>
+        <div class="pane-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#A57A55"></span>
+          <span class="chip" style="background:#C2452A"></span>
+          <span class="chip" style="background:#E27040"></span>
+          <span class="chip" style="background:#F0A05A"></span>
+          <span class="chip" style="background:#F6D27A"></span>
+          <span class="chip" style="background:#C28A48"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="name">B · mixed-autumn (red + gold + brown)</span>
+      <span class="blurb">a real autumn-peak tree · most painterly</span>
+    </div>
+  </div>
+
+  <!-- C · botanical-print (muted + 1 pop) -->
+  <div class="option card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="pane light">
+        <svg class="tree" viewBox="0 0 220 240" preserveAspectRatio="xMidYMax meet">
+          <g stroke="#5A3C24" stroke-linecap="round" fill="none" opacity="0.9">
+            <path d="M110,240 L110,150" stroke-width="3"/>
+            <path d="M110,150 L75,100" stroke-width="2.2"/>
+            <path d="M110,150 L145,100" stroke-width="2.2"/>
+            <path d="M75,100 L52,65" stroke-width="1.5"/>
+            <path d="M75,100 L88,55" stroke-width="1.5"/>
+            <path d="M145,100 L132,55" stroke-width="1.5"/>
+            <path d="M145,100 L168,65" stroke-width="1.5"/>
+          </g>
+          <g><polygon points="52,65 55,72 58,67 55,62" fill="#94553B"/>
+             <polygon points="88,55 91,62 94,57 91,52" fill="#B07744"/>
+             <polygon points="132,55 135,62 138,57 135,52" fill="#C99A6A"/>
+             <polygon points="168,65 171,72 174,67 171,62" fill="#DDB97E"/>
+             <polygon points="110,128 113,135 116,130 113,124" fill="#B83918"/></g>
+        </svg>
+        <div class="pane-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#5A3C24"></span>
+          <span class="chip" style="background:#94553B"></span>
+          <span class="chip" style="background:#B07744"></span>
+          <span class="chip" style="background:#C99A6A"></span>
+          <span class="chip" style="background:#DDB97E"></span>
+          <span class="chip" style="background:#B83918"></span>
+        </div>
+      </div>
+      <div class="pane dark">
+        <svg class="tree" viewBox="0 0 220 240" preserveAspectRatio="xMidYMax meet">
+          <g stroke="#A0805C" stroke-linecap="round" fill="none" opacity="0.78">
+            <path d="M110,240 L110,150" stroke-width="3"/>
+            <path d="M110,150 L75,100" stroke-width="2.2"/>
+            <path d="M110,150 L145,100" stroke-width="2.2"/>
+            <path d="M75,100 L52,65" stroke-width="1.5"/>
+            <path d="M75,100 L88,55" stroke-width="1.5"/>
+            <path d="M145,100 L132,55" stroke-width="1.5"/>
+            <path d="M145,100 L168,65" stroke-width="1.5"/>
+          </g>
+          <g><polygon points="52,65 55,72 58,67 55,62" fill="#BC7A55"/>
+             <polygon points="88,55 91,62 94,57 91,52" fill="#D69870"/>
+             <polygon points="132,55 135,62 138,57 135,52" fill="#E8BC8A"/>
+             <polygon points="168,65 171,72 174,67 171,62" fill="#F3D5A4"/>
+             <polygon points="110,128 113,135 116,130 113,124" fill="#E8602C"/></g>
+        </svg>
+        <div class="pane-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#A0805C"></span>
+          <span class="chip" style="background:#BC7A55"></span>
+          <span class="chip" style="background:#D69870"></span>
+          <span class="chip" style="background:#E8BC8A"></span>
+          <span class="chip" style="background:#F3D5A4"></span>
+          <span class="chip" style="background:#E8602C"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="name">C · botanical-print (muted + 1 pop)</span>
+      <span class="blurb">vintage botanical · soft with one bright leaf</span>
+    </div>
+  </div>
+
+  <!-- D · watercolor (dusty pinks even — softer) -->
+  <div class="option card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="pane light">
+        <svg class="tree" viewBox="0 0 220 240" preserveAspectRatio="xMidYMax meet">
+          <g stroke="#876045" stroke-linecap="round" fill="none" opacity="0.78">
+            <path d="M110,240 L110,150" stroke-width="3"/>
+            <path d="M110,150 L75,100" stroke-width="2.2"/>
+            <path d="M110,150 L145,100" stroke-width="2.2"/>
+            <path d="M75,100 L52,65" stroke-width="1.5"/>
+            <path d="M75,100 L88,55" stroke-width="1.5"/>
+            <path d="M145,100 L132,55" stroke-width="1.5"/>
+            <path d="M145,100 L168,65" stroke-width="1.5"/>
+          </g>
+          <g><polygon points="52,65 55,72 58,67 55,62" fill="#A85740"/>
+             <polygon points="88,55 91,62 94,57 91,52" fill="#C97C58"/>
+             <polygon points="132,55 135,62 138,57 135,52" fill="#DDA079"/>
+             <polygon points="168,65 171,72 174,67 171,62" fill="#E8C193"/>
+             <polygon points="110,128 113,135 116,130 113,124" fill="#C44B62"/></g>
+        </svg>
+        <div class="pane-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#876045"></span>
+          <span class="chip" style="background:#A85740"></span>
+          <span class="chip" style="background:#C97C58"></span>
+          <span class="chip" style="background:#DDA079"></span>
+          <span class="chip" style="background:#E8C193"></span>
+          <span class="chip" style="background:#C44B62"></span>
+        </div>
+      </div>
+      <div class="pane dark">
+        <svg class="tree" viewBox="0 0 220 240" preserveAspectRatio="xMidYMax meet">
+          <g stroke="#B89578" stroke-linecap="round" fill="none" opacity="0.72">
+            <path d="M110,240 L110,150" stroke-width="3"/>
+            <path d="M110,150 L75,100" stroke-width="2.2"/>
+            <path d="M110,150 L145,100" stroke-width="2.2"/>
+            <path d="M75,100 L52,65" stroke-width="1.5"/>
+            <path d="M75,100 L88,55" stroke-width="1.5"/>
+            <path d="M145,100 L132,55" stroke-width="1.5"/>
+            <path d="M145,100 L168,65" stroke-width="1.5"/>
+          </g>
+          <g><polygon points="52,65 55,72 58,67 55,62" fill="#D8755A"/>
+             <polygon points="88,55 91,62 94,57 91,52" fill="#EAA078"/>
+             <polygon points="132,55 135,62 138,57 135,52" fill="#F2C29A"/>
+             <polygon points="168,65 171,72 174,67 171,62" fill="#F5D7AE"/>
+             <polygon points="110,128 113,135 116,130 113,124" fill="#E8758F"/></g>
+        </svg>
+        <div class="pane-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#B89578"></span>
+          <span class="chip" style="background:#D8755A"></span>
+          <span class="chip" style="background:#EAA078"></span>
+          <span class="chip" style="background:#F2C29A"></span>
+          <span class="chip" style="background:#F5D7AE"></span>
+          <span class="chip" style="background:#E8758F"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="name">D · watercolor (dusty + a pink note)</span>
+      <span class="blurb">softer · romantic · most "painted"</span>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:1.5rem;">My read: <strong>B</strong> if you want a tree that feels like a real autumn-peak photograph; <strong>C</strong> if you want it to feel like a vintage botanical print with one bright accent. <strong>A</strong> is what's shipped right now — coherent but monochromatic.</p>
+<p class="subtitle" style="margin-top:0.5rem;">Tree design refinement coming in the same change: thinner branches at the top (already there) + leaves with a tiny stem-vertex for a more "leaf" silhouette + branch alpha so overlaps blend rather than stack.</p>

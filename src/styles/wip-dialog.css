@@ -1,0 +1,63 @@
+/* wip-dialog.css — WIP caveat popup on /projects */
+
+.wip-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--gutter);
+  background: color-mix(in srgb, var(--text-0) 28%, transparent);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.wip-dialog[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.wip-dialog-card {
+  max-width: 28rem;
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  background: var(--bg-0);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: 6px;
+  box-shadow: 0 20px 48px -24px color-mix(in srgb, var(--text-0) 45%, transparent);
+}
+
+.wip-dialog-card h2 {
+  font-family: var(--face-display);
+  font-style: italic;
+  font-size: 1.1rem;
+  margin: 0 0 0.75rem;
+  color: var(--text-0);
+}
+
+.wip-dialog-body {
+  font-family: var(--face-text);
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+  color: var(--text-1);
+  margin: 0;
+}
+
+.wip-dialog-close {
+  margin-top: 1rem;
+  font-family: var(--face-mono);
+  font-size: var(--type-small);
+  color: var(--bg-0);
+  background: var(--accent);
+  border: 0;
+  border-radius: 4px;
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+}
+
+.wip-dialog-close:hover,
+.wip-dialog-close:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--accent) 90%, var(--text-0));
+}

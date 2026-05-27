@@ -1,0 +1,106 @@
+---
+import ProjectMediaAsset from './ProjectMediaAsset.astro';
+
+interface MediaItem {
+  src: string;
+  label?: string;
+}
+
+interface Props {
+  projectId: string;
+  title: string;
+  items: MediaItem[];
+  defaultIndex?: number;
+}
+
+const { projectId, title, items, defaultIndex = 0 } = Astro.props;
+const start = Math.min(Math.max(defaultIndex, 0), Math.max(items.length - 1, 0));
+const carouselId = `carousel-${projectId.replace(/\//g, '-')}`;
+---
+<div
+  class="project-media-carousel"
+  id={carouselId}
+  data-project-media-carousel
+  data-default-index={start}
+  role="region"
+  aria-roledescription="carousel"
+  aria-label={`media for ${title}`}
+>
+  <div class="project-media-carousel-viewport">
+    {
+      items.map((item, i) => {
+        const label = item.label ?? `slide ${i + 1}`;
+        const isActive = i === start;
+        return (
+          <div
+            class:list={[
+              'project-media-carousel-slide',
+              { 'is-active': isActive },
+            ]}
+            data-carousel-slide
+            data-slide-index={i}
+            data-slide-label={label}
+            data-slide-src={item.src}
+            hidden={!isActive}
+            aria-hidden={!isActive}
+          >
+            <ProjectMediaAsset
+              projectId={projectId}
+              src={item.src}
+              alt={`${title} — ${label}`}
+              eager={isActive}
+              deferLoad={!isActive}
+              lightbox
+              class="project-media-carousel-asset"
+            />
+          </div>
+        );
+      })
+    }
+  </div>
+
+  {
+    items.length > 1 && (
+      <div class="project-media-carousel-controls">
+        <button
+          type="button"
+          class="project-media-carousel-btn project-media-carousel-prev"
+          data-carousel-prev
+          aria-label="previous slide"
+        >
+          ‹
+        </button>
+        <div class="project-media-carousel-meta">
+          <span class="project-media-carousel-label" data-carousel-label aria-live="polite">
+            {items[start]?.label ?? `slide ${start + 1}`}
+          </span>
+          <div class="project-media-carousel-dots" role="tablist" aria-label="slides">
+            {
+              items.map((item, i) => (
+                <button
+                  type="button"
+                  class:list={[
+                    'project-media-carousel-dot',
+                    { 'is-active': i === start },
+                  ]}
+                  data-carousel-dot={i}
+                  role="tab"
+                  aria-selected={i === start}
+                  aria-label={item.label ?? `slide ${i + 1}`}
+                />
+              ))
+            }
+          </div>
+        </div>
+        <button
+          type="button"
+          class="project-media-carousel-btn project-media-carousel-next"
+          data-carousel-next
+          aria-label="next slide"
+        >
+          ›
+        </button>
+      </div>
+    )
+  }
+</div>

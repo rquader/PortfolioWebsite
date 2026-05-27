@@ -1,0 +1,331 @@
+/* global.css — resets, body type baseline, reduced-motion CSS gate.
+   Wired by src/layouts/Base.astro (loads after tokens.css).
+
+   Tokens come from tokens.css. Reduced-motion is gated at three levels;
+   this file handles the CSS layer. The JS-loop layer is in
+   src/lib/reduced-motion.ts.
+*/
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  scroll-padding-top: var(--nav-h); /* keep section heads clear of the fixed nav */
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+html, body {
+  background: var(--ink-0);
+  color: var(--paper-0);
+  font-family: var(--face-serif);
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  min-height: 100dvh;
+}
+
+img, svg, video, canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button, input, textarea, select {
+  font: inherit;
+  color: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration-skip-ink: auto;
+  text-underline-offset: 0.15em;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
+  line-height: var(--leading-tight);
+  text-wrap: balance;
+}
+
+::selection {
+  background: var(--paper-0);
+  color: var(--ink-0);
+}
+
+/* ---- Focus indicators ----
+   Uses the live --companion-color so keyboard focus rings recolor per
+   section, matching the rest of the per-section accent system. */
+:focus-visible {
+  outline: 2px solid var(--companion-color);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---- Scroll progress bar ----
+   CSS-only via scroll-driven animations (Chrome 115+, Firefox 134+).
+   Older browsers see no bar (scaleX 0). No JS, no reflow cost. */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--forest-t3), var(--forest-accent));
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  z-index: 60;
+  pointer-events: none;
+  animation: scroll-progress linear;
+  animation-timeline: scroll(root block);
+}
+@keyframes scroll-progress {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-progress { animation: none; }
+}
+
+/* Reduced-motion gate — CSS layer.
+   JS layer: src/lib/reduced-motion.ts. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---- Visually-hidden utility ----
+   Accessible to screen readers, invisible to sighted users. Used by
+   the section aria-live announcer. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---- Section baseline ----
+   Default room padding + heading treatment. Threshold overrides these
+   with its own per-section CSS.
+   `content-visibility: auto` lets the browser skip rendering work for
+   sections that aren't on screen — meaningful perf win on the long
+   single-page scroll. `contain-intrinsic-size` prevents reserved-space
+   collapse on first paint. */
+.section {
+  padding: var(--section-pad) var(--gutter);
+  position: relative;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+}
+.section > .section-inner {
+  max-width: 64rem;
+  margin: 0 auto;
+}
+/* Section headings: Fraunces display face with WONK + soft italics.
+   The WONK axis adds gentle hand-written wobble to letterforms; italic
+   gives the script slant. This is where the "almost-handwritten" feel
+   lives (Phase 5 — ADR-008). */
+.section > h2,
+.section > .section-inner > h2 {
+  font-family: var(--face-display);
+  font-variation-settings: 'SOFT' 80, 'WONK' 1;
+  font-style: italic;
+  font-optical-sizing: auto;
+  font-size: var(--type-h2);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  color: var(--text-0);
+}
+.section h3 {
+  font-family: var(--face-display);
+  font-variation-settings: 'SOFT' 60, 'WONK' 0;
+  font-optical-sizing: auto;
+  font-size: var(--type-h3);
+  font-weight: 500;
+  color: var(--text-0);
+  margin-bottom: 0.75rem;
+}
+.section p {
+  font-family: var(--face-text);
+  font-optical-sizing: auto;
+  max-width: var(--max-content);
+  margin-bottom: 1rem;
+  color: var(--text-1);
+}
+
+/* Hand-written utility class. Apply to any element (an aside, a
+   pull-quote, a margin note) for a softer, scribbled feel — sits on
+   Fraunces with maximum WONK + italic. */
+.handwritten,
+.field-note {
+  font-family: var(--face-display);
+  font-variation-settings: 'SOFT' 100, 'WONK' 1;
+  font-style: italic;
+  font-optical-sizing: auto;
+  color: var(--text-1);
+}
+
+/* ---- Inertial typography letters ----
+   Created by src/lib/primitives/inertial-type.ts. Each letter is a
+   span that the JS animates via transform. Inline-block so transforms
+   work; whitespace stays as raw text nodes between spans.
+   `color` and `text-shadow` transitions support the optional
+   color-on-proximity reveal (opt-in via `data-color-letters` on an
+   ancestor). */
+.inertial-letter,
+[data-inertial] {
+  display: inline-block;
+  will-change: transform;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+[data-color-letters] {
+  cursor: default;
+}
+
+/* ---- Cursor companion ----
+   Created by src/lib/primitives/cursor-companion.ts on fine-pointer
+   devices only. Hidden on touch via the @media block below.
+   Per-section accent comes from --companion-color (set by scroll-spy
+   on :root[data-section]). */
+#cursor-companion {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 100;
+  transform: translate3d(-100px, -100px, 0);
+  will-change: transform;
+}
+.companion-body {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--companion-color);
+  box-shadow: 0 0 12px var(--companion-color);
+  transition: background 0.6s ease, box-shadow 0.6s ease;
+}
+.companion-ring {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  margin: -15px 0 0 -15px;
+  border-radius: 50%;
+  border: 1px solid var(--companion-color);
+  opacity: 0.4;
+  animation: companion-breath 4.8s ease-in-out infinite;
+  transition: border-color 0.6s ease;
+}
+@keyframes companion-breath {
+  0%, 100% { transform: scale(0.7); opacity: 0.65; }
+  50%      { transform: scale(1.08); opacity: 0.12; }
+}
+@media (pointer: coarse) {
+  #cursor-companion { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .companion-ring { animation: none; }
+}
+
+/* ---- Phosphor touch trail ----
+   Full-viewport fixed canvas at z-index 90 (below cursor-companion at
+   100). pointer-events: none so it never blocks clicks. */
+#phosphor-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 90;
+}
+@media (pointer: coarse) {
+  #phosphor-canvas { display: none; }
+}
+
+/* ---- Print stylesheet ----
+   Strip the ambient chrome — canvases, cursor companion, top nav,
+   scroll progress — and force a high-contrast paper-on-ink reversal
+   so the text is readable on white paper. */
+@media print {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  #cursor-companion,
+  .top-nav,
+  .scroll-progress,
+  .threshold-tree,
+  .scroll-cue,
+  .reading-overlay,
+  .skip-link {
+    display: none !important;
+  }
+  .threshold {
+    min-height: auto !important;
+    padding: 2rem 0 !important;
+  }
+  .section {
+    padding: 2rem 0 !important;
+  }
+  h1,
+  h2,
+  h3,
+  p,
+  li,
+  a {
+    color: #000 !important;
+    text-shadow: none !important;
+  }
+  .on-me,
+  .on-me.syn-tinted {
+    background-color: transparent !important;
+  }
+  a {
+    text-decoration: underline !important;
+  }
+  a[href]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    color: #666;
+  }
+  a[href^="#"]::after,
+  a[href^="/"]::after {
+    content: "";
+  }
+}

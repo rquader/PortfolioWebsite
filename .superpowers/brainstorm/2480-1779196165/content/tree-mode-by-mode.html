@@ -1,0 +1,253 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Newsreader:opsz,wght@6..72,300..700&display=swap" rel="stylesheet">
+
+<style>
+  body { font-family: 'Newsreader', Georgia, serif; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.5rem; }
+  .mode-frame {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    min-height: 460px;
+  }
+  .mode-frame.light { background: #F5EAD4; color: #3A2615; }
+  .mode-frame.dark  { background: #1F1812; color: #ECDEC5; }
+
+  .mode-stripe {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 0.7rem 1.2rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    z-index: 4;
+  }
+  .light .mode-stripe { color: rgba(58,38,21,0.55); }
+  .dark  .mode-stripe { color: rgba(236,222,197,0.55); }
+
+  .tm-svg { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; }
+
+  .tm-close {
+    position: absolute; top: 1rem; right: 1.2rem;
+    font-size: 1.4rem; line-height: 1;
+    z-index: 5;
+    cursor: pointer; opacity: 0.75;
+  }
+  .light .tm-close { color: #7A3E1C; }
+  .dark  .tm-close { color: #E08A52; }
+
+  .tm-card {
+    position: absolute;
+    bottom: 1.2rem; right: 1.2rem;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.72rem;
+    z-index: 3;
+    backdrop-filter: blur(8px);
+    min-width: 200px;
+  }
+  .light .tm-card {
+    background: rgba(245,234,212,0.78);
+    border: 1px solid rgba(122,62,28,0.22);
+    color: #3A2615;
+  }
+  .dark .tm-card {
+    background: rgba(15,11,8,0.78);
+    border: 1px solid rgba(224,138,82,0.25);
+    color: #ECDEC5;
+  }
+
+  .knob { display: flex; align-items: center; gap: 0.6rem; margin: 0.25rem 0; }
+  .knob .name { width: 3.6rem; opacity: 0.7; }
+  .knob .bar  { flex: 1; height: 2px; position: relative; border-radius: 1px; }
+  .light .knob .bar { background: rgba(58,38,21,0.2); }
+  .dark  .knob .bar { background: rgba(236,222,197,0.18); }
+  .knob .bar::after {
+    content: ""; position: absolute; top: -3px;
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .light .knob.depth  .bar::after { left: 60%; background: #7A3E1C; }
+  .light .knob.angle  .bar::after { left: 50%; background: #7A3E1C; }
+  .light .knob.shrink .bar::after { left: 56%; background: #7A3E1C; }
+  .dark  .knob.depth  .bar::after { left: 60%; background: #E08A52; }
+  .dark  .knob.angle  .bar::after { left: 50%; background: #E08A52; }
+  .dark  .knob.shrink .bar::after { left: 56%; background: #E08A52; }
+  .knob .val  { width: 2.6rem; text-align: right; }
+  .light .knob .val { color: #7A3E1C; }
+  .dark  .knob .val { color: #E08A52; }
+
+  .reset-btn {
+    position: absolute; bottom: 0.55rem; left: 0.55rem;
+    width: 1.5rem; height: 1.5rem; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 0.78rem;
+    opacity: 0.6;
+  }
+
+  .swatches {
+    background: #15110D;
+    color: #D6C8AE;
+    border-radius: 10px;
+    padding: 1.1rem 1.4rem;
+    margin-top: 0.5rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.72rem;
+    line-height: 1.6;
+  }
+  .swatches .row { display: flex; gap: 0.7rem; align-items: center; margin: 0.25rem 0; }
+  .sw { width: 1rem; height: 1rem; border-radius: 3px; border: 1px solid rgba(255,255,255,0.08); }
+  .sw-lbl { width: 7rem; opacity: 0.65; }
+  .sw-grp { display: inline-flex; gap: 0.25rem; margin-right: 0.45rem; }
+
+  h2, h3 { font-family: 'Fraunces', Georgia, serif; font-weight: 400; }
+  h2 { letter-spacing: -0.01em; }
+</style>
+
+<h2>Tree-mode · per-mode palette</h2>
+<p class="subtitle">Each mode keeps its palette inside tree-mode. Click "open the tree" in light mode → light tree-mode. In dark mode → dark tree-mode. No jarring shifts.</p>
+
+<div class="pair">
+  <!-- LIGHT tree-mode -->
+  <div class="mode-frame light">
+    <div class="mode-stripe">tree-mode · light</div>
+    <span class="tm-close">×</span>
+    <svg class="tm-svg" viewBox="0 0 600 460" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <!-- Branches: deep walnut on cream -->
+      <g stroke="#5C3C20" stroke-linecap="round" fill="none" opacity="0.78">
+        <path d="M300,460 L300,300" stroke-width="5"/>
+        <path d="M300,300 L230,225" stroke-width="3.8"/>
+        <path d="M300,300 L370,225" stroke-width="3.8"/>
+        <path d="M230,225 L180,165" stroke-width="2.6"/>
+        <path d="M230,225 L255,150" stroke-width="2.6"/>
+        <path d="M370,225 L345,150" stroke-width="2.6"/>
+        <path d="M370,225 L420,165" stroke-width="2.6"/>
+        <path d="M180,165 L145,118" stroke-width="1.8"/>
+        <path d="M180,165 L195,108" stroke-width="1.8"/>
+        <path d="M255,150 L240,100" stroke-width="1.8"/>
+        <path d="M255,150 L280,105" stroke-width="1.8"/>
+        <path d="M345,150 L320,105" stroke-width="1.8"/>
+        <path d="M345,150 L360,100" stroke-width="1.8"/>
+        <path d="M420,165 L405,108" stroke-width="1.8"/>
+        <path d="M420,165 L455,118" stroke-width="1.8"/>
+      </g>
+      <!-- Leaves: terracotta / burnt-sienna / amber on cream -->
+      <g opacity="0.95">
+        <polygon points="145,118 149,126 154,121 149,114" fill="#A04A2A"/>
+        <polygon points="195,108 199,116 204,111 199,104" fill="#C66A3C"/>
+        <polygon points="240,100 244,108 249,103 244,96" fill="#7A3E1C"/>
+        <polygon points="280,105 284,113 289,108 284,101" fill="#D8853E"/>
+        <polygon points="320,105 324,113 329,108 324,101" fill="#A04A2A"/>
+        <polygon points="360,100 364,108 369,103 364,96" fill="#7A3E1C"/>
+        <polygon points="405,108 409,116 414,111 409,104" fill="#C66A3C"/>
+        <polygon points="455,118 459,126 464,121 459,114" fill="#A04A2A"/>
+      </g>
+      <!-- A few drifting -->
+      <polygon points="100,330 104,338 109,333 104,326" fill="#C66A3C" opacity="0.55"/>
+      <polygon points="500,370 504,378 509,373 504,366" fill="#A04A2A" opacity="0.5"/>
+      <polygon points="85,400 89,408 94,403 89,396" fill="#D8853E" opacity="0.5"/>
+    </svg>
+    <div class="tm-card">
+      <div class="reset-btn">↺</div>
+      <div class="knob depth"><span class="name">depth</span><span class="bar"></span><span class="val">8</span></div>
+      <div class="knob angle"><span class="name">angle</span><span class="bar"></span><span class="val">27°</span></div>
+      <div class="knob shrink"><span class="name">shrink</span><span class="bar"></span><span class="val">74%</span></div>
+    </div>
+  </div>
+
+  <!-- DARK tree-mode -->
+  <div class="mode-frame dark">
+    <div class="mode-stripe">tree-mode · dark</div>
+    <span class="tm-close">×</span>
+    <svg class="tm-svg" viewBox="0 0 600 460" preserveAspectRatio="xMidYMax meet" aria-hidden="true">
+      <!-- Branches: warm walnut on deep walnut -->
+      <g stroke="#A88160" stroke-linecap="round" fill="none" opacity="0.72">
+        <path d="M300,460 L300,300" stroke-width="5"/>
+        <path d="M300,300 L230,225" stroke-width="3.8"/>
+        <path d="M300,300 L370,225" stroke-width="3.8"/>
+        <path d="M230,225 L180,165" stroke-width="2.6"/>
+        <path d="M230,225 L255,150" stroke-width="2.6"/>
+        <path d="M370,225 L345,150" stroke-width="2.6"/>
+        <path d="M370,225 L420,165" stroke-width="2.6"/>
+        <path d="M180,165 L145,118" stroke-width="1.8"/>
+        <path d="M180,165 L195,108" stroke-width="1.8"/>
+        <path d="M255,150 L240,100" stroke-width="1.8"/>
+        <path d="M255,150 L280,105" stroke-width="1.8"/>
+        <path d="M345,150 L320,105" stroke-width="1.8"/>
+        <path d="M345,150 L360,100" stroke-width="1.8"/>
+        <path d="M420,165 L405,108" stroke-width="1.8"/>
+        <path d="M420,165 L455,118" stroke-width="1.8"/>
+      </g>
+      <!-- Leaves: warm autumn glow on deep walnut -->
+      <g opacity="0.9">
+        <polygon points="145,118 149,126 154,121 149,114" fill="#E08A52"/>
+        <polygon points="195,108 199,116 204,111 199,104" fill="#F0A668"/>
+        <polygon points="240,100 244,108 249,103 244,96" fill="#C46B45"/>
+        <polygon points="280,105 284,113 289,108 284,101" fill="#E8C078"/>
+        <polygon points="320,105 324,113 329,108 324,101" fill="#E08A52"/>
+        <polygon points="360,100 364,108 369,103 364,96" fill="#C46B45"/>
+        <polygon points="405,108 409,116 414,111 409,104" fill="#F0A668"/>
+        <polygon points="455,118 459,126 464,121 459,114" fill="#E08A52"/>
+      </g>
+      <polygon points="100,330 104,338 109,333 104,326" fill="#F0A668" opacity="0.65"/>
+      <polygon points="500,370 504,378 509,373 504,366" fill="#C46B45" opacity="0.6"/>
+      <polygon points="85,400 89,408 94,403 89,396" fill="#E8C078" opacity="0.6"/>
+    </svg>
+    <div class="tm-card">
+      <div class="reset-btn">↺</div>
+      <div class="knob depth"><span class="name">depth</span><span class="bar"></span><span class="val">8</span></div>
+      <div class="knob angle"><span class="name">angle</span><span class="bar"></span><span class="val">27°</span></div>
+      <div class="knob shrink"><span class="name">shrink</span><span class="bar"></span><span class="val">74%</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="swatches">
+  <h3 style="color:#E8C99A;margin-bottom:0.5rem;font-size:0.8rem;letter-spacing:0.08em;">color tokens</h3>
+  <div class="row">
+    <span class="sw-lbl">light · bg</span>
+    <span class="sw-grp"><span class="sw" style="background:#F5EAD4;"></span></span>
+    <span>#F5EAD4 (parchment, same as threshold)</span>
+  </div>
+  <div class="row">
+    <span class="sw-lbl">light · branches</span>
+    <span class="sw-grp"><span class="sw" style="background:#5C3C20;"></span></span>
+    <span>#5C3C20 (deep walnut)</span>
+  </div>
+  <div class="row">
+    <span class="sw-lbl">light · leaves</span>
+    <span class="sw-grp">
+      <span class="sw" style="background:#7A3E1C;"></span>
+      <span class="sw" style="background:#A04A2A;"></span>
+      <span class="sw" style="background:#C66A3C;"></span>
+      <span class="sw" style="background:#D8853E;"></span>
+    </span>
+    <span>terracotta · burnt sienna · ochre · amber</span>
+  </div>
+  <div class="row" style="opacity:0.4;height:0.6rem;"><span></span></div>
+  <div class="row">
+    <span class="sw-lbl">dark · bg</span>
+    <span class="sw-grp"><span class="sw" style="background:#1F1812;"></span></span>
+    <span>#1F1812 (deep walnut, same as threshold)</span>
+  </div>
+  <div class="row">
+    <span class="sw-lbl">dark · branches</span>
+    <span class="sw-grp"><span class="sw" style="background:#A88160;"></span></span>
+    <span>#A88160 (warm walnut, glow against deep)</span>
+  </div>
+  <div class="row">
+    <span class="sw-lbl">dark · leaves</span>
+    <span class="sw-grp">
+      <span class="sw" style="background:#C46B45;"></span>
+      <span class="sw" style="background:#E08A52;"></span>
+      <span class="sw" style="background:#F0A668;"></span>
+      <span class="sw" style="background:#E8C078;"></span>
+    </span>
+    <span>terracotta-warm · amber · honey · ochre-light</span>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:1.5rem;">Light tree-mode reads like a botanical-print page; dark tree-mode reads like dusk in the same scene. No mode switch on click. Sliders, particles, and residue all pick the appropriate palette.</p>
+
+<p class="subtitle">Lock this in, or want a variation (e.g., slight bg-deepening on tree-mode entry for "focus signal", different leaf hues)?</p>

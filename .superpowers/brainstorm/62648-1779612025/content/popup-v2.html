@@ -1,0 +1,339 @@
+<h2>Option B revised · accordion + less intrusive</h2>
+<p class="subtitle">
+  Left = the new Option B (centered folio, nested accordion, lighter backdrop). Right = a third
+  option I want to put on the table: <em>"B's paper feel anchored like A"</em> — a paper-textured
+  side panel. Same accordion behavior inside both. Pick the one that resolves the tension.
+</p>
+
+<style>
+  /* ---------------- shared ---------------- */
+  .demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+  @media (max-width: 1200px) { .demo-row { grid-template-columns: 1fr; } }
+  .frame { border-radius: 6px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); background: #1a1410; min-height: 620px; position: relative; }
+  .frame-label {
+    font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 12px;
+    background: rgba(255,255,255,0.04); color: #c8b88b; border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative; z-index: 30;
+  }
+
+  /* faded page behind */
+  .page-bg {
+    position: absolute; inset: 30px 0 0 0;
+    background: #F5EAD4; padding: 20px 24px; font-family: Georgia, serif; color: #3A2615;
+  }
+  .bg-title { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 22px; margin: 0; }
+  .bg-sub   { font-style: italic; font-size: 11px; margin: 2px 0 14px; color: #5C3C20; }
+  .bg-rule  { height: 1px; background: rgba(122, 62, 28, 0.18); margin: 8px 0 12px; }
+  .bg-row   { display: grid; grid-template-columns: 1.05fr 1fr; gap: 14px; align-items: center; margin-bottom: 12px; }
+  .bg-cover { aspect-ratio: 16 / 10; border-radius: 3px; background: linear-gradient(135deg, #C66A3C 0%, #7A3E1C 60%, #3A2615 100%); }
+  .bg-text  { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+  .bg-h     { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 18px; margin: 0; }
+  .bg-btnrow { display: flex; gap: 6px; margin-top: 4px; }
+  .bg-btn { padding: 4px 9px; border: 1px solid rgba(122, 62, 28, 0.3); border-radius: 3px; font-family: ui-monospace, Menlo, monospace; font-size: 10px; color: #5C3C20; }
+  .bg-notes-btn { background: #7A3E1C; color: #F5EAD4; padding: 6px 11px; border-radius: 3px; font-family: "Iowan Old Style", serif; font-style: italic; font-size: 12px; display: inline-block; }
+
+  /* paper feel */
+  .paper {
+    background: #F0E4CC; color: #3A2615;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(122, 62, 28, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(122, 62, 28, 0.025) 0%, transparent 35%);
+  }
+  .paper-grain {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.32 0 0 0 0 0.18 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+  }
+  .close-x {
+    position: absolute; top: 14px; right: 14px;
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 0; background: transparent; cursor: pointer;
+    color: #5C3C20; font-size: 16px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5;
+  }
+  .close-x:hover { background: rgba(122, 62, 28, 0.08); }
+
+  /* ============= OPTION B' · Centered Folio, lighter backdrop ============= */
+  .backdrop-soft {
+    position: absolute; inset: 30px 0 0 0;
+    background: rgba(31, 24, 18, 0.28);
+    z-index: 10;
+  }
+  .folio-soft {
+    position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+    width: 70%; max-width: 520px;
+    height: calc(100% - 80px);
+    background: #F0E4CC; border-radius: 6px;
+    box-shadow: 0 24px 60px -20px rgba(31, 24, 18, 0.45), 0 1px 0 rgba(255,255,255,0.5) inset;
+    display: flex; flex-direction: column;
+    z-index: 20; overflow: hidden;
+  }
+  .folio-soft .head {
+    padding: 16px 22px 12px;
+    border-bottom: 1px solid rgba(122, 62, 28, 0.14);
+    background: #E8D9B8;
+  }
+  .folio-soft .crumb { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; color: #8A6A48; letter-spacing: 0.04em; }
+  .folio-soft .ttl { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 20px; margin: 3px 0 0; color: #3A2615; }
+  .folio-soft .body { padding: 14px 22px 22px; overflow-y: auto; flex: 1; position: relative; }
+
+  /* ---- nested accordion (inside folio) ---- */
+  .acc-folder {
+    border-bottom: 1px solid rgba(122, 62, 28, 0.1);
+    padding: 8px 0;
+  }
+  .acc-folder:last-child { border-bottom: none; }
+  .acc-folder-head {
+    cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+    padding: 3px 4px; border-radius: 3px;
+    font-family: ui-monospace, Menlo, monospace; font-size: 11.5px;
+    letter-spacing: 0.04em; color: #7A3E1C; text-transform: lowercase;
+  }
+  .acc-folder-head:hover { background: rgba(122, 62, 28, 0.06); }
+  .acc-folder-head .chev { display: inline-block; transition: transform 0.2s ease; opacity: 0.6; margin-right: 6px; font-size: 9px; }
+  .acc-folder.open .acc-folder-head .chev { transform: rotate(90deg); }
+  .acc-folder-head .count { color: #8A6A48; }
+  .acc-folder-notes { padding: 5px 0 0 14px; display: none; }
+  .acc-folder.open .acc-folder-notes { display: block; }
+
+  .acc-note { margin: 2px 0; }
+  .acc-note-head {
+    cursor: pointer; padding: 4px 8px;
+    font-family: "Iowan Old Style", Georgia, serif; font-size: 13.5px;
+    color: #3A2615; border-radius: 3px;
+    display: flex; align-items: center;
+  }
+  .acc-note-head:hover { background: rgba(122, 62, 28, 0.06); }
+  .acc-note-head .chev { font-size: 9px; opacity: 0.5; margin-right: 7px; transition: transform 0.2s ease; }
+  .acc-note.open .acc-note-head { color: #7A3E1C; font-style: italic; }
+  .acc-note.open .acc-note-head .chev { transform: rotate(90deg); opacity: 0.9; }
+  .acc-note-body {
+    display: none;
+    margin: 4px 8px 12px 18px;
+    padding: 14px 18px;
+    background: #F8EFD7;
+    border-left: 2px solid rgba(122, 62, 28, 0.25);
+    border-radius: 0 4px 4px 0;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 13px; line-height: 1.65; color: #3A2615;
+  }
+  .acc-note.open .acc-note-body { display: block; }
+  .acc-note-body h2 { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 15px; margin: 12px 0 5px; padding-bottom: 3px; border-bottom: 1px solid rgba(122, 62, 28, 0.15); }
+  .acc-note-body p { margin: 0 0 9px; }
+  .placeholder-mark { background: rgba(122, 62, 28, 0.08); padding: 0 4px; border-radius: 2px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: #7A3E1C; }
+
+  /* ============= OPTION C · Paper Side Panel (hybrid) ============= */
+  .panel {
+    position: absolute; top: 30px; right: 0; bottom: 0;
+    width: 60%;
+    background: #F0E4CC;
+    box-shadow: -24px 0 48px -24px rgba(31, 24, 18, 0.5);
+    z-index: 20; overflow: hidden;
+    display: flex; flex-direction: column;
+    border-left: 1px solid rgba(122, 62, 28, 0.18);
+  }
+  .panel .head {
+    padding: 16px 22px 12px;
+    border-bottom: 1px solid rgba(122, 62, 28, 0.14);
+    background: #E8D9B8;
+  }
+  .panel .crumb { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; color: #8A6A48; letter-spacing: 0.04em; }
+  .panel .ttl { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 22px; margin: 3px 0 0; color: #3A2615; }
+  .panel .body { padding: 14px 22px 22px; overflow-y: auto; flex: 1; position: relative; }
+</style>
+
+<div class="demo-row">
+
+  <!-- ============= OPTION B' · centered folio, accordion, light backdrop ============= -->
+  <div class="frame">
+    <div class="frame-label">option B' · centered folio (lighter, nested accordion)</div>
+
+    <!-- faded page behind -->
+    <div class="page-bg">
+      <h1 class="bg-title">Projects</h1>
+      <p class="bg-sub">[PLACEHOLDER framing]</p>
+      <div class="bg-rule"></div>
+      <div class="bg-row">
+        <div class="bg-cover"></div>
+        <div class="bg-text">
+          <h3 class="bg-h">AdhkarCounter</h3>
+          <p style="margin:0;font-style:italic;font-size:11px;color:#5C3C20">a quiet counter…</p>
+          <div class="bg-btnrow">
+            <span class="bg-notes-btn">◰ open notes</span>
+            <span class="bg-btn">↗ github</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="backdrop-soft"></div>
+
+    <div class="folio-soft paper">
+      <div class="paper-grain"></div>
+      <button class="close-x">×</button>
+
+      <div class="head">
+        <div class="crumb">working notes</div>
+        <h1 class="ttl">AdhkarCounter</h1>
+      </div>
+
+      <div class="body">
+        <!-- field folder OPEN -->
+        <div class="acc-folder open">
+          <div class="acc-folder-head">
+            <span><span class="chev">▸</span>field</span>
+            <span class="count">3</span>
+          </div>
+          <div class="acc-folder-notes">
+            <div class="acc-note">
+              <div class="acc-note-head"><span class="chev">▸</span>tactile counter</div>
+            </div>
+            <div class="acc-note open">
+              <div class="acc-note-head"><span class="chev">▸</span>architecture</div>
+              <div class="acc-note-body">
+                <p>
+                  <span class="placeholder-mark">[PLACEHOLDER — opening paragraph rendered from
+                  the actual vault note. The inset paper tone signals this is content, not nav.]</span>
+                </p>
+                <h2>Storage</h2>
+                <p>
+                  <span class="placeholder-mark">[PLACEHOLDER — sub-section body. Bolds and
+                  italics keep their flashlight letter-color treatment from the site.]</span>
+                </p>
+              </div>
+            </div>
+            <div class="acc-note">
+              <div class="acc-note-head"><span class="chev">▸</span>audio rendering</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- decisions folder CLOSED -->
+        <div class="acc-folder">
+          <div class="acc-folder-head">
+            <span><span class="chev">▸</span>decisions</span>
+            <span class="count">2</span>
+          </div>
+        </div>
+
+        <!-- journal folder CLOSED -->
+        <div class="acc-folder">
+          <div class="acc-folder-head">
+            <span><span class="chev">▸</span>journal</span>
+            <span class="count">1</span>
+          </div>
+        </div>
+
+        <!-- credits folder CLOSED -->
+        <div class="acc-folder">
+          <div class="acc-folder-head">
+            <span><span class="chev">▸</span>credits</span>
+            <span class="count">1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============= OPTION C · paper side panel hybrid ============= -->
+  <div class="frame">
+    <div class="frame-label">option C · paper side panel (B's feel, A's anchor)</div>
+
+    <!-- faded page behind -->
+    <div class="page-bg">
+      <h1 class="bg-title">Projects</h1>
+      <p class="bg-sub">[PLACEHOLDER framing]</p>
+      <div class="bg-rule"></div>
+      <div class="bg-row">
+        <div class="bg-cover"></div>
+        <div class="bg-text">
+          <h3 class="bg-h">AdhkarCounter</h3>
+          <p style="margin:0;font-style:italic;font-size:11px;color:#5C3C20">a quiet counter…</p>
+          <div class="bg-btnrow">
+            <span class="bg-notes-btn">◰ open notes</span>
+            <span class="bg-btn">↗ github</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel paper">
+      <div class="paper-grain"></div>
+      <button class="close-x">×</button>
+
+      <div class="head">
+        <div class="crumb">working notes</div>
+        <h1 class="ttl">AdhkarCounter</h1>
+      </div>
+
+      <div class="body">
+        <div class="acc-folder open">
+          <div class="acc-folder-head">
+            <span><span class="chev">▸</span>field</span>
+            <span class="count">3</span>
+          </div>
+          <div class="acc-folder-notes">
+            <div class="acc-note">
+              <div class="acc-note-head"><span class="chev">▸</span>tactile counter</div>
+            </div>
+            <div class="acc-note open">
+              <div class="acc-note-head"><span class="chev">▸</span>architecture</div>
+              <div class="acc-note-body">
+                <p>
+                  <span class="placeholder-mark">[PLACEHOLDER — opening paragraph. With more
+                  horizontal room the prose breathes here.]</span>
+                </p>
+                <h2>Storage</h2>
+                <p>
+                  <span class="placeholder-mark">[PLACEHOLDER — sub-section body.]</span>
+                </p>
+              </div>
+            </div>
+            <div class="acc-note">
+              <div class="acc-note-head"><span class="chev">▸</span>audio rendering</div>
+            </div>
+          </div>
+        </div>
+        <div class="acc-folder">
+          <div class="acc-folder-head">
+            <span><span class="chev">▸</span>decisions</span>
+            <span class="count">2</span>
+          </div>
+        </div>
+        <div class="acc-folder">
+          <div class="acc-folder-head">
+            <span><span class="chev">▸</span>journal</span>
+            <span class="count">1</span>
+          </div>
+        </div>
+        <div class="acc-folder">
+          <div class="acc-folder-head">
+            <span><span class="chev">▸</span>credits</span>
+            <span class="count">1</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>To your question · "do sub-notes pop up as a set below?"</h3>
+  <p style="margin: 6px 0 10px;">Yes. Both mockups show it. Click a folder → its notes appear below the folder line. Click a folder again → they collapse back. Click a note → its rendered markdown appears in an inset paper panel directly below the note title. Multiple notes can be open at once (matches Obsidian's read mode).</p>
+
+  <h3>To your tension · "B looks better, A feels less intrusive"</h3>
+  <p style="margin: 6px 0 4px;">Three knobs that lower B's intrusiveness:</p>
+  <ul style="margin: 0 0 10px; padding-left: 18px; font-size: 13.5px; line-height: 1.6;">
+    <li><strong>Backdrop opacity</strong> · went from 50% to 28%. The page is now visible behind, just slightly hushed. (Try it — the previous mockup had a much heavier veil.)</li>
+    <li><strong>Card width</strong> · narrower (520px max vs the 580 before). The page peeks around the card.</li>
+    <li><strong>No blur</strong> · pure dim, no defocus. Page stays legible if you glance at it.</li>
+  </ul>
+  <p style="margin: 6px 0 4px;">Option C resolves the tension differently: takes B's paper feel and accordion behavior, but anchors it to the right edge like A. You get the paper warmth + the partial-page-visible reassurance. Tradeoff: it covers ~60% of the page (more than B's 35%), so it's not strictly "less intrusive" in surface area — but it doesn't <em>float</em>, which is what often reads as intrusive.</p>
+</div>
+
+<p class="subtitle" style="margin-top: 14px;">
+  Take a look. Tell me: B' (the lighter centered folio) or C (the paper side panel)?
+</p>

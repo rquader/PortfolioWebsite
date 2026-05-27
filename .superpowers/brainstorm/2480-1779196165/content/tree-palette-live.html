@@ -1,0 +1,441 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=Newsreader:opsz,wght@6..72,300..700&display=swap" rel="stylesheet">
+
+<style>
+  body { font-family: 'Newsreader', Georgia, serif; }
+  h2 { font-family: 'Fraunces', Georgia, serif; font-weight: 400; font-variation-settings: 'SOFT' 60; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+  .card {
+    border: 2px solid transparent;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    background: #1A1410;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+  .card:hover { transform: translateY(-2px); }
+  .card.selected {
+    border-color: #C66A3C;
+    box-shadow: 0 12px 36px -8px rgba(198,106,60,0.4);
+  }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; }
+  .pane {
+    position: relative;
+    min-height: 360px;
+    padding: 1.2rem;
+    overflow: hidden;
+  }
+  .light { background: #F5EAD4; color: #3A2615; }
+  .dark  { background: #1F1812; color: #ECDEC5; }
+  .pane-label {
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    opacity: 0.45;
+    margin-bottom: 0.3rem;
+    position: relative; z-index: 3;
+  }
+  .hero {
+    font-family: 'Fraunces', Georgia, serif;
+    font-variation-settings: 'SOFT' 60;
+    font-size: 2rem;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+    margin-bottom: 0.4rem;
+    color: inherit;
+    position: relative; z-index: 3;
+    font-weight: 350;
+  }
+  .light .hero { color: #7A3E1C; }
+  .dark  .hero { color: #E08A52; }
+  .hero span { display: block; }
+  canvas.tree {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .footer {
+    background: #15110D;
+    color: #D6C8AE;
+    padding: 0.7rem 1.2rem;
+    font-family: 'SF Mono', Menlo, monospace;
+    font-size: 0.66rem;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .name { color: #E8C99A; letter-spacing: 0.06em; }
+  .blurb { opacity: 0.65; font-style: italic; }
+
+  .chips { display: flex; gap: 0.25rem; margin-top: 0.5rem; position: relative; z-index: 3; }
+  .chip { width: 0.9rem; height: 0.9rem; border-radius: 3px; border: 1px solid rgba(0,0,0,0.12); }
+</style>
+
+<h2>Tree palette · live-rendered with the real algorithm</h2>
+<p class="subtitle">Same recursive build, same leaf polygons, same seed (42). Only the palette varies.</p>
+
+<div class="grid options">
+
+  <!-- A · terracotta-mono (current shipped) -->
+  <div class="option card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="pane light">
+        <canvas class="tree" data-tree="a-light"></canvas>
+        <div class="pane-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#7A4D2C"></span>
+          <span class="chip" style="background:#8C4A22"></span>
+          <span class="chip" style="background:#B05A2A"></span>
+          <span class="chip" style="background:#C66A3C"></span>
+          <span class="chip" style="background:#D8853E"></span>
+          <span class="chip" style="background:#E0B266"></span>
+        </div>
+      </div>
+      <div class="pane dark">
+        <canvas class="tree" data-tree="a-dark"></canvas>
+        <div class="pane-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#B8916A"></span>
+          <span class="chip" style="background:#C46B45"></span>
+          <span class="chip" style="background:#E08A52"></span>
+          <span class="chip" style="background:#F0A668"></span>
+          <span class="chip" style="background:#E8C078"></span>
+          <span class="chip" style="background:#D9B27A"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="name">A · current shipped · terracotta-mono</span>
+      <span class="blurb">harmonized with --accent · least busy</span>
+    </div>
+  </div>
+
+  <!-- B · mixed-autumn (red+gold+brown) -->
+  <div class="option card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="pane light">
+        <canvas class="tree" data-tree="b-light"></canvas>
+        <div class="pane-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#6B4423"></span>
+          <span class="chip" style="background:#8B2C0A"></span>
+          <span class="chip" style="background:#B8542E"></span>
+          <span class="chip" style="background:#D88B2E"></span>
+          <span class="chip" style="background:#E5B547"></span>
+          <span class="chip" style="background:#8E5A1F"></span>
+        </div>
+      </div>
+      <div class="pane dark">
+        <canvas class="tree" data-tree="b-dark"></canvas>
+        <div class="pane-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#A57A55"></span>
+          <span class="chip" style="background:#C2452A"></span>
+          <span class="chip" style="background:#E27040"></span>
+          <span class="chip" style="background:#F0A05A"></span>
+          <span class="chip" style="background:#F6D27A"></span>
+          <span class="chip" style="background:#C28A48"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="name">B · mixed-autumn (red + gold + brown)</span>
+      <span class="blurb">autumn-peak photograph · most painterly</span>
+    </div>
+  </div>
+
+  <!-- C · botanical-print (muted + 1 pop) -->
+  <div class="option card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="pane light">
+        <canvas class="tree" data-tree="c-light"></canvas>
+        <div class="pane-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#5A3C24"></span>
+          <span class="chip" style="background:#94553B"></span>
+          <span class="chip" style="background:#B07744"></span>
+          <span class="chip" style="background:#C99A6A"></span>
+          <span class="chip" style="background:#DDB97E"></span>
+          <span class="chip" style="background:#B83918"></span>
+        </div>
+      </div>
+      <div class="pane dark">
+        <canvas class="tree" data-tree="c-dark"></canvas>
+        <div class="pane-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#A0805C"></span>
+          <span class="chip" style="background:#BC7A55"></span>
+          <span class="chip" style="background:#D69870"></span>
+          <span class="chip" style="background:#E8BC8A"></span>
+          <span class="chip" style="background:#F3D5A4"></span>
+          <span class="chip" style="background:#E8602C"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="name">C · botanical-print (muted + 1 pop)</span>
+      <span class="blurb">vintage botanical · soft with one bright leaf</span>
+    </div>
+  </div>
+
+  <!-- D · watercolor (dusty + pink note) -->
+  <div class="option card" data-choice="d" onclick="toggleSelect(this)">
+    <div class="modes">
+      <div class="pane light">
+        <canvas class="tree" data-tree="d-light"></canvas>
+        <div class="pane-label">light</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#876045"></span>
+          <span class="chip" style="background:#A85740"></span>
+          <span class="chip" style="background:#C97C58"></span>
+          <span class="chip" style="background:#DDA079"></span>
+          <span class="chip" style="background:#E8C193"></span>
+          <span class="chip" style="background:#C44B62"></span>
+        </div>
+      </div>
+      <div class="pane dark">
+        <canvas class="tree" data-tree="d-dark"></canvas>
+        <div class="pane-label">dark</div>
+        <h1 class="hero"><span>rafan</span><span>quader</span></h1>
+        <div class="chips">
+          <span class="chip" style="background:#B89578"></span>
+          <span class="chip" style="background:#D8755A"></span>
+          <span class="chip" style="background:#EAA078"></span>
+          <span class="chip" style="background:#F2C29A"></span>
+          <span class="chip" style="background:#F5D7AE"></span>
+          <span class="chip" style="background:#E8758F"></span>
+        </div>
+      </div>
+    </div>
+    <div class="footer">
+      <span class="name">D · watercolor (dusty + a pink note)</span>
+      <span class="blurb">softer · romantic · most "painted"</span>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:1.5rem;">Click your pick. Same RNG seed across all eight canvases so the structures are identical — only colors differ.</p>
+
+<script>
+  // Inline recursive-tree algorithm, ported from src/lib/backdrop/tree-algorithm.ts.
+  // Same shape, same constants, same seed (42) — palette varies per canvas.
+  const PI = Math.PI;
+  const C = {
+    MAX_DEPTH: 8,
+    TRUNK_LENGTH: 1.8,
+    LENGTH_RATIO: 0.74,
+    LENGTH_JITTER: 0.10,
+    BRANCH_ANGLE: 27 * PI / 180,
+    ANGLE_JITTER: 7 * PI / 180,
+    INITIAL_ANGLE: PI / 2,
+    TRUNK_BASE_Y: -3.5,
+    LEAF_DEPTH_MIN: 8,
+    LEAF_SIZE_MIN: 0.10,
+    LEAF_SIZE_MAX: 0.18,
+    LEAF_OPACITY: 0.92,
+    LEAF_ROTATION_JITTER: 22 * PI / 180,
+    THREE_WAY_PROB: 0.12,
+    THREE_WAY_ANGLE: 6 * PI / 180,
+    THREE_WAY_LENGTH_FACTOR: 0.88,
+    FRAME_UNITS_HEIGHT: 7.5,
+    RNG_SEED: 42,
+  };
+
+  function mulberry32(seed) {
+    let s = seed >>> 0;
+    return {
+      random() {
+        s = (s + 0x6D2B79F5) >>> 0;
+        let t = s;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      },
+      uniform(lo, hi) { return lo + this.random() * (hi - lo); },
+      choice(arr) { return arr[Math.floor(this.random() * arr.length)]; },
+    };
+  }
+
+  function buildBranches(rng) {
+    const branches = [];
+    function recurse(parent, length, relAngle, depth) {
+      if (depth > C.MAX_DEPTH || length < 0.045) return;
+      const isTerminal = depth === C.MAX_DEPTH;
+      branches.push({ parent, relAngle, length, depth, isTerminal });
+      if (isTerminal) return;
+      const idx = branches.length - 1;
+      const aL = C.BRANCH_ANGLE + rng.uniform(-C.ANGLE_JITTER, C.ANGLE_JITTER);
+      const aR = -C.BRANCH_ANGLE + rng.uniform(-C.ANGLE_JITTER, C.ANGLE_JITTER);
+      const lL = length * C.LENGTH_RATIO * (1 + rng.uniform(-C.LENGTH_JITTER, C.LENGTH_JITTER));
+      const lR = length * C.LENGTH_RATIO * (1 + rng.uniform(-C.LENGTH_JITTER, C.LENGTH_JITTER));
+      recurse(idx, lL, aL, depth + 1);
+      recurse(idx, lR, aR, depth + 1);
+      if (rng.random() < C.THREE_WAY_PROB) {
+        const aC = rng.uniform(-C.THREE_WAY_ANGLE, C.THREE_WAY_ANGLE);
+        const lC = length * C.LENGTH_RATIO * C.THREE_WAY_LENGTH_FACTOR *
+                   (1 + rng.uniform(-C.LENGTH_JITTER, C.LENGTH_JITTER));
+        recurse(idx, lC, aC, depth + 1);
+      }
+    }
+    recurse(-1, C.TRUNK_LENGTH, C.INITIAL_ANGLE, 0);
+    return branches;
+  }
+
+  function resolveTree(branches) {
+    const n = branches.length;
+    const starts = new Float32Array(n * 2);
+    const ends = new Float32Array(n * 2);
+    const abs = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const b = branches[i];
+      if (b.parent < 0) {
+        starts[2*i] = 0; starts[2*i+1] = C.TRUNK_BASE_Y;
+        abs[i] = b.relAngle;
+      } else {
+        starts[2*i] = ends[2*b.parent];
+        starts[2*i+1] = ends[2*b.parent+1];
+        abs[i] = abs[b.parent] + b.relAngle;
+      }
+      const a = abs[i];
+      ends[2*i] = starts[2*i] + Math.cos(a) * b.length;
+      ends[2*i+1] = starts[2*i+1] + Math.sin(a) * b.length;
+    }
+    return { starts, ends, abs };
+  }
+
+  function tone(p, t01) {
+    const n = p.tones.length;
+    const i = Math.max(0, Math.min(n - 1, Math.round(t01 * (n - 1))));
+    return p.tones[i];
+  }
+
+  function leafVerts(s) {
+    const h = s, w = s * 0.55;
+    return [
+      [0, h], [w*0.55, h*0.65], [w, h*0.20], [w*0.60, -h*0.25],
+      [w*0.20, -h*0.48], [0, -h*0.58], [-w*0.20, -h*0.48],
+      [-w*0.60, -h*0.25], [-w, h*0.20], [-w*0.55, h*0.65],
+    ];
+  }
+
+  function buildLeaves(rng, branches, palette) {
+    const tones = palette.tones;
+    const leafPal = [tones[tones.length-2], tones[tones.length-1], palette.accent];
+    const out = [];
+    for (let i = 0; i < branches.length; i++) {
+      const b = branches[i];
+      if (b.depth < C.LEAF_DEPTH_MIN) continue;
+      out.push({
+        idx: i,
+        size: rng.uniform(C.LEAF_SIZE_MIN, C.LEAF_SIZE_MAX),
+        color: rng.choice(leafPal),
+        rot: rng.uniform(-C.LEAF_ROTATION_JITTER, C.LEAF_ROTATION_JITTER),
+      });
+    }
+    return out;
+  }
+
+  function render(canvas, palette) {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    const cssW = Math.max(1, Math.round(rect.width));
+    const cssH = Math.max(1, Math.round(rect.height));
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.floor(cssW * dpr);
+    canvas.height = Math.floor(cssH * dpr);
+    canvas.style.width = cssW + 'px';
+    canvas.style.height = cssH + 'px';
+    const ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, cssW, cssH);
+
+    const u = cssH / C.FRAME_UNITS_HEIGHT;
+    const toX = mx => cssW / 2 + mx * u;
+    const toY = my => cssH / 2 - my * u;
+
+    const rng = mulberry32(C.RNG_SEED);
+    const branches = buildBranches(rng);
+    const frame = resolveTree(branches);
+    const leaves = buildLeaves(rng, branches, palette);
+
+    // Branches
+    ctx.lineCap = 'round';
+    const trunkPx = Math.max(2.5, u * 0.10);
+    const leafPx = 0.9;
+    for (let i = 0; i < branches.length; i++) {
+      const b = branches[i];
+      const t01 = b.depth / C.MAX_DEPTH;
+      ctx.strokeStyle = tone(palette, t01);
+      ctx.lineWidth = trunkPx * (1 - t01) + leafPx * t01;
+      ctx.beginPath();
+      ctx.moveTo(toX(frame.starts[2*i]), toY(frame.starts[2*i+1]));
+      ctx.lineTo(toX(frame.ends[2*i]), toY(frame.ends[2*i+1]));
+      ctx.stroke();
+    }
+
+    // Leaves
+    for (const leaf of leaves) {
+      const i = leaf.idx;
+      const cx = toX(frame.ends[2*i]);
+      const cy = toY(frame.ends[2*i+1]);
+      const rotManim = frame.abs[i] - Math.PI / 2 + leaf.rot;
+      const cos = Math.cos(rotManim), sin = Math.sin(rotManim);
+      const sizePx = leaf.size * u;
+      const vs = leafVerts(sizePx);
+      ctx.globalAlpha = C.LEAF_OPACITY;
+      ctx.fillStyle = leaf.color;
+      ctx.beginPath();
+      for (let v = 0; v < vs.length; v++) {
+        const [vx, vy] = vs[v];
+        const rx = cos * vx - sin * vy;
+        const ry = sin * vx + cos * vy;
+        const x = cx + rx;
+        const y = cy - ry;
+        if (v === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  const palettes = {
+    'a-light': { tones: ['#7A4D2C','#8C4A22','#B05A2A','#C66A3C','#D8853E'], accent: '#E0B266' },
+    'a-dark':  { tones: ['#B8916A','#C46B45','#E08A52','#F0A668','#E8C078'], accent: '#D9B27A' },
+    'b-light': { tones: ['#6B4423','#8B2C0A','#B8542E','#D88B2E','#E5B547'], accent: '#8E5A1F' },
+    'b-dark':  { tones: ['#A57A55','#C2452A','#E27040','#F0A05A','#F6D27A'], accent: '#C28A48' },
+    'c-light': { tones: ['#5A3C24','#94553B','#B07744','#C99A6A','#DDB97E'], accent: '#B83918' },
+    'c-dark':  { tones: ['#A0805C','#BC7A55','#D69870','#E8BC8A','#F3D5A4'], accent: '#E8602C' },
+    'd-light': { tones: ['#876045','#A85740','#C97C58','#DDA079','#E8C193'], accent: '#C44B62' },
+    'd-dark':  { tones: ['#B89578','#D8755A','#EAA078','#F2C29A','#F5D7AE'], accent: '#E8758F' },
+  };
+
+  function renderAll() {
+    for (const [key, p] of Object.entries(palettes)) {
+      const canvas = document.querySelector('canvas[data-tree="' + key + '"]');
+      if (canvas) render(canvas, p);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderAll);
+  } else {
+    renderAll();
+  }
+
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(renderAll, 150);
+  });
+</script>

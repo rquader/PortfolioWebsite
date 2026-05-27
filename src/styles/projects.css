@@ -1,0 +1,746 @@
+/* projects.css — /projects page
+ *
+ * Editorial alternating-row layout. Each project chapter is a
+ * two-column grid (~1.05fr media, 1fr text); the second chapter
+ * flips to text-left / media-right, the third flips back, etc.
+ * The flip is per-instance via `.project-chapter-flip` on the
+ * article — alternation is computed in ProjectChapter from `index`.
+ *
+ * Spec: [[specs/2026-05-24-projects-page-redesign-design]].
+ */
+
+.projects-page {
+  max-width: min(72rem, 100% - var(--gutter) * 2);
+  margin: clamp(5rem, 10vh, 8rem) auto clamp(4rem, 8vh, 6rem);
+  padding: 0 var(--gutter);
+}
+
+/* ─── page header ─── */
+
+.projects-header {
+  margin-bottom: clamp(2.5rem, 5vh, 4rem);
+}
+
+.projects-title {
+  font-family: var(--face-display);
+  font-variation-settings: 'SOFT' 70, 'WONK' 1;
+  font-size: var(--type-h2);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  margin-bottom: 1.2rem;
+  color: var(--text-0);
+}
+
+.projects-intro,
+.projects-outro {
+  font-family: var(--face-text);
+  font-size: var(--type-body);
+  line-height: var(--leading-body);
+  color: var(--text-1);
+  max-width: 38rem;
+}
+
+.projects-intro-rule {
+  margin: 1.4rem 0 0;
+  border: 0;
+  height: 1px;
+  max-width: 12rem;
+  background: linear-gradient(
+    to right,
+    color-mix(in srgb, var(--accent) 55%, transparent),
+    transparent
+  );
+}
+
+.projects-intro-notes {
+  margin-top: 1rem;
+  max-width: 38rem;
+  font-style: italic;
+  color: var(--text-2);
+}
+
+/* ─── mode-toggle row — centered between the intro prose and the first chapter
+       Hairline rules flank the segmented control so it reads as a deliberate
+       seam between two registers, not a UI chip in a corner. ─── */
+
+.projects-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.7rem, 2vw, 1.5rem);
+  margin: clamp(1.4rem, 3vh, 2rem) 0 0;
+}
+
+.projects-toggle-rule {
+  flex: 1 1 0;
+  height: 1px;
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+/* ─── story/info segmented toggle ─── */
+
+.mode-toggle {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--bg-0) 60%, transparent);
+  font-family: var(--face-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  flex: 0 0 auto;
+}
+
+.mode-toggle-btn {
+  background: transparent;
+  border: 0;
+  padding: 0.36rem 1.05rem;
+  border-radius: 999px;
+  color: var(--text-1);
+  cursor: pointer;
+  text-transform: lowercase;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.mode-toggle-btn:hover {
+  color: var(--text-0);
+}
+
+.mode-toggle-btn[aria-checked='true'] {
+  background: var(--accent);
+  color: var(--bg-0);
+}
+
+:root[data-theme='dark'] .mode-toggle-btn[aria-checked='true'] {
+  background: var(--accent);
+  color: var(--bg-0);
+}
+
+/* ─── chapter list + alternation ─── */
+
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 5vh, 4rem);
+}
+
+.project-chapter {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  align-items: center;
+  scroll-margin-top: var(--nav-h);
+}
+
+.project-chapter-flip {
+  grid-template-columns: 1fr 1.05fr;
+}
+
+.project-chapter-flip .project-chapter-media {
+  order: 2;
+}
+
+.project-chapter-flip .project-chapter-text {
+  order: 1;
+}
+
+.project-chapter-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0; /* lets the column shrink instead of overflowing */
+}
+
+.project-chapter-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.project-chapter-title {
+  font-family: var(--face-display);
+  font-variation-settings: 'SOFT' 80, 'WONK' 1;
+  font-style: italic;
+  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  line-height: var(--leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--text-0);
+  margin: 0;
+}
+
+.project-tagline {
+  font-family: var(--face-text);
+  font-style: italic;
+  font-size: var(--type-small);
+  color: var(--text-1);
+  margin: 0;
+}
+
+/* ─── chapter body / story slots ─── */
+
+.project-body {
+  margin: 0.2rem 0 0.4rem;
+}
+
+.project-story,
+.project-story-empty {
+  max-width: 38rem;
+  color: var(--text-1);
+}
+
+.project-story-empty {
+  font-family: var(--face-text);
+  font-size: var(--type-small);
+  font-style: italic;
+  opacity: 0.7;
+}
+
+/* page-mode visibility — driven by [data-page-mode] on <html> */
+
+:root[data-page-mode='story'] .project-body-slot[data-mode-content='info'] {
+  display: none;
+}
+
+:root:not([data-page-mode='story']) .project-body-slot[data-mode-content='story'] {
+  display: none;
+}
+
+/* ─── media column ─── */
+
+.project-media {
+  width: 100%;
+  max-height: 70vh;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: 2px;
+  background: var(--bg-1);
+}
+
+.project-media-image {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.project-media-image .photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-media-empty {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(
+      circle at 30% 30%,
+      color-mix(in srgb, var(--accent) 35%, transparent) 0%,
+      transparent 60%
+    ),
+    repeating-linear-gradient(45deg, transparent 0 6px, rgba(0, 0, 0, 0.04) 6px 7px),
+    var(--bg-1);
+  border-radius: 2px;
+}
+
+.project-media-empty-label {
+  font-family: var(--face-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  color: var(--text-2);
+  opacity: 0.85;
+}
+
+.project-media-wrap {
+  position: relative;
+}
+
+/* ─── single asset ─── */
+
+.project-media-single {
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--bg-1);
+}
+
+.project-media-single .project-media-gif,
+.project-media-single .project-media-static,
+.project-media-single .photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-media-single .project-media-static {
+  height: 100%;
+}
+
+.project-media-single .project-media-static .photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-media-asset.project-media-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 2px;
+  background: var(--bg-1);
+}
+
+/* ─── carousel ─── */
+
+.project-media-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  width: 100%;
+}
+
+.project-media-carousel-viewport {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--bg-1);
+}
+
+.project-media-carousel-slide {
+  position: absolute;
+  inset: 0;
+}
+
+.project-media-carousel-slide[hidden] {
+  display: none;
+}
+
+.project-media-carousel-asset,
+.project-media-carousel-slide .project-media-gif,
+.project-media-carousel-slide .project-media-static,
+.project-media-carousel-slide .photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.project-media-carousel-slide .project-media-static {
+  height: 100%;
+}
+
+.project-media-carousel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.project-media-carousel-btn {
+  flex: 0 0 auto;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--bg-0) 90%, var(--accent) 10%);
+  color: var(--text-1);
+  font-family: var(--face-mono);
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.project-media-carousel-btn:hover,
+.project-media-carousel-btn:focus-visible {
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-0));
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.project-media-carousel-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.project-media-carousel-label {
+  font-family: var(--face-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+  text-transform: lowercase;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.project-media-carousel-dots {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.project-media-carousel-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--text-2) 45%, transparent);
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.project-media-carousel-dot.is-active {
+  background: var(--accent);
+  transform: scale(1.15);
+}
+
+.project-media-carousel-dot:hover,
+.project-media-carousel-dot:focus-visible {
+  background: color-mix(in srgb, var(--accent) 70%, var(--text-2));
+  outline: none;
+}
+
+/* ─── stack (Arabic dialect map) ─── */
+
+.project-media-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
+  border-radius: 2px;
+}
+
+.project-media-stack-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--bg-1);
+}
+
+.project-media-stack-item:first-child {
+  aspect-ratio: 950 / 706;
+}
+
+.project-media-stack-item:last-child {
+  aspect-ratio: 16 / 10;
+}
+
+.project-media-stack-item .project-media-gif,
+.project-media-stack-item .project-media-static,
+.project-media-stack-item .photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Arabic dialect map — show full screenshot without tight crop */
+.project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:first-child .project-media-gif,
+.project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:first-child .photo-img {
+  object-fit: contain;
+  object-position: center top;
+}
+
+.project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:last-child .project-media-gif {
+  object-fit: contain;
+}
+
+/* InstaDM — 16:9 gif, fit entire frame */
+.project-media-wrap[data-project-slug='insta-dm'] .project-media-single {
+  aspect-ratio: 16 / 9;
+}
+
+.project-media-wrap[data-project-slug='insta-dm'] .project-media-single .project-media-gif {
+  object-fit: contain;
+}
+
+/* Web Crossword Generator — screenshot fills viewport height; crop sides only */
+.project-media-wrap[data-project-slug='web-crossword-generator'] .project-media-carousel-viewport {
+  aspect-ratio: 16 / 7;
+  max-height: 72vh;
+}
+
+.project-media-wrap[data-project-slug='web-crossword-generator']
+  .project-media-carousel-slide[data-slide-index='0']
+  .project-media-static,
+.project-media-wrap[data-project-slug='web-crossword-generator']
+  .project-media-carousel-slide[data-slide-index='0']
+  .project-media-carousel-asset {
+  width: 100%;
+  height: 100%;
+}
+
+.project-media-wrap[data-project-slug='web-crossword-generator']
+  .project-media-carousel-slide[data-slide-index='0']
+  .photo,
+.project-media-wrap[data-project-slug='web-crossword-generator']
+  .project-media-carousel-slide[data-slide-index='0']
+  .photo-picture {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
+}
+
+.project-media-wrap[data-project-slug='web-crossword-generator']
+  .project-media-carousel-slide[data-slide-index='0']
+  .photo-img {
+  width: auto;
+  height: 100%;
+  min-width: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* Adhkar Counter — screenshot default; gif height-matched, crop from bottom */
+.project-media-wrap[data-project-slug='adhkar-counter'] .project-media-carousel-viewport {
+  aspect-ratio: 752 / 454;
+  max-height: 72vh;
+}
+
+.project-media-wrap[data-project-slug='adhkar-counter']
+  .project-media-carousel-slide[data-slide-index='0']
+  .project-media-static,
+.project-media-wrap[data-project-slug='adhkar-counter']
+  .project-media-carousel-slide[data-slide-index='0']
+  .project-media-carousel-asset {
+  width: 100%;
+  height: 100%;
+}
+
+.project-media-wrap[data-project-slug='adhkar-counter']
+  .project-media-carousel-slide[data-slide-index='0']
+  .photo,
+.project-media-wrap[data-project-slug='adhkar-counter']
+  .project-media-carousel-slide[data-slide-index='0']
+  .photo-picture {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: unset;
+}
+
+.project-media-wrap[data-project-slug='adhkar-counter']
+  .project-media-carousel-slide[data-slide-index='0']
+  .photo-img {
+  width: auto;
+  height: 100%;
+  min-width: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.project-media-wrap[data-project-slug='adhkar-counter']
+  .project-media-carousel-slide[data-slide-index='1']
+  .project-media-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+.project-media-stack-item .project-media-static {
+  height: 100%;
+}
+
+.project-media-stack-label {
+  position: absolute;
+  left: 0.5rem;
+  bottom: 0.45rem;
+  padding: 0.15rem 0.4rem;
+  font-family: var(--face-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  color: var(--text-0);
+  background: color-mix(in srgb, var(--bg-0) 75%, transparent);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.wip-sticker {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 2;
+  padding: 0.28rem 0.55rem;
+  font-family: var(--face-display);
+  font-style: italic;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--text-0);
+  background: color-mix(in srgb, var(--bg-0) 88%, var(--accent) 12%);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 3px;
+  box-shadow: 0 4px 12px -6px color-mix(in srgb, var(--text-0) 25%, transparent);
+  transform: rotate(-4deg);
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.wip-sticker:hover,
+.wip-sticker:focus-visible {
+  transform: rotate(-2deg) translateY(-1px);
+  outline: none;
+}
+
+/* ─── the Notes button (primary affordance) ─── */
+
+.project-notes-btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 1rem;
+  background: var(--accent);
+  color: var(--bg-0);
+  border: 0;
+  border-radius: 4px;
+  text-decoration: none;
+  font-family: var(--face-display);
+  font-style: italic;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin: 0.4rem 0 0.2rem;
+  transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+  box-shadow:
+    0 1px 0 color-mix(in srgb, var(--text-0) 14%, transparent),
+    0 8px 16px -10px color-mix(in srgb, var(--text-0) 32%, transparent);
+}
+
+.project-notes-btn:hover,
+.project-notes-btn:focus-visible {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent) 92%, var(--text-0));
+  outline: none;
+}
+
+.project-notes-btn-icon {
+  font-family: var(--face-mono);
+  font-style: normal;
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.project-notes-btn-count {
+  font-family: var(--face-mono);
+  font-style: normal;
+  font-size: 0.74rem;
+  opacity: 0.75;
+  padding-left: 0.4rem;
+  border-left: 1px solid color-mix(in srgb, var(--bg-0) 45%, transparent);
+}
+
+/* ─── modular link buttons row ─── */
+
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.3rem 0 0;
+}
+
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.28rem 0.65rem 0.28rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-1);
+  text-decoration: none;
+  font-family: var(--face-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.project-link:hover,
+.project-link:focus-visible {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text-0);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  outline: none;
+}
+
+.project-link-icon {
+  font-size: 0.78rem;
+  opacity: 0.7;
+}
+
+/* ─── meta line ─── */
+
+.project-meta {
+  font-family: var(--face-mono);
+  font-size: 0.74rem;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  margin: 0.45rem 0 0;
+}
+
+.project-status {
+  text-transform: lowercase;
+  padding: 0.05em 0.45em;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  border-radius: 999px;
+  color: var(--text-1);
+}
+
+/* ─── chapter divider ─── */
+
+.chapter-rule {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  margin: 0;
+  width: 100%;
+  max-width: 24rem;
+  align-self: center;
+}
+
+.projects-footer {
+  margin-top: clamp(3rem, 6vh, 5rem);
+  border-top: 1px solid color-mix(in srgb, var(--accent) 15%, transparent);
+  padding-top: clamp(1rem, 3vh, 2rem);
+}
+
+/* ─── mobile / narrow viewport ─── */
+
+@media (max-width: 720px) {
+  .project-chapter,
+  .project-chapter-flip {
+    grid-template-columns: 1fr;
+  }
+
+  /* on mobile, the media always sits above the text regardless of flip */
+  .project-chapter-flip .project-chapter-media { order: 1; }
+  .project-chapter-flip .project-chapter-text  { order: 2; }
+
+  .project-media,
+  .project-media-image,
+  .project-media-empty,
+  .project-media-single,
+  .project-media-carousel-viewport,
+  .project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:first-child,
+  .project-media-wrap[data-project-slug='insta-dm'] .project-media-single,
+  .project-media-wrap[data-project-slug='web-crossword-generator'] .project-media-carousel-viewport,
+  .project-media-wrap[data-project-slug='adhkar-counter'] .project-media-carousel-viewport {
+    aspect-ratio: 4 / 3;
+    max-height: 60vh;
+  }
+
+  .projects-header {
+    align-items: flex-start;
+  }
+}

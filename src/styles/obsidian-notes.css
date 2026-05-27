@@ -1,0 +1,153 @@
+/* obsidian-notes.css — markdown styling scoped to .rp-content.
+   Aims for the clean Obsidian read view that Rafan's notes live in
+   when opened in Obsidian itself. Bold gets a stronger weight and a
+   warmer color so `**` in markdown reads as deliberate emphasis; the
+   obsidian-bolds primitive then layers a proximity letter-color
+   reveal on top (same flashlight effect as section headings).
+
+   Scope: every rule starts with `.rp-content` so this layer never
+   bleeds onto the rest of the site.
+
+   Spec: [[specs/2026-05-18-tree-leaves-folders-design#4.5]];
+         [[Concept - Folder Primitive]] in the Obsidian docs. */
+
+.rp-content {
+  font-family: var(--face-serif);
+  color: var(--text-1);
+  line-height: var(--leading-body);
+  font-size: var(--type-body);
+}
+
+/* Headings — Obsidian-leaning: serif, slightly tightened tracking,
+   h2 carries a subtle bottom rule. */
+.rp-content h1,
+.rp-content h2,
+.rp-content h3,
+.rp-content h4,
+.rp-content h5,
+.rp-content h6 {
+  font-family: var(--face-serif);
+  color: var(--text-0);
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.rp-content > h1:first-child,
+.rp-content > h1 { margin: 0 0 0.6em; }
+.rp-content h1 { font-size: clamp(1.8rem, 3.2vw, 2.4rem); }
+.rp-content h2 {
+  font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  margin: 1.6em 0 0.5em;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  padding-bottom: 0.2em;
+}
+.rp-content h3 {
+  font-size: 1.2rem;
+  margin: 1.3em 0 0.4em;
+}
+.rp-content h4 {
+  font-size: 1.05rem;
+  margin: 1.1em 0 0.3em;
+}
+
+/* Bolds: the visual hook. Weight 600 + ink-0 color stands out against
+   the ink-2 body. The bold-synesthesia primitive wraps each char in
+   .syn-letter so the inertial-type flashlight reveal lights them up
+   on cursor proximity. */
+.rp-content strong {
+  font-weight: 600;
+  color: var(--text-0);
+}
+.rp-content em { font-style: italic; }
+
+/* Block spacing — paragraphs, lists, code, blockquote, figure all
+   share a 1em bottom rhythm. */
+.rp-content > p,
+.rp-content > ul,
+.rp-content > ol,
+.rp-content > blockquote,
+.rp-content > pre,
+.rp-content > figure { margin: 0 0 1em; }
+
+.rp-content p { max-width: none; color: var(--text-1); }
+
+.rp-content blockquote {
+  margin: 0 0 1em;
+  padding: 0.4em 0 0.4em 1em;
+  border-left: 3px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  color: var(--text-1);
+  font-style: italic;
+}
+.rp-content blockquote p { margin-bottom: 0.5em; }
+.rp-content blockquote p:last-child { margin-bottom: 0; }
+
+/* Code styling — theme-aware so it reads correctly in BOTH palettes.
+   The old rgba(0,0,0,X) backgrounds barely registered on parchment;
+   --bg-2 is the lifted-surface token that flips with the theme. A
+   light accent-tinted border seals the inset and adds palette
+   personality. */
+.rp-content code {
+  font-family: var(--face-mono);
+  font-size: 0.88em;
+  background: color-mix(in srgb, var(--bg-2) 80%, var(--accent) 6%);
+  color: var(--text-0);
+  padding: 0.05em 0.4em;
+  border-radius: 3px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.rp-content pre {
+  font-family: var(--face-mono);
+  font-size: 0.84em;
+  background: color-mix(in srgb, var(--bg-2) 70%, var(--bg-1));
+  color: var(--text-0);
+  padding: 0.9em 1.05em;
+  border-left: 3px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+  border-radius: 0 4px 4px 0;
+  overflow-x: auto;
+}
+.rp-content pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+  border: 0;
+  color: inherit;
+}
+
+.rp-content a {
+  color: var(--text-0);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+}
+.rp-content a:hover { color: var(--companion-color); }
+
+.rp-content ul,
+.rp-content ol { padding-left: 1.2em; }
+.rp-content li { margin-bottom: 0.35em; color: var(--text-1); }
+
+.rp-content hr {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  margin: 1.5em 0;
+}
+
+.rp-content img,
+.rp-content video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em 0;
+  border-radius: 4px;
+}
+
+/* Inline letter spans that the bold-synesthesia primitive creates
+   inside `<strong>` — same shape as the inertial-letter spans, but
+   without `data-inertial` so no spring physics fires on them. */
+.rp-content strong .syn-letter,
+.rp-content strong .inertial-letter {
+  display: inline-block;
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}

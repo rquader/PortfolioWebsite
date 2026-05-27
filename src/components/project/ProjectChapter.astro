@@ -1,0 +1,101 @@
+---
+/**
+ * @file ProjectChapter.astro
+ *
+ * One project as an editorial alternating row. Photo on one side,
+ * text on the other, flipped based on the chapter's index. The text
+ * column holds two body slots (info-mode and story-mode) that the
+ * ProjectModeToggle swaps via [data-page-mode] on the <html> element.
+ *
+ * Tasks downstream (Phase 2): both slots get filled via Content. For
+ * now (Phase 1) only info-mode renders the _index.md body; story-mode
+ * is a placeholder marker awaiting the projectStories wiring.
+ *
+ * The Notes button is a hash-link to `#notes/<slug>` — Phase 3 mounts
+ * ProjectNotesPopup that listens to that hash and opens itself.
+ *
+ * Spec: [[specs/2026-05-24-projects-page-redesign-design#4.1]].
+ */
+
+import { render, type CollectionEntry } from 'astro:content';
+import ProjectMedia from './ProjectMedia.astro';
+import ProjectLinks from './ProjectLinks.astro';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  story?: CollectionEntry<'projectStories'> | null;
+  notesCount: number;
+  index: number;
+  isLast?: boolean;
+}
+
+const { project, story = null, notesCount, index, isLast = false } = Astro.props;
+const { Content: InfoContent } = await render(project);
+const StoryContent = story ? (await render(story)).Content : null;
+
+function slugFor(id: string): string {
+  return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
+}
+const slug = slugFor(project.id);
+const flipped = index % 2 === 1;
+---
+<article
+  class:list={['project-chapter', { 'project-chapter-flip': flipped }]}
+  id={slug}
+  data-project-slug={slug}
+>
+  <div class="project-chapter-media">
+    <ProjectMedia project={project} />
+  </div>
+
+  <div class="project-chapter-text">
+    <header class="project-chapter-head">
+      <h2 class="project-chapter-title" data-color-letters data-inertial-text>
+        {project.data.title}
+      </h2>
+      <p class="project-tagline">{project.data.tagline}</p>
+    </header>
+
+    <div class="project-body">
+      <div class="project-body-slot" data-mode-content="info">
+        <div class="rp-content project-story">
+          <InfoContent />
+        </div>
+      </div>
+      <div class="project-body-slot" data-mode-content="story">
+        {
+          StoryContent ? (
+            <div class="rp-content project-story">
+              <StoryContent />
+            </div>
+          ) : (
+            <p class="project-story project-story-empty">
+              [PLACEHOLDER — story-mode segment for <em>{project.data.title}</em>. Drop a
+              <code>story.md</code> into <code>src/content/projects/{slug}/</code> with the
+              "where i was at" voice that picks up from the previous project's segment.
+              ~80–140 words.]
+            </p>
+          )
+        }
+      </div>
+    </div>
+
+    {
+      notesCount > 0 && (
+        <a class="project-notes-btn" href={`#notes/${slug}`} data-notes-trigger={slug}>
+          <span class="project-notes-btn-icon" aria-hidden="true">◰</span>
+          <span class="project-notes-btn-label">open notes</span>
+          <span class="project-notes-btn-count">{notesCount} {notesCount === 1 ? 'file' : 'files'}</span>
+        </a>
+      )
+    }
+
+    <ProjectLinks project={project} />
+
+    <p class="project-meta">
+      <span class={`project-status status-${project.data.status}`}>{project.data.status}</span>
+    </p>
+  </div>
+</article>
+
+{!isLast && <hr class="chapter-rule" aria-hidden="true" />}

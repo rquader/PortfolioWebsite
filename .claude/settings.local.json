@@ -1,0 +1,58 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/Users/rafanquader/Developer/Manim_Wallpaper/.venv/bin/manim --version)",
+      "Bash(./render.sh scenes/recursive_tree_v2.py RecursiveTreeV2Wallpaper -o 05_recursive_tree_v2)",
+      "Bash(./render.sh scenes/aurora.py AuroraWallpaper -o 06_aurora)",
+      "Bash(cp /Users/rafanquader/Developer/Manim_Wallpaper/media/videos/recursive_tree_v2/1664p60/05_recursive_tree_v2.mp4 /Users/rafanquader/Developer/Manim_Wallpaper/output/finals/)",
+      "Bash(cp /Users/rafanquader/Developer/Manim_Wallpaper/media/videos/aurora/1664p60/06_aurora.mp4 /Users/rafanquader/Developer/Manim_Wallpaper/output/finals/)",
+      "Bash(mkdir -p /Users/rafanquader/Developer/Portfolio_Website/public/videos)",
+      "Bash(ln -sf /Users/rafanquader/Developer/Manim_Wallpaper/output/finals/05_recursive_tree_v2.mp4 recursive-tree-v2.mp4)",
+      "Bash(ln -sf /Users/rafanquader/Developer/Manim_Wallpaper/output/finals/06_aurora.mp4 aurora.mp4)",
+      "Bash(ln -sf /Users/rafanquader/Developer/Manim_Wallpaper/output/finals/01_recursive_tree.mp4 recursive-tree-v1.mp4)",
+      "Bash(ln -sf /Users/rafanquader/Developer/Manim_Wallpaper/output/finals/04_constellation.mp4 constellation.mp4)",
+      "Bash(./render.sh scenes/network_nodes.py NetworkNodesBackdrop -o 07_network_nodes)",
+      "Bash(awk '{print $5, $NF}')",
+      "Bash(xargs -I{} basename {})",
+      "Bash(npm --version)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)",
+      "Bash(curl -s -o /tmp/test-tree.html -w \"HTTP %{http_code}\\\\nbytes: %{size_download}\\\\n\" http://localhost:4321/test-tree)",
+      "Bash(pkill -f astro)",
+      "Bash(curl -s -o /tmp/index.html -w \"HTTP %{http_code}\\\\nbytes: %{size_download}\\\\n\" http://localhost:4321/)",
+      "Bash(curl -s -o /tmp/index.html -w \"HTTP %{http_code} bytes: %{size_download}\\\\n\" http://localhost:4321/)",
+      "Bash(curl -s -o /tmp/404.html -w \"HTTP %{http_code} bytes: %{size_download}\\\\n\" http://localhost:4321/nonexistent)",
+      "Bash(curl -s -o /tmp/sitemap.xml -w \"HTTP %{http_code} bytes: %{size_download}\\\\n\" http://localhost:4321/sitemap-index.xml)",
+      "Bash(curl -s http://localhost:4321/robots.txt)",
+      "Read(//Users/rafanquader/Developer/Manim_Wallpaper/lib/**)",
+      "Skill(superpowers-extended-cc:using-superpowers)",
+      "Skill(superpowers-extended-cc:brainstorming)",
+      "Skill(superpowers-extended-cc:writing-plans)",
+      "Skill(superpowers-extended-cc:executing-plans)",
+      "Bash(./render.sh scenes/falling_leaves_forest.py FallingLeavesForestBackdrop -o 08_falling_leaves_forest)",
+      "Bash(curl -s http://localhost:4321/)",
+      "Bash(pkill -f 'astro dev')",
+      "Skill(superpowers-extended-cc:gate-check)",
+      "Skill(superpowers-extended-cc:checking-gates)",
+      "Bash(md5 *)",
+      "Bash(/Users/rafanquader/.claude/plugins/cache/superpowers-extended-cc-marketplace/superpowers-extended-cc/5.5.0/skills/brainstorming/scripts/start-server.sh *)",
+      "Bash(/Users/rafanquader/.claude/plugins/cache/superpowers-extended-cc-marketplace/superpowers-extended-cc/5.5.0/skills/brainstorming/scripts/stop-server.sh /Users/rafanquader/Developer/Portfolio_Website/.superpowers/brainstorm/62648-1779612025)",
+      "Bash(curl -sS http://localhost:4322/projects)"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 /Users/rafanquader/Developer/Portfolio_Website/.claude/hooks/log-bash.py 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,207 @@
+<h2>Editorial alternating rows — light + dark</h2>
+<p class="subtitle">
+  This is the <em>main page</em> shape. Each project gets a photo + text row, alternating sides.
+  Traceability buttons at the bottom open the popup (we'll design that next). Both palettes shown
+  side-by-side so we can validate the dark/light treatment together.
+</p>
+
+<style>
+  .demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: stretch; }
+  @media (max-width: 1100px) { .demo-row { grid-template-columns: 1fr; } }
+
+  .frame {
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .frame-label {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    background: rgba(255,255,255,0.04);
+    color: #948c7e;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  /* shared row layout */
+  .page { padding: 36px 28px; font-family: Georgia, "Times New Roman", serif; }
+  .chapter { display: grid; grid-template-columns: 1.05fr 1fr; gap: 36px; align-items: center; padding: 24px 0; }
+  .chapter.flip { grid-template-columns: 1fr 1.05fr; }
+  .chapter.flip .col-media { order: 2; }
+  .chapter.flip .col-text  { order: 1; }
+  .col-media { aspect-ratio: 16 / 10; border-radius: 3px; overflow: hidden; }
+  .col-text  { display: flex; flex-direction: column; gap: 10px; }
+  .chapter h3 { font-family: "Iowan Old Style", "Palatino", Georgia, serif; font-style: italic; font-size: 28px; line-height: 1.15; letter-spacing: -0.01em; margin: 0; }
+  .chapter .tag { font-style: italic; font-size: 13px; margin: 0; }
+  .chapter .story { font-size: 14px; line-height: 1.6; margin: 4px 0 8px; }
+  .meta-line { font-family: ui-monospace, Menlo, monospace; font-size: 11px; letter-spacing: 0.05em; opacity: 0.7; }
+  .chip { display: inline-block; padding: 1px 7px; border-radius: 999px; border: 1px solid currentColor; opacity: 0.6; font-size: 10px; }
+
+  .rule { height: 1px; margin: 8px 0; max-width: 24rem; opacity: 0.25; }
+
+  /* trace buttons — the linchpin */
+  .trace-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .trace-btn {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 5px 11px 5px 9px;
+    border-radius: 3px;
+    border: 1px solid;
+    background: transparent;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .trace-btn .icon { font-size: 10px; }
+  .trace-btn .count { opacity: 0.6; }
+
+  /* LIGHT palette */
+  .light { background: #F5EAD4; color: #3A2615; }
+  .light .frame-label { background: rgba(0,0,0,0.04); color: #8A6A48; border-bottom-color: rgba(0,0,0,0.06); }
+  .light h3 { color: #3A2615; }
+  .light .tag, .light .story { color: #5C3C20; }
+  .light .meta-line { color: #8A6A48; }
+  .light .rule { background: #7A3E1C; }
+  .light .col-media { background: linear-gradient(135deg, #C66A3C 0%, #7A3E1C 60%, #3A2615 100%); }
+  .light .trace-btn { color: #7A3E1C; border-color: rgba(122, 62, 28, 0.35); background: rgba(255,255,255,0.35); }
+  .light .trace-btn:hover { background: rgba(122, 62, 28, 0.08); }
+
+  /* DARK palette */
+  .dark { background: #1F1812; color: #ECDEC5; }
+  .dark .frame-label { background: rgba(255,255,255,0.03); color: #9A856A; border-bottom-color: rgba(255,255,255,0.05); }
+  .dark h3 { color: #ECDEC5; }
+  .dark .tag, .dark .story { color: #C9B796; }
+  .dark .meta-line { color: #9A856A; }
+  .dark .rule { background: #E08A52; }
+  .dark .col-media { background: linear-gradient(135deg, #E08A52 0%, #7A3E1C 60%, #2A201A 100%); }
+  .dark .trace-btn { color: #E8C078; border-color: rgba(232, 192, 120, 0.35); background: rgba(255,255,255,0.04); }
+  .dark .trace-btn:hover { background: rgba(232, 192, 120, 0.08); }
+</style>
+
+<div class="demo-row">
+
+  <!-- LIGHT -->
+  <div class="frame">
+    <div class="frame-label">light mode · parchment</div>
+    <div class="page light">
+
+      <div class="chapter">
+        <div class="col-media">
+          <div style="height:100%;display:flex;align-items:flex-end;padding:14px;color:rgba(255,255,255,0.6);font-family:ui-monospace,Menlo,monospace;font-size:11px;">cover image · adhkar counter</div>
+        </div>
+        <div class="col-text">
+          <h3>AdhkarCounter</h3>
+          <p class="tag">a quiet counter for daily remembrance</p>
+          <p class="story">
+            i wanted something the screen could hold without becoming a screen. the hand learns
+            the count before the eye does. swiftui because the shape of state mattered more than
+            the chrome — and because the navigation stack…
+          </p>
+          <div class="trace-row">
+            <button class="trace-btn"><span class="icon">▸</span>field <span class="count">(3)</span></button>
+            <button class="trace-btn"><span class="icon">▸</span>decisions <span class="count">(2)</span></button>
+            <button class="trace-btn"><span class="icon">▸</span>credits <span class="count">(1)</span></button>
+            <button class="trace-btn"><span class="icon">↗</span>github</button>
+          </div>
+          <p class="meta-line"><span class="chip">shipped</span></p>
+        </div>
+      </div>
+
+      <div class="rule"></div>
+
+      <div class="chapter flip">
+        <div class="col-media">
+          <div style="height:100%;display:flex;align-items:flex-end;padding:14px;color:rgba(255,255,255,0.6);font-family:ui-monospace,Menlo,monospace;font-size:11px;">cover image · arabic dialect map</div>
+        </div>
+        <div class="col-text">
+          <h3>Arabic Dialect Map</h3>
+          <p class="tag">a small atlas of spoken variation</p>
+          <p class="story">
+            the project started as a sentence — "what if you could hear the line between
+            shami and khaleeji" — and grew a corpus, then a renderer, then a way to stand
+            still inside a single phrase…
+          </p>
+          <div class="trace-row">
+            <button class="trace-btn"><span class="icon">▸</span>field <span class="count">(4)</span></button>
+            <button class="trace-btn"><span class="icon">▸</span>journal <span class="count">(1)</span></button>
+            <button class="trace-btn"><span class="icon">↗</span>github</button>
+          </div>
+          <p class="meta-line"><span class="chip">active</span></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DARK -->
+  <div class="frame">
+    <div class="frame-label">dark mode · deep walnut</div>
+    <div class="page dark">
+
+      <div class="chapter">
+        <div class="col-media">
+          <div style="height:100%;display:flex;align-items:flex-end;padding:14px;color:rgba(255,255,255,0.55);font-family:ui-monospace,Menlo,monospace;font-size:11px;">cover image · adhkar counter</div>
+        </div>
+        <div class="col-text">
+          <h3>AdhkarCounter</h3>
+          <p class="tag">a quiet counter for daily remembrance</p>
+          <p class="story">
+            i wanted something the screen could hold without becoming a screen. the hand learns
+            the count before the eye does. swiftui because the shape of state mattered more than
+            the chrome — and because the navigation stack…
+          </p>
+          <div class="trace-row">
+            <button class="trace-btn"><span class="icon">▸</span>field <span class="count">(3)</span></button>
+            <button class="trace-btn"><span class="icon">▸</span>decisions <span class="count">(2)</span></button>
+            <button class="trace-btn"><span class="icon">▸</span>credits <span class="count">(1)</span></button>
+            <button class="trace-btn"><span class="icon">↗</span>github</button>
+          </div>
+          <p class="meta-line"><span class="chip">shipped</span></p>
+        </div>
+      </div>
+
+      <div class="rule"></div>
+
+      <div class="chapter flip">
+        <div class="col-media">
+          <div style="height:100%;display:flex;align-items:flex-end;padding:14px;color:rgba(255,255,255,0.55);font-family:ui-monospace,Menlo,monospace;font-size:11px;">cover image · arabic dialect map</div>
+        </div>
+        <div class="col-text">
+          <h3>Arabic Dialect Map</h3>
+          <p class="tag">a small atlas of spoken variation</p>
+          <p class="story">
+            the project started as a sentence — "what if you could hear the line between
+            shami and khaleeji" — and grew a corpus, then a renderer, then a way to stand
+            still inside a single phrase…
+          </p>
+          <div class="trace-row">
+            <button class="trace-btn"><span class="icon">▸</span>field <span class="count">(4)</span></button>
+            <button class="trace-btn"><span class="icon">▸</span>journal <span class="count">(1)</span></button>
+            <button class="trace-btn"><span class="icon">↗</span>github</button>
+          </div>
+          <p class="meta-line"><span class="chip">active</span></p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>Three things to validate</h3>
+  <ol>
+    <li><strong>Shape</strong> — alternating photo/text rows, ~50/50 split, photo edge-aligned. Right?</li>
+    <li><strong>Traceability buttons</strong> — one per top-level folder in <code>src/content/projects/&lt;slug&gt;/</code> (field, decisions, credits, journal, …) with a count. Plus github/download as buttons too, or kept as a separate meta line?</li>
+    <li><strong>Inline content</strong> — should the story prose stay inline as a paragraph (current behavior), or shrink to a 1-sentence hook with everything reading-length pushed into the popup?</li>
+  </ol>
+</div>
+
+<p class="subtitle" style="margin-top:12px">
+  Tell me what to adjust and I'll iterate. Once we lock the row shape, we move to the popup —
+  that's where the "really fun, really creative" UI lives.
+</p>

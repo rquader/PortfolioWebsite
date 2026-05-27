@@ -1,0 +1,61 @@
+---
+// Coda — closing tagline + profile links (same chips as ProjectLinks).
+
+const links = [
+  { href: 'https://github.com/rquader', label: 'github', icon: '↗' },
+  { href: 'https://www.linkedin.com/in/rafan-quader/', label: 'linkedin', icon: '↗' },
+  { href: 'mailto:rafan.quader@sjsu.edu', label: 'email', icon: '✉' },
+] as const;
+---
+<section class="section coda" id="coda" data-section-id="coda">
+  <div class="section-inner">
+    <p class="tagline tagline-primary">Computer Science @ SJSU</p>
+    <p class="tagline tagline-secondary">
+      Research · Claude Code · Education
+    </p>
+    <div class="project-links coda-links" role="list">
+      {
+        links.map(({ href, label, icon }) => (
+          <a
+            class="project-link"
+            role="listitem"
+            href={href}
+            target={href.startsWith('mailto:') ? undefined : '_blank'}
+            rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
+          >
+            <span class="project-link-icon" aria-hidden="true">{icon}</span>
+            <span class="project-link-label">{label}</span>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .coda {
+    border-top: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    padding-bottom: clamp(6rem, 12vh, 10rem);
+  }
+
+  .coda .tagline-primary {
+    font-family: var(--face-display);
+    font-variation-settings: 'SOFT' 70, 'WONK' 0;
+    font-size: var(--type-body);
+    line-height: var(--leading-body);
+    max-width: var(--max-content);
+    color: var(--text-0);
+    margin: 0 0 0.35rem;
+  }
+
+  .coda .tagline-secondary {
+    font-family: var(--face-text);
+    font-size: var(--type-small);
+    color: var(--text-2);
+    margin: 0 0 1.25rem;
+  }
+
+  .coda-links {
+    margin: 0;
+  }
+</style>

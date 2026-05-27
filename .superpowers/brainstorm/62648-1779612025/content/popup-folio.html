@@ -1,0 +1,292 @@
+<h2>Centered Folio · refined · light + dark</h2>
+<p class="subtitle">
+  Back to the second option from before — top tab strip for folders, prev/next stepper for notes
+  within a folder, one note shown at a time. Backdrop is lighter than the first mockup (28% instead
+  of 50%) so the editorial page stays visible behind. No nested accordion.
+</p>
+
+<style>
+  .demo-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: stretch; }
+  @media (max-width: 1200px) { .demo-row { grid-template-columns: 1fr; } }
+  .frame { border-radius: 6px; overflow: hidden; border: 1px solid rgba(0,0,0,0.08); background: #1a1410; min-height: 620px; position: relative; }
+  .frame-label {
+    font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 12px;
+    background: rgba(255,255,255,0.04); color: #c8b88b; border-bottom: 1px solid rgba(255,255,255,0.05);
+    position: relative; z-index: 30;
+  }
+
+  /* page bg */
+  .page-bg {
+    position: absolute; inset: 30px 0 0 0;
+    padding: 20px 24px; font-family: Georgia, serif;
+  }
+  .bg-title { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 22px; margin: 0; }
+  .bg-sub   { font-style: italic; font-size: 11px; margin: 2px 0 14px; }
+  .bg-rule  { height: 1px; margin: 8px 0 12px; opacity: 0.18; }
+  .bg-row   { display: grid; grid-template-columns: 1.05fr 1fr; gap: 14px; align-items: center; margin-bottom: 12px; }
+  .bg-cover { aspect-ratio: 16 / 10; border-radius: 3px; }
+  .bg-text  { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+  .bg-h     { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 18px; margin: 0; }
+  .bg-btnrow { display: flex; gap: 6px; margin-top: 4px; }
+  .bg-notes-btn { padding: 6px 11px; border-radius: 3px; font-family: "Iowan Old Style", serif; font-style: italic; font-size: 12px; display: inline-block; }
+  .bg-btn { padding: 4px 9px; border: 1px solid; border-radius: 3px; font-family: ui-monospace, Menlo, monospace; font-size: 10px; }
+
+  /* paper feel */
+  .paper-grain {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.5;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.32 0 0 0 0 0.18 0 0 0 0.06 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: multiply;
+  }
+
+  /* the folio */
+  .backdrop {
+    position: absolute; inset: 30px 0 0 0;
+    z-index: 10;
+  }
+  .folio {
+    position: absolute; top: 56px; left: 50%; transform: translateX(-50%);
+    width: 72%; max-width: 540px;
+    height: calc(100% - 80px);
+    border-radius: 6px;
+    box-shadow: 0 24px 60px -20px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.5) inset;
+    display: flex; flex-direction: column;
+    z-index: 20; overflow: hidden;
+  }
+  .folio .head { padding: 16px 22px 12px; border-bottom: 1px solid; }
+  .folio .crumb { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; letter-spacing: 0.04em; opacity: 0.7; }
+  .folio .ttl { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 20px; margin: 3px 0 0; }
+  .close-x {
+    position: absolute; top: 14px; right: 14px;
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 0; background: transparent; cursor: pointer;
+    font-size: 16px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    z-index: 5;
+  }
+
+  .folio .tabs { display: flex; gap: 2px; padding: 8px 20px 0; border-bottom: 1px solid; }
+  .folio .tab {
+    padding: 7px 14px 6px; border-radius: 4px 4px 0 0;
+    font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+    letter-spacing: 0.04em; cursor: pointer;
+    border: 1px solid transparent; border-bottom: none;
+    background: transparent;
+  }
+  .folio .body { padding: 18px 26px 22px; overflow-y: auto; flex: 1; position: relative; font-family: "Iowan Old Style", Georgia, serif; }
+  .folio .stepper {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;
+    font-family: ui-monospace, Menlo, monospace; font-size: 11px;
+  }
+  .folio .stepper .arrow { padding: 4px 10px; border-radius: 3px; cursor: pointer; opacity: 0.8; }
+  .folio .stepper .arrow:hover { opacity: 1; background: rgba(122, 62, 28, 0.06); }
+  .folio .stepper .pos { opacity: 0.55; }
+  .folio .body h1 { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 22px; margin: 0 0 12px; }
+  .folio .body p { font-size: 13.5px; line-height: 1.7; margin: 0 0 11px; }
+  .folio .body h2 { font-family: "Iowan Old Style", Palatino, serif; font-style: italic; font-size: 16px; margin: 16px 0 6px; padding-bottom: 4px; border-bottom: 1px solid; }
+  .placeholder-mark { padding: 0 4px; border-radius: 2px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+
+  /* ---------- LIGHT palette ---------- */
+  .light.page-bg { background: #F5EAD4; color: #3A2615; }
+  .light .bg-sub { color: #5C3C20; }
+  .light .bg-rule { background: #7A3E1C; }
+  .light .bg-cover { background: linear-gradient(135deg, #C66A3C 0%, #7A3E1C 60%, #3A2615 100%); }
+  .light .bg-text p { color: #5C3C20; }
+  .light .bg-notes-btn { background: #7A3E1C; color: #F5EAD4; }
+  .light .bg-btn { border-color: rgba(122, 62, 28, 0.3); color: #5C3C20; }
+  .light.backdrop { background: rgba(31, 24, 18, 0.28); }
+  .light.folio {
+    background: #F0E4CC; color: #3A2615;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(122, 62, 28, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(122, 62, 28, 0.025) 0%, transparent 35%);
+  }
+  .light.folio .head { border-bottom-color: rgba(122, 62, 28, 0.14); background: #E8D9B8; }
+  .light.folio .crumb { color: #8A6A48; }
+  .light.folio .ttl { color: #3A2615; }
+  .light.folio .close-x { color: #5C3C20; }
+  .light.folio .close-x:hover { background: rgba(122, 62, 28, 0.08); }
+  .light.folio .tabs { border-bottom-color: rgba(122, 62, 28, 0.14); background: #ECDFC0; }
+  .light.folio .tab { color: #5C3C20; }
+  .light.folio .tab.on { background: #F0E4CC; border-color: rgba(122, 62, 28, 0.14); color: #3A2615; font-weight: 600; margin-bottom: -1px; }
+  .light.folio .stepper { color: #5C3C20; }
+  .light.folio .body h2 { color: #3A2615; border-bottom-color: rgba(122, 62, 28, 0.15); }
+  .light .placeholder-mark { background: rgba(122, 62, 28, 0.08); color: #7A3E1C; }
+
+  /* ---------- DARK palette ---------- */
+  .dark.page-bg { background: #1F1812; color: #ECDEC5; }
+  .dark .bg-sub { color: #C9B796; }
+  .dark .bg-rule { background: #E08A52; }
+  .dark .bg-cover { background: linear-gradient(135deg, #E08A52 0%, #7A3E1C 60%, #2A201A 100%); }
+  .dark .bg-text p { color: #C9B796; }
+  .dark .bg-notes-btn { background: #E08A52; color: #1F1812; }
+  .dark .bg-btn { border-color: rgba(232, 192, 120, 0.3); color: #C9B796; }
+  .dark.backdrop { background: rgba(0, 0, 0, 0.45); }
+  .dark.folio {
+    background: #2A2018; color: #ECDEC5;
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(232, 192, 120, 0.05) 0%, transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(232, 192, 120, 0.03) 0%, transparent 35%);
+  }
+  .dark.folio .head { border-bottom-color: rgba(232, 192, 120, 0.14); background: #2F241B; }
+  .dark.folio .crumb { color: #9A856A; }
+  .dark.folio .ttl { color: #ECDEC5; }
+  .dark.folio .close-x { color: #C9B796; }
+  .dark.folio .close-x:hover { background: rgba(232, 192, 120, 0.08); }
+  .dark.folio .tabs { border-bottom-color: rgba(232, 192, 120, 0.14); background: #2C211A; }
+  .dark.folio .tab { color: #C9B796; }
+  .dark.folio .tab.on { background: #2A2018; border-color: rgba(232, 192, 120, 0.14); color: #ECDEC5; font-weight: 600; margin-bottom: -1px; }
+  .dark.folio .stepper { color: #C9B796; }
+  .dark.folio .body h2 { color: #ECDEC5; border-bottom-color: rgba(232, 192, 120, 0.15); }
+  .dark .placeholder-mark { background: rgba(232, 192, 120, 0.07); color: #E8C078; }
+
+  /* dark grain a little different */
+  .dark .paper-grain {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.9 0 0 0 0 0.78 0 0 0 0 0.55 0 0 0 0.04 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: screen;
+  }
+</style>
+
+<div class="demo-row">
+
+  <!-- LIGHT -->
+  <div class="frame">
+    <div class="frame-label">light · parchment</div>
+
+    <div class="page-bg light">
+      <h1 class="bg-title">Projects</h1>
+      <p class="bg-sub">[PLACEHOLDER framing]</p>
+      <div class="bg-rule"></div>
+      <div class="bg-row">
+        <div class="bg-cover"></div>
+        <div class="bg-text">
+          <h3 class="bg-h">AdhkarCounter</h3>
+          <p style="margin:0;font-style:italic;font-size:11px;">a quiet counter…</p>
+          <div class="bg-btnrow">
+            <span class="bg-notes-btn">◰ open notes</span>
+            <span class="bg-btn">↗ github</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="backdrop light"></div>
+
+    <div class="folio light">
+      <div class="paper-grain"></div>
+      <button class="close-x">×</button>
+
+      <div class="head">
+        <div class="crumb">working notes</div>
+        <h1 class="ttl">AdhkarCounter</h1>
+      </div>
+
+      <div class="tabs">
+        <button class="tab on">field</button>
+        <button class="tab">decisions</button>
+        <button class="tab">journal</button>
+        <button class="tab">credits</button>
+      </div>
+
+      <div class="body">
+        <div class="stepper">
+          <span class="arrow">◂ tactile counter</span>
+          <span class="pos">2 of 3 · field</span>
+          <span class="arrow">audio rendering ▸</span>
+        </div>
+        <h1>Architecture</h1>
+        <p>
+          <span class="placeholder-mark">[PLACEHOLDER — first paragraph from the actual vault
+          note, ~80 words. Voice and structure are exactly what you wrote in Obsidian.]</span>
+        </p>
+        <p>
+          <span class="placeholder-mark">[PLACEHOLDER — second paragraph. Bolds and italics keep
+          the flashlight letter-color treatment.]</span>
+        </p>
+        <h2>Storage</h2>
+        <p>
+          <span class="placeholder-mark">[PLACEHOLDER — sub-section body.]</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DARK -->
+  <div class="frame">
+    <div class="frame-label">dark · deep walnut</div>
+
+    <div class="page-bg dark">
+      <h1 class="bg-title">Projects</h1>
+      <p class="bg-sub">[PLACEHOLDER framing]</p>
+      <div class="bg-rule"></div>
+      <div class="bg-row">
+        <div class="bg-cover"></div>
+        <div class="bg-text">
+          <h3 class="bg-h">AdhkarCounter</h3>
+          <p style="margin:0;font-style:italic;font-size:11px;">a quiet counter…</p>
+          <div class="bg-btnrow">
+            <span class="bg-notes-btn">◰ open notes</span>
+            <span class="bg-btn">↗ github</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="backdrop dark"></div>
+
+    <div class="folio dark">
+      <div class="paper-grain"></div>
+      <button class="close-x">×</button>
+
+      <div class="head">
+        <div class="crumb">working notes</div>
+        <h1 class="ttl">AdhkarCounter</h1>
+      </div>
+
+      <div class="tabs">
+        <button class="tab on">field</button>
+        <button class="tab">decisions</button>
+        <button class="tab">journal</button>
+        <button class="tab">credits</button>
+      </div>
+
+      <div class="body">
+        <div class="stepper">
+          <span class="arrow">◂ tactile counter</span>
+          <span class="pos">2 of 3 · field</span>
+          <span class="arrow">audio rendering ▸</span>
+        </div>
+        <h1>Architecture</h1>
+        <p>
+          <span class="placeholder-mark">[PLACEHOLDER — first paragraph.]</span>
+        </p>
+        <p>
+          <span class="placeholder-mark">[PLACEHOLDER — second paragraph.]</span>
+        </p>
+        <h2>Storage</h2>
+        <p>
+          <span class="placeholder-mark">[PLACEHOLDER — section body.]</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section" style="margin-top: 24px;">
+  <h3>One note at a time — confirmed</h3>
+  <ul style="margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.65;">
+    <li><strong>Folder tabs</strong> at the top — clicking switches to that folder's notes. The active tab is the parchment-colored one (in light) / cream (in dark).</li>
+    <li><strong>Prev/Next stepper</strong> under the tab strip — moves through the notes inside the active folder. Position indicator shows <em>2 of 3 · field</em>.</li>
+    <li><strong>Single note body</strong> below the stepper — only this note's content is visible. Switching to a sibling note replaces it. Keyboard ← → also navigate.</li>
+    <li><strong>Close</strong> · × button, click outside the card, or Esc.</li>
+  </ul>
+</div>
+
+<div class="section" style="margin-top: 14px;">
+  <h3>Quick confirm</h3>
+  <ol style="margin: 0; padding-left: 18px; font-size: 13.5px; line-height: 1.65;">
+    <li>This is the right pattern — folder tabs + prev/next stepper + single note view, yes?</li>
+    <li>If "tactile counter" or "audio rendering" don't exist in a folder when you reach the end, the stepper arrow grays out (no wrap-around)? Or wrap to the first note of the next folder? My pick: no wrap — keeps the model legible.</li>
+  </ol>
+</div>

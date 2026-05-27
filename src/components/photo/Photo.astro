@@ -1,0 +1,53 @@
+---
+/**
+ * Photo — reusable photograph primitive.
+ *
+ * Treatments:
+ *   - 'print' (default): small printed-photo presentation. Full frame
+ *     preserved (no crop, no mask). Soft drop shadow + hairline accent
+ *     ring carry the palette at the EDGE; the photograph itself is
+ *     untouched. True pixels at rest; brightness-only on hover.
+ *     Designed for the threshold author photo so the subject's gesture
+ *     and speaking context (podium, mic) remain visible.
+ *   - 'frame': legacy sepia paper frame (kept for future use).
+ *   - 'plain': no frame, no decoration (project covers, anywhere unstyled).
+ *
+ * Spec: specs/2026-05-22-gallery-v2-photo-sticker-design.md §4.3 (rev4)
+ */
+
+interface Props {
+  src: string;
+  alt: string;
+  caption?: string;
+  treatment?: 'print' | 'frame' | 'plain';
+  aspect?: string;
+  lightbox?: boolean;
+}
+
+const {
+  src,
+  alt,
+  caption,
+  treatment = 'print',
+  aspect = 'auto',
+  lightbox = true,
+} = Astro.props;
+---
+<figure
+  class={`photo ${treatment}`}
+  style={`--photo-aspect: ${aspect};`}
+>
+  <picture class="photo-picture">
+    <source srcset={src} type="image/jpeg" />
+    <img
+      src={src}
+      alt={alt}
+      loading="eager"
+      decoding="async"
+      class="photo-img"
+      data-lightbox-trigger={lightbox ? src : undefined}
+      data-lightbox-alt={lightbox ? alt : undefined}
+    />
+  </picture>
+  {caption && <figcaption class="photo-caption">{caption}</figcaption>}
+</figure>

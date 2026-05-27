@@ -1,0 +1,57 @@
+---
+// 404 — wrong-room page. Same warm-dark room, same nav, but the body
+// is just a small block explaining what happened and offering the way
+// back. Cloudflare Pages picks this up automatically as the catch-all.
+
+import Base from '../layouts/Base.astro';
+---
+<Base title="404 — wrong room — Rafan Quader">
+  <main>
+    <section class="four-oh-four">
+      <p class="hint">404</p>
+      <h1>wrong room.</h1>
+      <p class="body">
+        Nothing's wired up at that path. Try the <a href="/">front of the house</a>.
+      </p>
+    </section>
+  </main>
+</Base>
+
+<style>
+  .four-oh-four {
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: var(--section-pad) var(--gutter);
+    gap: 1rem;
+    max-width: 56rem;
+    margin: 0 auto;
+  }
+  .four-oh-four .hint {
+    font-family: var(--face-mono);
+    font-size: var(--type-small);
+    color: var(--paper-2);
+    letter-spacing: 0.1em;
+    margin: 0;
+  }
+  .four-oh-four h1 {
+    font-family: var(--face-serif);
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    color: var(--paper-0);
+    letter-spacing: -0.02em;
+    font-weight: 400;
+    margin: 0;
+  }
+  .four-oh-four .body {
+    color: var(--paper-1);
+    max-width: var(--max-content);
+    margin: 0;
+  }
+  .four-oh-four a {
+    color: var(--paper-0);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+    text-decoration-color: var(--forest-t3);
+  }
+</style>

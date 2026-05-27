@@ -1,0 +1,57 @@
+---
+import Photo from '../photo/Photo.astro';
+import { isAnimatedMedia, resolveProjectMediaUrl } from '../../lib/project-media-url';
+
+interface Props {
+  projectId: string;
+  src: string;
+  alt: string;
+  eager?: boolean;
+  deferLoad?: boolean;
+  lightbox?: boolean;
+  class?: string;
+}
+
+const {
+  projectId,
+  src,
+  alt,
+  eager = false,
+  deferLoad = false,
+  lightbox = true,
+  class: className = '',
+} = Astro.props;
+
+const resolved = resolveProjectMediaUrl(projectId, src);
+const animated = isAnimatedMedia(src);
+const loadNow = !deferLoad;
+---
+{
+  animated ? (
+    <img
+      class:list={['project-media-asset', 'project-media-gif', className]}
+      src={loadNow ? resolved : undefined}
+      data-src={resolved}
+      alt={alt}
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      data-lightbox-trigger={lightbox ? resolved : undefined}
+      data-lightbox-alt={lightbox ? alt : undefined}
+    />
+  ) : deferLoad ? (
+    <img
+      class:list={['project-media-asset', 'project-media-gif', 'photo-img', className]}
+      src={undefined}
+      data-src={resolved}
+      alt={alt}
+      loading="lazy"
+      decoding="async"
+      data-lightbox-trigger={lightbox ? resolved : undefined}
+      data-lightbox-alt={lightbox ? alt : undefined}
+    />
+  ) : (
+    <div class:list={['project-media-asset', 'project-media-static', className]}>
+      <Photo src={resolved} alt={alt} treatment="plain" lightbox={lightbox} />
+    </div>
+  )
+}

@@ -1,0 +1,127 @@
+---
+// Base.astro — single layout for every page in src/pages/*.
+//
+// Responsibilities:
+//   - <html>, <head>, viewport + description meta
+//   - global stylesheet wiring (tokens + global)
+//   - a skip-link affordance for keyboard users
+//   - the rAF boot script (wired in Bootstrap step 3.2; placeholder until then)
+//
+// Spec: [[02 - Architecture]].
+
+import '../styles/tokens.css';
+import '../styles/fonts.css';
+import '../styles/global.css';
+import '../styles/falling-leaves.css';
+import '../styles/obsidian-notes.css';
+import '../styles/photo.css';
+import '../styles/tree-hint.css';
+import '../styles/projects.css';
+import '../styles/notes-popup.css';
+import '../styles/wip-dialog.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'Rafan Quader — portfolio',
+  description =
+    'Computer Science @ SJSU. Aspiring to participate in meaningful ' +
+    'applications of Computer Science.',
+} = Astro.props;
+
+const canonical = Astro.url.href;
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+
+    {/* FOUC-prevention: sets data-theme on <html> before first paint.
+        Reads rq-theme from localStorage; default is light. Matches the
+        choice in ADR-009 (light default, dark via toggle — OS pref is
+        not consulted; the toggle is the only mechanism). */}
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('rq-theme');
+          var theme = (stored === 'dark') ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (_) {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+
+    {/* Inline SVG favicon — a single "rq" lowercase mark in the FOREST-accent tone. */}
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%230A1620'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Georgia,serif' font-size='34' fill='%23B0EBD2'%3Erq%3C/text%3E%3C/svg%3E"
+    />
+
+    {/* OpenGraph / Twitter cards */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+
+    <link rel="canonical" href={canonical} />
+  </head>
+  <body>
+    {/* Page-wide drifting-leaf backdrop. Behind the threshold tree
+        (which is z-index: -1 within its section). Spec:
+        [[specs/2026-05-18-tree-leaves-folders-design#4.1]]. */}
+    <canvas id="page-leaves" class="page-leaves-bg" aria-hidden="true"></canvas>
+    <a class="skip-link" href="#on-me">skip to content</a>
+    <div id="section-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+    <slot />
+
+    <div
+      id="photo-lightbox"
+      class="photo-lightbox"
+      data-state="closed"
+      role="dialog"
+      aria-modal="true"
+      aria-label="enlarged photograph"
+      aria-hidden="true"
+    >
+      <button class="photo-lightbox-close" type="button" aria-label="close">×</button>
+      <img class="photo-lightbox-image" src="" alt="" />
+    </div>
+
+    <script>
+      // Single client-side entry point. Starts the rAF loop and inits
+      // every primitive against whatever's in the DOM. Each init is a
+      // no-op if its target markup is absent — so per-page opt-in is
+      // "just include the right elements."
+      // See: src/lib/site-init.ts and 02 - Architecture.
+      import { initSite } from '../lib/site-init';
+      initSite();
+    </script>
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    padding: 0.5rem 1rem;
+    background: var(--paper-0);
+    color: var(--ink-0);
+    z-index: 200;
+    font-size: var(--type-small);
+  }
+  .skip-link:focus {
+    left: 0;
+  }
+</style>

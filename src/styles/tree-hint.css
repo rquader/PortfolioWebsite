@@ -1,0 +1,90 @@
+/* tree-hint.css — first-load sticker on the threshold tree */
+
+.tree-hint {
+  position: absolute;
+  bottom: clamp(2.5rem, 6vh, 4rem);
+  right: clamp(1.5rem, 5vw, 3rem);
+  z-index: 8;
+  display: block;
+  padding: 0.45rem 0.9rem 0.55rem;
+  background: var(--bg-1);
+  color: var(--text-0);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border-radius: 2px;
+  font-family: var(--face-display);
+  font-style: italic;
+  font-size: 0.78rem;
+  font-variation-settings: 'SOFT' 70, 'WONK' 1;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transform: rotate(-3deg);
+  transform-origin: top right;
+  box-shadow: 0 6px 14px -6px rgba(58, 38, 21, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 240ms ease, transform 240ms ease;
+}
+
+.tree-hint::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 18%;
+  right: 18%;
+  height: 7px;
+  background: color-mix(in srgb, var(--accent-glow, var(--accent)) 60%, transparent);
+  border-radius: 1px;
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.tree-hint[data-state='visible'] {
+  opacity: 1;
+  pointer-events: auto;
+  transform: rotate(-3deg) translateY(0);
+}
+
+.tree-hint[data-state='gone'] {
+  opacity: 0;
+  pointer-events: none;
+  transform: rotate(-3deg) translateY(4px);
+}
+
+.tree-hint:hover,
+.tree-hint:focus-visible {
+  outline: none;
+  transform: rotate(-2deg) translateY(-1px);
+  box-shadow: 0 8px 20px -8px rgba(58, 38, 21, 0.45);
+}
+
+@media (max-width: 600px) {
+  .tree-hint {
+    right: 50%;
+    transform: rotate(-3deg) translateX(50%);
+    transform-origin: center;
+  }
+  .tree-hint[data-state='visible'] {
+    transform: rotate(-3deg) translateX(50%) translateY(0);
+  }
+  .tree-hint[data-state='gone'] {
+    transform: rotate(-3deg) translateX(50%) translateY(4px);
+  }
+  .tree-hint:hover,
+  .tree-hint:focus-visible {
+    transform: rotate(-2deg) translateX(50%) translateY(-1px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tree-hint,
+  .tree-hint:hover,
+  .tree-hint:focus-visible {
+    transition: none;
+    transform: rotate(-3deg);
+  }
+  @media (max-width: 600px) {
+    .tree-hint {
+      transform: rotate(-3deg) translateX(50%);
+    }
+  }
+}

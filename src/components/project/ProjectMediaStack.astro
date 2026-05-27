@@ -1,0 +1,34 @@
+---
+import ProjectMediaAsset from './ProjectMediaAsset.astro';
+
+interface MediaItem {
+  src: string;
+  label?: string;
+}
+
+interface Props {
+  projectId: string;
+  title: string;
+  items: MediaItem[];
+}
+
+const { projectId, title, items } = Astro.props;
+---
+<div class="project-media-stack" role="group" aria-label={`media for ${title}`}>
+  {
+    items.map((item, i) => (
+      <div class="project-media-stack-item">
+        <ProjectMediaAsset
+          projectId={projectId}
+          src={item.src}
+          alt={`${title} — ${item.label ?? `media ${i + 1}`}`}
+          eager={i === 0}
+          lightbox
+        />
+        {item.label && (
+          <span class="project-media-stack-label">{item.label}</span>
+        )}
+      </div>
+    ))
+  }
+</div>

@@ -2,10 +2,15 @@
 // TopNav — fixed top-nav with anchor links (home) or cross-route links.
 
 const pathname = Astro.url.pathname;
-const onProjects = pathname.startsWith('/projects');
-
 const BASE = import.meta.env.BASE_URL;
 const BASE_WITH_SLASH = BASE.endsWith('/') ? BASE : `${BASE}/`;
+const BASE_NO_SLASH = BASE_WITH_SLASH.replace(/\/$/, '');
+
+// On GitHub Pages, `Astro.url.pathname` includes the configured `base`
+// (e.g. "/PortfolioWebsite/projects/"), so route checks must be base-aware.
+const projectsPath = `${BASE_NO_SLASH}/projects`;
+const onProjects = pathname === projectsPath || pathname.startsWith(`${projectsPath}/`);
+
 const withBase = (p: string) => `${BASE_WITH_SLASH}${p.replace(/^\//, '')}`;
 
 const homeHref = onProjects ? `${BASE_WITH_SLASH}#threshold` : '#threshold';
@@ -20,7 +25,8 @@ type NavLink = {
 const links: NavLink[] = [
   { slug: 'on-me', label: 'on me', href: onProjects ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
   { slug: 'on-the-work', label: 'on the work', href: onProjects ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
-  { slug: 'projects', label: 'projects ↗', href: withBase('/projects'), route: true },
+  // Always include trailing slash so GitHub Pages serves /projects/index.html.
+  { slug: 'projects', label: 'projects ↗', href: withBase('/projects/'), route: true },
   { slug: 'on-the-trail', label: 'on the trail', href: onProjects ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
   { slug: 'coda', label: 'on the web', href: onProjects ? `${BASE_WITH_SLASH}#coda` : '#coda' },
 ];

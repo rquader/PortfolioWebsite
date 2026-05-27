@@ -1,8 +1,9 @@
----
+i---
 // On The Trail — coursework, tools, resume.
 
 const BASE = import.meta.env.BASE_URL;
-const resumeHref = `${BASE}Rafan_Quader_Resume.pdf`;
+const BASE_WITH_SLASH = BASE.endsWith('/') ? BASE : `${BASE}/`;
+const resumeHref = `${BASE_WITH_SLASH}Rafan_Quader_Resume.pdf`;
 ---
 <section
   class="section on-the-trail"

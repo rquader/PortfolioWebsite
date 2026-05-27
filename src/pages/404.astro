@@ -6,6 +6,7 @@
 import Base from '../layouts/Base.astro';
 
 const BASE = import.meta.env.BASE_URL;
+const BASE_WITH_SLASH = BASE.endsWith('/') ? BASE : `${BASE}/`;
 ---
 <Base title="404 — wrong room — Rafan Quader">
   <main>
@@ -13,7 +14,7 @@ const BASE = import.meta.env.BASE_URL;
       <p class="hint">404</p>
       <h1>wrong room.</h1>
       <p class="body">
-        Nothing's wired up at that path. Try the <a href={BASE}>front of the house</a>.
+        Nothing's wired up at that path. Try the <a href={BASE_WITH_SLASH}>front of the house</a>.
       </p>
     </section>
   </main>

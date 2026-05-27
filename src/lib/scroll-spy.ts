@@ -41,35 +41,41 @@ export function initScrollSpy(): ScrollSpyHandle {
 
   let lastAnnouncedSlug: string | null = null;
 
+  function applySlug(slug: string, bestEl?: HTMLElement): void {
+    document.documentElement.dataset.section = slug;
+    const links = document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]');
+    for (const link of links) {
+      link.classList.toggle('is-current', link.dataset.navLink === slug);
+    }
+    if (slug !== lastAnnouncedSlug) {
+      lastAnnouncedSlug = slug;
+      const live = document.getElementById('section-live');
+      if (live) {
+        const heading = bestEl?.querySelector('h1, h2');
+        const label = heading?.textContent?.trim() || slug.replace(/-/g, ' ');
+        live.textContent = label;
+      }
+    }
+  }
+
   function pickMostVisible(): void {
+    // Special-case: when the user scrolls to the very bottom of the page,
+    // IntersectionObserver ratios can be "close" between the last two
+    // sections and the final one may never win. Force the last section.
+    const atBottom =
+      window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
+    if (atBottom) {
+      const last = tracked[tracked.length - 1];
+      if (last?.slug) applySlug(last.slug, last.el);
+      return;
+    }
+
     let best: Tracked | null = null;
     for (const t of tracked) {
       if (best === null || t.ratio > best.ratio) best = t;
     }
     if (best && best.ratio > 0) {
-      const slug = best.slug;
-      document.documentElement.dataset.section = slug;
-      // Toggle `is-current` on nav anchors so they highlight without
-      // needing a :root-cascade rule (which doesn't survive Astro's
-      // per-component scoping).
-      const links = document.querySelectorAll<HTMLAnchorElement>('[data-nav-link]');
-      for (const link of links) {
-        link.classList.toggle('is-current', link.dataset.navLink === slug);
-      }
-      // Announce section change to screen readers. Throttle: only when
-      // the visible section actually changes.
-      if (slug !== lastAnnouncedSlug) {
-        lastAnnouncedSlug = slug;
-        const live = document.getElementById('section-live');
-        if (live) {
-          // Look up a human-readable label by grabbing the section's h2,
-          // or fall back to the slug with dashes → spaces.
-          const section = best.el;
-          const heading = section.querySelector('h1, h2');
-          const label = heading?.textContent?.trim() || slug.replace(/-/g, ' ');
-          live.textContent = label;
-        }
-      }
+      applySlug(best.slug, best.el);
     }
   }
 
@@ -89,9 +95,15 @@ export function initScrollSpy(): ScrollSpyHandle {
   );
   for (const t of tracked) io.observe(t.el);
 
+  // Bottom-of-page highlight reliability also needs a scroll listener,
+  // because IntersectionObserver callbacks won't necessarily fire when
+  // you're only scrolling within already-intersecting sections.
+  window.addEventListener('scroll', pickMostVisible, { passive: true });
+
   return {
     stop(): void {
       io.disconnect();
+      window.removeEventListener('scroll', pickMostVisible);
     },
   };
 }

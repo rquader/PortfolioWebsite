@@ -58,21 +58,24 @@ export function initScrollSpy(): ScrollSpyHandle {
     }
   }
 
-  function pickMostVisible(): void {
-    // Special-case: when the user scrolls to the very bottom of the page,
-    // IntersectionObserver ratios can be "close" between the last two
-    // sections and the final one may never win. Force the last section.
-    const atBottom =
-      window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4;
-    if (atBottom) {
-      const last = tracked[tracked.length - 1];
-      if (last?.slug) applySlug(last.slug, last.el);
-      return;
-    }
+  function viewportRatio(el: HTMLElement): number {
+    const rect = el.getBoundingClientRect();
+    const vpTop = 0;
+    const vpBottom = window.innerHeight;
+    const overlap = Math.max(0, Math.min(rect.bottom, vpBottom) - Math.max(rect.top, vpTop));
+    const denom = Math.max(1, Math.min(rect.height, window.innerHeight));
+    return overlap / denom;
+  }
 
+  function pickMostVisible(): void {
     let best: Tracked | null = null;
     for (const t of tracked) {
-      if (best === null || t.ratio > best.ratio) best = t;
+      // IntersectionObserver ratios can get "sticky" at boundaries (especially
+      // near the bottom of the page). Recompute a scroll-accurate ratio from
+      // geometry so the active section changes immediately as you scroll.
+      const r = viewportRatio(t.el);
+      t.ratio = r;
+      if (best === null || r > best.ratio) best = t;
     }
     if (best && best.ratio > 0) {
       applySlug(best.slug, best.el);

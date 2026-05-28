@@ -8,9 +8,13 @@ import { resolveProjectMediaUrl } from '../../lib/project-media-url';
 
 interface Props {
   project: CollectionEntry<'projects'>;
+  /** ADR-021: optional per-shell override (e.g. mobile uses 'carousel'
+   * while desktop uses 'stack'). When provided, takes precedence over
+   * the project's frontmatter `media_mode`. */
+  modeOverride?: 'single' | 'carousel' | 'stack';
 }
 
-const { project } = Astro.props;
+const { project, modeOverride } = Astro.props;
 const {
   cover_image,
   cover_video,
@@ -24,8 +28,9 @@ const {
 const wipNote = wip_note ?? '';
 
 const hasMediaItems = media_items && media_items.length > 0;
+const effectiveMode = modeOverride ?? media_mode;
 const resolvedMode = hasMediaItems
-  ? media_mode ?? (media_items!.length > 1 ? 'carousel' : 'single')
+  ? effectiveMode ?? (media_items!.length > 1 ? 'carousel' : 'single')
   : null;
 
 function slugFor(id: string): string {

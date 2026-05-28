@@ -82,8 +82,30 @@ const firstNoteId = tree.order[0]?.fileId ?? '';
             <ProjectNotesTree node={tree.root} />
           </aside>
 
+          {/* ADR-021 — resize divider. Drag handler in
+              src/lib/primitives/notes-resize.ts; session-only state via
+              the `--notes-sidebar` custom property on the folio. */}
+          <div
+            class="notes-popup-divider"
+            data-notes-divider
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="resize sidebar"
+            tabindex="0"
+          ></div>
+
           <div class="notes-popup-pane">
             <p class="notes-popup-breadcrumb" data-note-breadcrumb aria-label="note location" />
+
+            {/* ADR-021 — metadata strip: path · reading N / total. */}
+            <div class="notes-popup-meta" data-notes-meta aria-label="note metadata">
+              <span class="notes-popup-meta-item">
+                <strong>path</strong> · <span data-meta-path>—</span>
+              </span>
+              <span class="notes-popup-meta-item">
+                <strong>reading</strong> · <span data-meta-pos>—</span>
+              </span>
+            </div>
 
             <div class="notes-popup-scroll" data-notes-scroll>
               {renderedNotes.map((note) => (

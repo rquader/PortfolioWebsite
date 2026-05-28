@@ -39,6 +39,12 @@ const projects = defineCollection({
       )
       .optional(),
     media_mode: z.enum(['single', 'carousel', 'stack']).optional(),
+    // ADR-021 — optional per-shell override. If set, the mobile shell
+    // (<=720px) renders the project's media in this mode instead of
+    // `media_mode`; the desktop shell keeps `media_mode`. Used to fix
+    // arabic-dialect-map's mobile stack (its diagram + tall demo GIF
+    // pair poorly stacked on phone widths — carousel is the answer).
+    media_mode_mobile: z.enum(['single', 'carousel', 'stack']).optional(),
     media_default: z.number().optional().default(0),
     status: z.enum(['archived', 'active', 'shipped']).default('shipped'),
     // Modular link URLs — only buttons for present URLs render in ProjectLinks.

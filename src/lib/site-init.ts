@@ -17,6 +17,9 @@ import { initThemeToggle } from './theme-toggle';
 import { initPhotoLightbox } from './primitives/photo-lightbox';
 import { initProjectMediaCarousels } from './primitives/project-media-carousel';
 import { initTreeHint } from './primitives/tree-hint';
+import { initChapterProgress } from './primitives/chapter-progress';
+import { initNotesResize } from './primitives/notes-resize';
+import { initMobileDrawer } from './primitives/mobile-drawer';
 
 export function initSite(): void {
   startBoot();
@@ -41,4 +44,13 @@ export function initSite(): void {
   initProjectMediaCarousels();
   initTreeHint();
   initScrollSpy();
+  // ADR-021 — /projects per-chapter progress + rail active state. No-op
+  // when no chapters are present (e.g. on the home page).
+  initChapterProgress();
+  // ADR-021 — drag-to-resize for the notes folio sidebar. No-op when no
+  // popup is present.
+  initNotesResize();
+  // ADR-021 — mobile-shell drawer nav. No-op when no MobileTopNav on
+  // the page.
+  initMobileDrawer();
 }

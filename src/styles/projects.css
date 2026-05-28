@@ -744,3 +744,191 @@
     align-items: flex-start;
   }
 }
+
+
+/* ─────────────────────────────────────────────────────────────────────
+   ADR-021 — projects page rework (Claude Design handoff)
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Eyebrow above the page title. */
+.projects-eyebrow {
+  display: block;
+  font-family: var(--face-mono);
+  font-size: var(--type-tiny);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: lowercase;
+  color: var(--text-2);
+  margin-bottom: 0.55rem;
+}
+
+/* Two-column wrapper around list + rail. */
+.projects-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 3rem);
+}
+@media (min-width: 1100px) {
+  .projects-layout {
+    grid-template-columns: minmax(0, 1fr) var(--rail);
+  }
+}
+
+/* Sticky right rail (≥1100px). Hidden below. */
+.projects-rail { display: none; }
+@media (min-width: 1100px) {
+  .projects-rail {
+    display: block;
+    position: sticky;
+    top: calc(var(--nav-h) + 1.5rem);
+    align-self: start;
+    max-height: calc(100dvh - var(--nav-h) - 3rem);
+    overflow-y: auto;
+    padding-left: 1.5rem;
+    border-left: 1px solid var(--hair);
+  }
+}
+.projects-rail-eyebrow {
+  font-family: var(--face-mono);
+  font-size: var(--type-tiny);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: lowercase;
+  color: var(--text-2);
+  margin: 0 0 0.85rem;
+}
+.projects-rail-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+.projects-rail-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55rem;
+  padding: 0.4rem 0 0.4rem 0.6rem;
+  margin-left: -0.6rem;
+  text-decoration: none;
+  color: var(--text-2);
+  font-family: var(--face-text);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  border-left: 2px solid transparent;
+  transition:
+    color var(--d-fast) var(--ease-out),
+    border-color var(--d-fast) var(--ease-out);
+}
+.projects-rail-item:hover { color: var(--text-1); }
+.projects-rail-item.is-current {
+  color: var(--text-0);
+  border-left-color: var(--accent);
+  font-style: italic;
+}
+.projects-rail-num {
+  font-family: var(--face-mono);
+  font-size: 0.66rem;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+  font-style: normal;
+  flex-shrink: 0;
+}
+.projects-rail-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Chapter eyebrow — "NN chapter · status".
+   ADR-021 — visible in STORY mode only. CSS-gated via :root data-page-mode
+   so info mode shows the title + tagline cleanly without the eyebrow. */
+.project-chapter-eyebrow {
+  font-family: var(--face-mono);
+  font-size: var(--type-tiny);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: lowercase;
+  color: var(--text-2);
+  display: inline-flex;
+  gap: 0.4rem;
+  align-items: center;
+  white-space: nowrap;
+}
+.project-chapter-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1px solid var(--hair-strong);
+  border-radius: 50%;
+  font-size: 0.66rem;
+  color: var(--text-1);
+}
+/* Hidden by default (info mode) */
+.project-chapter-eyebrow { display: none; }
+:root[data-page-mode="story"] .project-chapter-eyebrow {
+  display: inline-flex;
+}
+
+/* Per-chapter reading-progress bar — driven by chapter-progress.ts. */
+.project-chapter { position: relative; }
+.project-chapter-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1.1rem;
+  height: 2px;
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.project-chapter-progress-bar {
+  display: block;
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.18s linear;
+  transform-origin: 0 50%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .project-chapter-progress-bar { transition: none; }
+}
+
+/* Scrollable story region — caps story height so the prose never
+   outgrows the media column. Mask-fade is small so short stories
+   barely register the bottom fade; long ones get a clear "more below"
+   cue. Thin terracotta scrollbar. */
+.project-chapter .project-story {
+  max-height: 22rem;
+  overflow-y: auto;
+  padding-right: 0.65rem;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0,
+    black calc(100% - 1.4rem),
+    transparent 100%
+  );
+          mask-image: linear-gradient(
+    to bottom,
+    black 0,
+    black calc(100% - 1.4rem),
+    transparent 100%
+  );
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--accent) 40%, transparent) transparent;
+}
+.project-chapter .project-story::-webkit-scrollbar { width: 4px; }
+.project-chapter .project-story::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 2px;
+}
+.project-chapter .project-story::-webkit-scrollbar-track {
+  background: transparent;
+}
+@media (max-width: 720px) {
+  .project-chapter .project-story {
+    max-height: 20rem;
+  }
+}

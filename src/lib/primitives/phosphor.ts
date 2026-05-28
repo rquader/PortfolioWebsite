@@ -43,10 +43,10 @@ export function initPhosphor(): PhosphorHandle {
   if (typeof document === 'undefined' || typeof window === 'undefined') {
     return { stop: () => {} };
   }
-  // Touch: no continuous pointermove → no trail. Skip entirely.
-  if (window.matchMedia('(pointer: coarse)').matches) {
-    return { stop: () => {} };
-  }
+  // ADR-021 — on coarse pointers (mobile), pointermove fires during
+  // an active touch drag, so the trail still works. Earlier this
+  // primitive bailed on coarse; now it runs in both shells.
+  // Reduced-motion still suppresses via the existing CSS gate.
 
   const canvas = document.createElement('canvas');
   canvas.id = 'phosphor-canvas';

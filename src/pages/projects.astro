@@ -2,9 +2,11 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import TopNav from '../components/TopNav.astro';
+import MobileTopNav from '../components/MobileTopNav.astro';
 import ProjectChapter from '../components/project/ProjectChapter.astro';
 import ProjectModeToggle from '../components/project/ProjectModeToggle.astro';
 import ProjectNotesPopup from '../components/project/ProjectNotesPopup.astro';
+import ProjectsRail from '../components/project/ProjectsRail.astro';
 
 const projects = (await getCollection('projects')).sort(
   (a, b) => a.data.sort_order - b.data.sort_order,
@@ -37,8 +39,10 @@ for (const s of allStories) {
   description="The things I've built, with the working notes attached."
 >
   <TopNav />
+  <MobileTopNav />
   <main class="projects-page">
     <header class="projects-header">
+      <span class="projects-eyebrow">essays · in chapters</span>
       <h1 class="projects-title" data-color-letters data-inertial-text>Projects</h1>
 
       {/* Page intro — shared in both modes; toggle only swaps chapter bodies + footer outro */}
@@ -72,21 +76,24 @@ for (const s of allStories) {
 
     {
       projects.length > 0 ? (
-        <div class="projects-list">
-          {projects.map((p, i) => {
-            const slug = slugFor(p.id);
-            const notesCount = (filesBySlug.get(slug) ?? []).length;
-            const story = storyBySlug.get(slug) ?? null;
-            return (
-              <ProjectChapter
-                project={p}
-                story={story}
-                notesCount={notesCount}
-                index={i}
-                isLast={i === projects.length - 1}
-              />
-            );
-          })}
+        <div class="projects-layout">
+          <div class="projects-list">
+            {projects.map((p, i) => {
+              const slug = slugFor(p.id);
+              const notesCount = (filesBySlug.get(slug) ?? []).length;
+              const story = storyBySlug.get(slug) ?? null;
+              return (
+                <ProjectChapter
+                  project={p}
+                  story={story}
+                  notesCount={notesCount}
+                  index={i}
+                  isLast={i === projects.length - 1}
+                />
+              );
+            })}
+          </div>
+          <ProjectsRail projects={projects} />
         </div>
       ) : (
         <p class="projects-empty">

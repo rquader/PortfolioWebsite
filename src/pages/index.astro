@@ -1,9 +1,16 @@
 ---
 // Single-page portfolio entry. The six rooms compose top-to-bottom in
 // natural scroll order. Project deep-dives live at /projects.
+//
+// ADR-021 — dual-shell: both TopNav (desktop) and MobileTopNav (mobile)
+// mount; CSS visibility gates which is active (`data-shell="desktop"`
+// vs `data-shell="mobile"`). Section IDs (#threshold, #on-me, …) are
+// unchanged and shared by both shells so hash routing works without
+// translation.
 
 import Base from '../layouts/Base.astro';
 import TopNav from '../components/TopNav.astro';
+import MobileTopNav from '../components/MobileTopNav.astro';
 import Threshold from '../components/Threshold.astro';
 import OnMe from '../components/OnMe.astro';
 import OnTheWork from '../components/OnTheWork.astro';
@@ -12,6 +19,7 @@ import Coda from '../components/Coda.astro';
 ---
 <Base>
   <TopNav />
+  <MobileTopNav />
   <main>
     <Threshold />
     <OnMe />

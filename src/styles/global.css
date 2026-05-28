@@ -18,7 +18,9 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
   scroll-behavior: smooth;
-  scroll-padding-top: var(--nav-h); /* keep section heads clear of the fixed nav */
+  /* Half-rem of breathing room past the nav so section heads don't kiss
+     the underside of the bar after a hash jump (ADR-021). */
+  scroll-padding-top: calc(var(--nav-h) + 0.5rem);
 }
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -33,9 +35,16 @@ html, body {
   font-size: var(--type-body);
   line-height: var(--leading-body);
   font-weight: 400;
+  /* Optical sizing on body so headers inherit the auto-adjusted axes
+     (ADR-021 — both Fraunces + Newsreader carry opsz axes). */
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Pull-down bounce on iOS Safari sometimes detaches the threshold
+     tree canvas from its inset:0; suppressing y-bounce keeps the
+     ambient backdrop stable. */
+  overscroll-behavior-y: none;
 }
 
 body {
@@ -55,7 +64,7 @@ button, input, textarea, select {
 a {
   color: inherit;
   text-decoration-skip-ink: auto;
-  text-underline-offset: 0.15em;
+  text-underline-offset: 0.18em;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -267,8 +276,108 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
   z-index: 90;
 }
-@media (pointer: coarse) {
-  #phosphor-canvas { display: none; }
+/* ADR-021: phosphor canvas stays on coarse pointers so the mobile
+   shell gets the touch trail — the primitive now handles both. */
+
+/* ---- ADR-021 shared utilities ----
+   The d/ track introduces a few names the Astro components reach for:
+   - .section-heading : a styled h2 — Fraunces display + WONK + italic,
+                       sized by --type-h2. Mirrors the existing
+                       `.section > h2` rule but as a class so non-h2
+                       headings (or h2s outside .section-inner) get the
+                       same treatment.
+   - .eyebrow         : small mono caps-ish lowercase label.
+   - .inertial-word   : wrapping cell for letter-spans so words don't
+                       break mid-word in inertial type headings.
+   - .chip            : pill/chip control (used for OnTheWork DDD
+                       links, Coda profile links, project links).
+   - .btn-accent      : filled accent CTA (resume button + similar).
+*/
+.section-heading {
+  font-family: var(--face-display);
+  font-variation-settings: 'SOFT' 80, 'WONK' 1;
+  font-style: italic;
+  font-optical-sizing: auto;
+  font-size: var(--type-h2);
+  font-weight: 400;
+  letter-spacing: var(--tracking-display);
+  color: var(--text-0);
+  margin-bottom: clamp(1.4rem, 3vw, 2.4rem);
+}
+
+.eyebrow {
+  font-family: var(--face-mono);
+  font-size: var(--type-tiny);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: lowercase;
+  color: var(--text-2);
+}
+
+.inertial-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--hair-strong);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--text-1);
+  text-decoration: none;
+  font-family: var(--face-mono);
+  font-size: 0.74rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  transition:
+    background var(--d-fast) var(--ease-out),
+    color var(--d-fast) var(--ease-out),
+    border-color var(--d-fast) var(--ease-out),
+    transform var(--d-fast) var(--ease-out);
+}
+.chip:hover,
+.chip:focus-visible {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text-0);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+  outline: none;
+  transform: translateY(-1px);
+}
+.chip-icon { opacity: 0.7; font-size: 0.78rem; }
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.6rem 1.1rem;
+  background: var(--accent);
+  color: var(--bg-0);
+  border: 0;
+  border-radius: 4px;
+  text-decoration: none;
+  font-family: var(--face-display);
+  font-style: italic;
+  font-size: 0.98rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition:
+    transform var(--d-fast) var(--ease-out),
+    background var(--d-fast) var(--ease-out);
+}
+.btn-accent:hover,
+.btn-accent:focus-visible {
+  transform: translateY(-1px);
+  background: color-mix(in srgb, var(--accent) 92%, var(--text-0));
+  outline: none;
+}
+.btn-accent .ico {
+  font-family: var(--face-mono);
+  font-style: normal;
+  font-size: 0.85rem;
+  opacity: 0.92;
 }
 
 /* ---- Print stylesheet ----
@@ -328,4 +437,41 @@ h1, h2, h3, h4, h5, h6 {
   a[href^="/"]::after {
     content: "";
   }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────
+   ADR-021 — Dual-shell visibility (desktop / mobile)
+
+   The mobile "shell" lives alongside the desktop shell in the SAME DOM
+   tree, with chrome elements (top nav, drawer, fullscreen notes sheet,
+   bottom-sheet tree mode) gated by CSS. Page-level content sections
+   (Threshold, OnMe, OnTheWork, OnTheTrail, Coda) keep their canonical
+   IDs and adapt internally — except for the threshold author photo,
+   which is rendered TWICE: once in Threshold (visible on desktop /
+   tablet ≥768px), once in OnMe (visible on phone <768px) so the
+   composition can differ without duplicating section IDs.
+
+   Breakpoint: ≤720px is the phone-shell bracket; 768px is the
+   tablet hybrid bracket (drawer nav stays, editorial layout returns).
+   ───────────────────────────────────────────────────────────────────── */
+
+/* `data-shell="desktop"` — desktop-shell-only element (default visible). */
+[data-shell="desktop"] { /* visible */ }
+@media (max-width: 720px) {
+  [data-shell="desktop"] { display: none !important; }
+}
+
+/* `data-shell="mobile"` — mobile-shell-only element (default hidden). */
+[data-shell="mobile"] { display: none; }
+@media (max-width: 720px) {
+  [data-shell="mobile"] { display: revert; }
+}
+
+/* Mobile drawer body-scroll-lock. While the drawer is open we freeze
+   the page beneath so taps on links underneath don't fire and the
+   scroll position is preserved across open/close. */
+body.mobile-drawer-open {
+  overflow: hidden;
+  touch-action: none;
 }

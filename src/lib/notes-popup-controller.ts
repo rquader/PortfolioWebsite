@@ -156,6 +156,22 @@ function updateStepper(inst: PopupInstance, ref: NoteRef): void {
   if (posEl) posEl.textContent = `${i + 1} of ${total}`;
 }
 
+// ADR-021 — metadata strip above the reader (path · reading N / total).
+function updateMeta(inst: PopupInstance, ref: NoteRef): void {
+  const i = inst.order.findIndex((n) => n.fileId === ref.fileId);
+  const total = inst.order.length;
+
+  const pathEl = inst.root.querySelector<HTMLElement>('[data-meta-path]');
+  const posEl = inst.root.querySelector<HTMLElement>('[data-meta-pos]');
+
+  if (pathEl) {
+    pathEl.textContent = ref.path.length > 0
+      ? `${ref.path.join('/')}/${ref.title}`
+      : ref.title;
+  }
+  if (posEl) posEl.textContent = `${i + 1} / ${total}`;
+}
+
 function setActiveNote(inst: PopupInstance, ref: NoteRef): void {
   inst.root.dataset.activeNote = ref.fileId;
 
@@ -177,6 +193,7 @@ function setActiveNote(inst: PopupInstance, ref: NoteRef): void {
 
   if (inst.breadcrumb) renderBreadcrumb(inst.breadcrumb, ref);
   updateStepper(inst, ref);
+  updateMeta(inst, ref);
 }
 
 function open(inst: PopupInstance, ref: NoteRef | null): void {

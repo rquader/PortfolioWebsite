@@ -78,18 +78,38 @@ function splitTextNodes(root: HTMLElement): HTMLElement[] {
     const text = node.nodeValue ?? '';
     if (text.trim().length === 0) continue;
     const frag = document.createDocumentFragment();
+
+    // ADR-021 — wrap each whole word in `<span class="inertial-word">`
+    // so the word never breaks mid-letter when the line wraps (each
+    // letter span is `display: inline-block` which on its own would
+    // create per-letter wrap points). Inter-word spaces remain plain
+    // text nodes, keeping spaces as the only break points.
+    let word: HTMLElement | null = null;
+    function flushWord(): void {
+      if (word) {
+        frag.appendChild(word);
+        word = null;
+      }
+    }
     for (const ch of text) {
       if (ch === ' ' || ch === '\t' || ch === '\n') {
+        flushWord();
         frag.appendChild(document.createTextNode(ch));
       } else {
+        if (!word) {
+          word = document.createElement('span');
+          word.className = 'inertial-word';
+        }
         const span = document.createElement('span');
         span.className = 'inertial-letter';
         span.setAttribute('data-inertial', '');
         span.textContent = ch;
-        frag.appendChild(span);
+        word.appendChild(span);
         spans.push(span);
       }
     }
+    flushWord();
+
     node.parentNode?.replaceChild(frag, node);
   }
   return spans;

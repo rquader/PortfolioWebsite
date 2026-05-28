@@ -45,24 +45,31 @@ const hasPhoto = fs.existsSync(photoDiskPath);
       <span class="tagline-dot" aria-hidden="true">·</span>
       <span>Education</span>
     </p>
+
+    {/* ADR-021 — moved inside the content stack so the hint sits with its
+        companions (name + tagline) instead of floating bottom-right. */}
+    <button
+      class="tree-hint"
+      type="button"
+      data-tree-open
+      aria-label="open the recursive tree"
+    >
+      <span class="tree-hint-leaf" aria-hidden="true"></span>
+      <span>click the tree</span>
+    </button>
   </div>
 
-  <div class="threshold-photo">
+  {/* ADR-021 — desktop shell only. On phone widths the photo moves
+      into OnMe (rendered in OnMe.astro), giving Threshold the full
+      width for name + tagline + tree. */}
+  <div class="threshold-photo" data-shell="desktop">
     <Photo
       src={`${BASE_WITH_SLASH}${(hasPhoto ? photoPublicPath : '/images/rafan-speaking-1.svg').replace(/^\//, '')}`}
       alt="Rafan Quader speaking at an event"
       treatment="print"
+      aspect="1/1"
     />
   </div>
-
-  <button
-    class="tree-hint"
-    type="button"
-    data-tree-open
-    aria-label="open the recursive tree"
-  >
-    ↘ click the tree
-  </button>
 
   <a class="scroll-cue" href="#on-me" aria-label="scroll to content">
     <span aria-hidden="true">↓</span>
@@ -128,7 +135,10 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   if (canvas) {
     const handle = mountTree(canvas, {
       palette: 'sepia',
-      opacity: 0.05,
+      // ADR-021 — baseline opacity raised from 0.05 to 0.35 so the tree
+      // reads as ambient texture, not a ghost. Tree mode still pushes
+      // this to 1 when active.
+      opacity: 0.35,
       swayScale: 0.6,
       numParticles: 24,
     });

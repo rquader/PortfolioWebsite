@@ -1,0 +1,48 @@
+---
+/**
+ * @file ProjectsRail.astro
+ *
+ * Sticky chapter index for the /projects page. Visible only ≥1100px
+ * (hidden via CSS below that). Numbered list of chapters; the active
+ * chapter is italicized and accent-bordered. Click jumps to the
+ * chapter via its `id` (= slug).
+ *
+ * Active state is set by `src/lib/primitives/chapter-progress.ts` on
+ * scroll — this component just renders the markup with stable
+ * `[data-rail-item="<slug>"]` hooks.
+ *
+ * Spec: [[decisions/ADR-021-desktop-overhaul-and-dual-shell-mobile]]
+ */
+
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  projects: CollectionEntry<'projects'>[];
+}
+
+function slugFor(id: string): string {
+  return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
+}
+
+const { projects } = Astro.props;
+---
+<aside class="projects-rail" aria-label="chapter index">
+  <p class="projects-rail-eyebrow">chapters</p>
+  <ol class="projects-rail-list">
+    {projects.map((p, i) => {
+      const slug = slugFor(p.id);
+      return (
+        <li>
+          <a
+            class="projects-rail-item"
+            data-rail-item={slug}
+            href={`#${slug}`}
+          >
+            <span class="projects-rail-num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="projects-rail-name">{p.data.title}</span>
+          </a>
+        </li>
+      );
+    })}
+  </ol>
+</aside>

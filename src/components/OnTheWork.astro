@@ -63,24 +63,54 @@
         class="ddd-svg"
         viewBox="0 0 360 160"
         role="img"
-        aria-label="three nodes: villager's phone and bus driver's phone connected by wifi-direct, bus driver's phone and internet connected by wifi. Messages flow both ways."
+        aria-labelledby="ddd-title ddd-desc"
+        focusable="false"
+        preserveAspectRatio="xMidYMid meet"
       >
+        <title id="ddd-title">Disconnected Data Distribution (DDD) hop diagram</title>
+        <desc id="ddd-desc">
+          Three nodes: villager's phone connects to bus driver's phone via WiFi-Direct; bus driver's phone connects
+          to the internet via WiFi. Messages flow both directions, shown by two curved arrows in each direction and
+          a drifting dot that pauses before each arrowhead.
+        </desc>
         <defs>
-          <marker id="ddd-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-            <path d="M0,0 L6,3 L0,6 Z" fill="currentColor" />
+          <marker
+            id="ddd-arrow"
+            viewBox="0 0 10 10"
+            markerWidth="6"
+            markerHeight="6"
+            refX="7.5"
+            refY="5"
+            orient="auto"
+          >
+            <path d="M0,0 L10,5 L0,10 Z" fill="currentColor" stroke="none" />
           </marker>
         </defs>
 
         {/* TOP row — send (left → right). Concave down (bulges up). */}
-        <g stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="3 5">
-          <path d="M78,52 C100,38 140,38 162,52" marker-end="url(#ddd-arrow)" />
-          <path d="M198,52 C220,38 260,38 282,52" marker-end="url(#ddd-arrow)" />
+        <g
+          stroke="currentColor"
+          stroke-width="1.2"
+          fill="none"
+          stroke-dasharray="3 5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M78,52 C100,38 140,38 156,52" marker-end="url(#ddd-arrow)" />
+          <path d="M198,52 C220,38 260,38 276,52" marker-end="url(#ddd-arrow)" />
         </g>
 
         {/* BOTTOM row — receive (right → left). Concave up (bulges down). */}
-        <g stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="3 5">
-          <path d="M282,98 C260,112 220,112 198,98" marker-end="url(#ddd-arrow)" />
-          <path d="M162,98 C140,112 100,112 78,98" marker-end="url(#ddd-arrow)" />
+        <g
+          stroke="currentColor"
+          stroke-width="1.2"
+          fill="none"
+          stroke-dasharray="3 5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M282,98 C260,112 220,112 204,98" marker-end="url(#ddd-arrow)" />
+          <path d="M162,98 C140,112 100,112 84,98" marker-end="url(#ddd-arrow)" />
         </g>
 
         {/* Node 1 — villager's phone */}
@@ -120,7 +150,7 @@
             keyTimes="0;0.1875;0.25;0.4375;0.5;0.6875;0.75;0.9375;1"
             keyPoints="0;0.235;0.25;0.485;0.5;0.735;0.75;0.985;1"
             calcMode="linear"
-            path="M78,52 C100,38 140,38 162,52 M198,52 C220,38 260,38 282,52 M282,98 C260,112 220,112 198,98 M162,98 C140,112 100,112 78,98"
+            path="M78,52 C100,38 140,38 156,52 M198,52 C220,38 260,38 276,52 M282,98 C260,112 220,112 204,98 M162,98 C140,112 100,112 84,98"
           />
           <animate
             attributeName="opacity"
@@ -249,6 +279,10 @@
     height: auto;
     color: var(--accent-on-the-work);
     display: block;
+    shape-rendering: geometricPrecision;
+  }
+  .ddd-svg :where(path, line, rect, circle) {
+    vector-effect: non-scaling-stroke;
   }
   .ddd-svg .ddd-node circle {
     fill: color-mix(in srgb, var(--bg-0) 80%, var(--accent-on-the-work) 12%);

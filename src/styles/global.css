@@ -456,16 +456,22 @@ h1, h2, h3, h4, h5, h6 {
    tablet hybrid bracket (drawer nav stays, editorial layout returns).
    ───────────────────────────────────────────────────────────────────── */
 
-/* `data-shell="desktop"` — desktop-shell-only element (default visible). */
-[data-shell="desktop"] { /* visible */ }
+/* `data-shell="…"` — single source of truth for "this element belongs to
+   one shell only". Both branches use `!important` because each component's
+   scoped Astro styles (e.g. `.mobile-top-nav { display: grid }`) get a
+   `[data-astro-cid-…]` selector appended that bumps their specificity to
+   (0,2,0), beating the plain `[data-shell="…"]` attribute selector at
+   (0,1,0). Without `!important` the mobile nav would render *on top of*
+   the desktop nav (and vice-versa) — exactly the "shadow on the top nav"
+   the user reported. Use min-width / max-width gates so the hidden side
+   simply isn't in the cascade for the active viewport.
+   Breakpoint: ≤720 px is the phone-shell bracket; 768 px is the tablet
+   hybrid (drawer nav stays, editorial layout returns). */
+@media (min-width: 721px) {
+  [data-shell="mobile"] { display: none !important; }
+}
 @media (max-width: 720px) {
   [data-shell="desktop"] { display: none !important; }
-}
-
-/* `data-shell="mobile"` — mobile-shell-only element (default hidden). */
-[data-shell="mobile"] { display: none; }
-@media (max-width: 720px) {
-  [data-shell="mobile"] { display: revert; }
 }
 
 /* Mobile drawer body-scroll-lock. While the drawer is open we freeze

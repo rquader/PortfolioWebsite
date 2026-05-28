@@ -213,14 +213,31 @@ const hasPhoto = fs.existsSync(photoDiskPath);
 
   const canvas = document.getElementById('tree-threshold') as HTMLCanvasElement | null;
   if (canvas) {
+    // ADR-026 — mobile-shrink. The tree fills its canvas in "units"
+    // (8 tall × proportional wide), so on a narrow phone viewport the
+    // canopy spreads close to the screen edges and the trunk sits
+    // nearly at the bottom. Shrink the trunk a touch and lift the
+    // anchor so the whole tree reads inside the visible frame.
+    // Desktop keeps the defaults from TREE_CONST.
+    const isPhoneShell = window.matchMedia('(max-width: 720px)').matches;
     const handle = mountTree(canvas, {
       palette: 'sepia',
+      // Render the same tree "smaller" on phones (more margin inside the
+      // canvas) without changing its underlying shape constants.
+      frameHeightUnits: isPhoneShell ? 9.5 : undefined,
       // ADR-021 — baseline opacity raised from 0.05 to 0.35 so the tree
       // reads as ambient texture, not a ghost. Tree mode still pushes
       // this to 1 when active.
-      opacity: 0.35,
+      //
+      // Mobile gets a dimmer baseline (0.22): on a narrow phone viewport
+      // the canopy fills more of the screen and the desktop's
+      // photo-area clearing mask is removed (see threshold.css mobile
+      // block), so 0.35 ends up bleeding into the name + tagline. 0.22
+      // keeps the tree readable as texture without competing with text.
+      opacity: isPhoneShell ? 0.22 : 0.35,
       swayScale: 0.6,
       numParticles: 24,
+      // Keep the desktop constants on mobile; we scale the frame instead.
     });
     initTreeMode(canvas, handle);
     // Mobile UI uses the same tree handle; the canvas click in

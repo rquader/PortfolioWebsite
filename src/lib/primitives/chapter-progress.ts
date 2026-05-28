@@ -14,11 +14,10 @@
  *   - pick the chapter whose top has crossed the 45% viewport probe and
  *     mark its rail item with `.is-current`.
  *
- * Driven by `scroll` + `resize` events. Passive listener; no rAF
- * scheduling here because the math is cheap and the existing rAF loop
- * (boot.ts) handles its own concerns. `prefers-reduced-motion` keeps the
- * tracking active (it's not animation, it's just classes) but the bar's
- * `width` transition is gated in CSS.
+ * Driven by `scroll` + `resize` events, but coalesced via
+ * `requestAnimationFrame` to avoid doing layout reads on every scroll
+ * event. `prefers-reduced-motion` keeps the tracking active (it's not
+ * animation, it's just classes) but the bar's transition is gated in CSS.
  *
  * Spec: [[decisions/ADR-021-desktop-overhaul-and-dual-shell-mobile]]
  */
@@ -32,6 +31,7 @@ interface Chapter {
   el: HTMLElement;
   bar: HTMLElement | null;
   railItem: HTMLElement | null;
+  lastProgress: number;
 }
 
 let active: ChapterProgressHandle | null = null;
@@ -63,51 +63,101 @@ export function initChapterProgress(): ChapterProgressHandle {
       railItem: document.querySelector<HTMLElement>(
         `[data-rail-item="${slug}"]`,
       ),
+      lastProgress: -1,
     };
   });
 
   let currentSlug: string | null = null;
 
-  function compute(): void {
-    const vh = window.innerHeight;
-    const probe = window.scrollY + vh * 0.45;
-    let next: string | null = null;
+  let rafId: number | null = null;
+  let lastVh = -1;
+
+  function updateProgress(c: Chapter, p: number): void {
+    // Avoid unnecessary style writes; transform updates are cheap but not free.
+    if (Math.abs(p - c.lastProgress) < 0.002) return;
+    c.lastProgress = p;
+    if (c.bar) c.bar.style.transform = `scaleX(${p.toFixed(4)})`;
+  }
+
+  function pickCurrentSlug(vh: number): string | null {
+    const probeY = vh * 0.45;
+    let candidate: string | null = null;
+    let candidateTop = -Infinity;
 
     for (const c of chapters) {
-      const top = c.el.offsetTop;
-      const height = c.el.offsetHeight;
-      const bot = top + height;
+      if (!c.slug) continue;
+      const rect = c.el.getBoundingClientRect();
 
-      // active chapter: the lowest one whose top has crossed the probe.
-      if (top <= probe) next = c.slug;
+      // Only consider chapters that are at least partially on-screen.
+      if (rect.bottom <= 0 || rect.top >= vh) continue;
 
-      // progress 0..1
-      const startY = top - vh * 0.6;
-      const endY = bot - vh * 0.2;
-      const span = Math.max(1, endY - startY);
-      const p = Math.max(0, Math.min(1, (window.scrollY - startY) / span));
-      if (c.bar) c.bar.style.width = (p * 100).toFixed(1) + '%';
+      // Choose the chapter whose top is closest below the probe.
+      if (rect.top <= probeY && rect.top > candidateTop) {
+        candidateTop = rect.top;
+        candidate = c.slug;
+      }
     }
 
+    // If nothing is below the probe (e.g. at very top), fall back to the
+    // first visible chapter to keep the selection stable.
+    if (!candidate) {
+      for (const c of chapters) {
+        if (!c.slug) continue;
+        const rect = c.el.getBoundingClientRect();
+        if (rect.bottom > 0 && rect.top < vh) return c.slug;
+      }
+    }
+    return candidate;
+  }
+
+  function computeNow(): void {
+    rafId = null;
+
+    const vh = window.innerHeight;
+    lastVh = vh;
+
+    const spanPad = vh * 0.4; // derived from start/end offsets
+    const startLine = vh * 0.6;
+
+    for (const c of chapters) {
+      const rect = c.el.getBoundingClientRect();
+      const denom = Math.max(1, rect.height + spanPad);
+      const p = Math.max(0, Math.min(1, (startLine - rect.top) / denom));
+      updateProgress(c, p);
+    }
+
+    const next = pickCurrentSlug(vh);
     if (next !== currentSlug) {
       currentSlug = next;
       for (const c of chapters) {
         if (!c.railItem) continue;
-        c.railItem.classList.toggle('is-current', c.slug === next);
-        if (c.slug === next) c.railItem.setAttribute('aria-current', 'true');
+        const isCurrent = c.slug === next;
+        c.railItem.classList.toggle('is-current', isCurrent);
+        if (isCurrent) c.railItem.setAttribute('aria-current', 'true');
         else c.railItem.removeAttribute('aria-current');
       }
     }
   }
 
-  compute();
-  window.addEventListener('scroll', compute, { passive: true });
-  window.addEventListener('resize', compute);
+  function schedule(): void {
+    if (rafId != null) return;
+    rafId = window.requestAnimationFrame(computeNow);
+  }
+
+  computeNow();
+  window.addEventListener('scroll', schedule, { passive: true });
+  const onResize = (): void => {
+    // Resize can change both probe thresholds and chapter layout.
+    // Coalesce into the same rAF tick as scroll.
+    if (window.innerHeight !== lastVh) schedule();
+    else schedule();
+  };
+  window.addEventListener('resize', onResize);
 
   // The mode toggle changes chapter heights (story body vs info body have
   // different lengths). Recompute on the next paint after the toggle.
   function onModeChange(): void {
-    requestAnimationFrame(compute);
+    schedule();
   }
   const toggleObserver = new MutationObserver(onModeChange);
   toggleObserver.observe(document.documentElement, {
@@ -117,9 +167,10 @@ export function initChapterProgress(): ChapterProgressHandle {
 
   const handle: ChapterProgressHandle = {
     stop(): void {
-      window.removeEventListener('scroll', compute);
-      window.removeEventListener('resize', compute);
+      window.removeEventListener('scroll', schedule);
+      window.removeEventListener('resize', onResize);
       toggleObserver.disconnect();
+      if (rafId != null) window.cancelAnimationFrame(rafId);
     },
   };
   active = handle;

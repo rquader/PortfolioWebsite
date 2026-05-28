@@ -64,7 +64,12 @@
       "Bash(wait)",
       "Bash(rm -rf design3 design4)",
       "Bash(mkdir design3 *)",
-      "Bash(tar -xzf design4-desktop.tar.gz -C design4)"
+      "Bash(tar -xzf design4-desktop.tar.gz -C design4)",
+      "Bash(curl -sIL \"https://api.anthropic.com/v1/design/h/obRpHGxCiQISC3usEAnigw\")",
+      "Bash(mkdir -p /tmp/design1_extract /tmp/design2_extract /tmp/design3_extract)",
+      "Bash(tar -xf /tmp/design1.raw -C /tmp/design1_extract)",
+      "Bash(tar -xf /tmp/design2.raw -C /tmp/design2_extract)",
+      "Bash(tar -xf /tmp/design3.raw -C /tmp/design3_extract)"
     ]
   },
   "hooks": {

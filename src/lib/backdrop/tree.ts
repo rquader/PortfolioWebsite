@@ -50,6 +50,13 @@ const FRAME_UNITS_HEIGHT = 8;
 export interface TreeOptions {
   /** 'sepia' picks the per-theme variant; 'forest' is the Phase 4 fallback. */
   palette?: 'forest' | 'sepia';
+  /**
+   * Manim-style frame height in "units" used to map algorithm coords → pixels.
+   * Default 8 (Manim's reference frame). Larger values render the same tree
+   * *smaller* inside the canvas (more margin) without changing the tree's
+   * shape constants — useful for narrow phone viewports.
+   */
+  frameHeightUnits?: number;
   /** Multiplier on top of per-branch line opacity. 0..1. Default 1.0. */
   opacity?: number;
   /** Multiplier on both sway amplitudes. 1.0 = full. Default 1.0. */
@@ -66,6 +73,11 @@ export interface TreeOptions {
 
 export interface TreeHandle {
   setOpacity(o: number): void;
+  /** Read the current canopy opacity. Used by tree-mode to capture the
+   *  ambient value before bumping to 1.0 on entry, and to restore that
+   *  same value on exit — replaces the old hard-coded 0.12 reset which
+   *  broke any per-shell mount opacity (e.g. mobile's 0.22). */
+  getOpacity(): number;
   setOverrides(p: Partial<TreeConstants>): void;
   stop(): void;
 }
@@ -89,6 +101,11 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('mountTree: 2d context unavailable');
 
+  const frameHeightUnits =
+    typeof opts.frameHeightUnits === 'number' && Number.isFinite(opts.frameHeightUnits)
+      ? Math.max(4, opts.frameHeightUnits)
+      : FRAME_UNITS_HEIGHT;
+
   const baseConsts: TreeConstants = { ...TREE_CONST, ...(opts.overrideConst ?? {}) };
   let consts: TreeConstants = baseConsts;
   const paletteChoice: 'forest' | 'sepia' = opts.palette ?? 'sepia';
@@ -103,7 +120,7 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
   let cssW = 0;
   let cssH = 0;
   let dpr = 1;
-  let map: CanvasMap = makeCanvasMap(1, 1, FRAME_UNITS_HEIGHT);
+  let map: CanvasMap = makeCanvasMap(1, 1, frameHeightUnits);
 
   let branches: Branch[] = [];
   let leaves: LeafSpec[] = [];
@@ -114,7 +131,7 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
     const rng = mulberry32(seed);
     branches = buildBranches(rng, consts);
     leaves = buildLeaves(rng, branches, palette, consts);
-    const frameWidth = cssH > 0 ? (cssW / cssH) * FRAME_UNITS_HEIGHT : FRAME_UNITS_HEIGHT;
+    const frameWidth = cssH > 0 ? (cssW / cssH) * frameHeightUnits : frameHeightUnits;
     particles = buildParticles(rng, frameWidth, numParticles);
     frame = makeResolvedFrame(branches.length);
   }
@@ -131,13 +148,13 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
     canvas.style.width = `${cssW}px`;
     canvas.style.height = `${cssH}px`;
     ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-    map = makeCanvasMap(cssW, cssH, FRAME_UNITS_HEIGHT);
+    map = makeCanvasMap(cssW, cssH, frameHeightUnits);
   }
 
   function draw(tSeconds: number): void {
     if (cssW < 2 || cssH < 2) return;
     resolveTree(branches, tSeconds, frame, swayScale, consts);
-    const resolved = resolveParticles(particles, tSeconds, FRAME_UNITS_HEIGHT, consts);
+    const resolved = resolveParticles(particles, tSeconds, frameHeightUnits, consts);
 
     ctx!.clearRect(0, 0, cssW, cssH);
     // Particles behind tree.
@@ -184,6 +201,9 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
   return {
     setOpacity(o: number): void {
       opacity = o;
+    },
+    getOpacity(): number {
+      return opacity;
     },
     setOverrides(p: Partial<TreeConstants>): void {
       consts = { ...consts, ...p };

@@ -31,7 +31,6 @@ import type { TreeHandle } from '../backdrop/tree';
 const DEFAULT_DEPTH = 8;
 const DEFAULT_ANGLE_DEG = 27;
 const DEFAULT_RATIO_PCT = 74;
-const DEFAULT_OPACITY = 0.12;
 // Threshold (backdrop) anchor — base near the viewport bottom so the
 // canopy fills the top of the hero. Tree-mode wants more vertical
 // centering, so the base shifts up.
@@ -125,8 +124,14 @@ export function initTreeMode(canvas: HTMLCanvasElement, tree: TreeHandle): TreeM
 
   // ---------- Mode entry/exit ----------
 
+  // Capture the ambient opacity on *each* entry so exit() can restore
+  // the value the mount (or shell) actually wants. This replaces the old
+  // hard-coded reset that clobbered phone/desktop-specific opacity.
+  let ambientOpacity = tree.getOpacity();
+
   function enter(): void {
     if (body.dataset.treeMode === 'on') return;
+    ambientOpacity = tree.getOpacity();
     body.dataset.treeMode = 'on';
     ui.removeAttribute('aria-hidden');
     tree.setOpacity(1.0);
@@ -141,7 +146,7 @@ export function initTreeMode(canvas: HTMLCanvasElement, tree: TreeHandle): TreeM
     if (body.dataset.treeMode !== 'on') return;
     body.dataset.treeMode = 'off';
     ui.setAttribute('aria-hidden', 'true');
-    tree.setOpacity(DEFAULT_OPACITY);
+    tree.setOpacity(ambientOpacity);
     tree.setOverrides({ TRUNK_BASE_Y: BASE_Y_THRESHOLD });
   }
 

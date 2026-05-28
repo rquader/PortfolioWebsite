@@ -875,7 +875,7 @@
     /* Drop the rail's resting opacity to a whisper — it should read
        as "there if you need it" rather than "look at me". Lifts to
        full on hover/focus-within. */
-    opacity: 0.22;
+    opacity: 0.32;
     transition: opacity var(--d-med) var(--ease-out);
   }
   .projects-rail:hover,
@@ -903,13 +903,13 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 0.1rem;
 }
 .projects-rail-item {
   display: flex;
   align-items: baseline;
   gap: 0.55rem;
-  padding: 0.32rem 0 0.32rem 0.6rem;
+  padding: 0.34rem 0 0.34rem 0.6rem;
   margin-left: -0.6rem;
   text-decoration: none;
   color: var(--text-2);
@@ -989,9 +989,11 @@
 .project-chapter-progress-bar {
   display: block;
   height: 100%;
-  width: 0%;
+  width: 100%;
   background: var(--accent);
-  transition: width 0.18s linear;
+  transform: scaleX(0);
+  will-change: transform;
+  transition: transform 0.18s linear;
   transform-origin: 0 50%;
 }
 @media (prefers-reduced-motion: reduce) {

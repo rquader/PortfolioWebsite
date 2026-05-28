@@ -178,6 +178,7 @@
   flex: 0 0 6px;
   align-self: stretch;
   cursor: ew-resize;
+  position: relative;
   background: linear-gradient(
     to right,
     transparent 0,
@@ -203,6 +204,17 @@
     transparent 100%
   );
   outline: none;
+}
+.notes-popup-divider:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: -2px;
+}
+
+/* While dragging, avoid accidental selection and show resize cursor. */
+:root.is-notes-resizing,
+:root.is-notes-resizing * {
+  cursor: ew-resize !important;
+  user-select: none !important;
 }
 @media (max-width: 720px) {
   /* On phone widths the popup goes fullscreen (handled elsewhere in
@@ -443,18 +455,18 @@
 }
 
 /* ─── mobile / narrow viewport ───
-   ADR-021 — mobile shell uses a fullscreen sheet (sidebar above reader)
-   rather than a centered card. Two-pane stays but stacks vertically.
-   The (future) two-step folder→reader-with-back pattern is queued in
-   [[Mobile/00 - Mobile Track Overview]]; this lands the structural
-   mobile sheet first and keeps the content layer (real sanitized
-   notes via getCollection) unchanged. The notes pipeline never reads
-   from a placeholder array — see
-   [[Mobile/Known Issue — Use real sanitized notes (not placeholder)]]. */
+   ADR-022 — mobile shell is a fullscreen sheet with two-step navigation:
+   the user lands on the folder tree, taps a note to slide into the
+   reader, and uses the back button (or system back) to return. Both
+   panes are still SSR-rendered into the same DOM; we just toggle which
+   one occupies the screen via [data-view] on the folio. Tablet and
+   desktop ignore [data-view] and show both panes side-by-side.
+   See ADR-021 for the earlier "stacked vertically" pass this replaces.
+   Notes pipeline still uses real sanitized markdown via
+   getCollection('projectFiles') — never a placeholder array. */
 @media (max-width: 720px) {
   .notes-popup-folio {
-    /* Fullscreen-ish — leave a hairline gutter at the bottom for the
-       iOS Safari home indicator (safe-area). */
+    /* Fullscreen — leave hairline gutters for the iOS home indicator. */
     top: 0;
     left: 0;
     transform: none;
@@ -469,23 +481,59 @@
     transform: none;
   }
   .notes-popup-main {
-    flex-direction: column;
+    flex-direction: row;
+    /* Position relative so the two absolutely-sized panes can slide
+       across each other; the parent holds the height. */
+    position: relative;
+  }
+
+  /* Two-step pane visibility: tree view shows tree, reader view shows
+     reader. The hidden pane is removed from flow (display:none) so we
+     never get a tall scroll container collapsed onto a phone screen. */
+  .notes-popup-sidebar,
+  .notes-popup-pane {
+    flex: 1 1 0;
+    width: 100%;
+    min-width: 0;
   }
   .notes-popup-sidebar {
-    flex: 0 0 auto;
-    width: 100%;
-    max-height: 38vh;
+    /* Mobile: sidebar is the whole content area when on tree view. */
+    max-height: none;
     border-right: 0;
-    border-bottom: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
   }
+  .notes-popup-folio[data-view='tree'] .notes-popup-pane {
+    display: none;
+  }
+  .notes-popup-folio[data-view='reader'] .notes-popup-sidebar {
+    display: none;
+  }
+
+  /* Back button — only visible on mobile while in reader view. Sits
+     top-left, mirrors the close button's chrome but with an arrow + label. */
+  .notes-popup-back {
+    display: none;
+  }
+  .notes-popup-folio[data-view='reader'] .notes-popup-back {
+    display: inline-flex;
+  }
+
+  /* In tree view the head shows the project title; in reader view we
+     lean on the breadcrumb + active note's heading instead, so the
+     head's crumb-eyebrow + title would feel redundant. Keep it for now
+     for landmark continuity — back button sits above it. */
+
   .notes-popup-step {
     max-width: 7.5rem;
   }
-  /* On phone widths the metadata strip wraps the way real estate
-     allows — let it flow without forcing nowrap. */
   .notes-popup-meta-item {
     white-space: normal;
   }
+}
+
+/* Desktop / tablet — back button is never relevant; tree and reader sit
+   side-by-side and tapping a note simply switches active-note inline. */
+.notes-popup-back {
+  display: none;
 }
 
 /* ─── reduced motion ─── */
@@ -511,7 +559,7 @@
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.45rem 1.1rem;
-  padding: 0.4rem 0 0.55rem;
+  padding: 0.4rem 1.4rem 0.55rem;
   border-bottom: 1px solid var(--hair);
   font-family: var(--face-mono);
   font-size: var(--type-tiny);
@@ -547,12 +595,11 @@
 }
 
 /* ─────────────────────────────────────────────────────────────────────
-   ADR-021 follow-up — mobile pane scroll fix.
-   On phone widths the user couldn't scroll within an open note (only
-   the folder tree scrolled). The pane's flex/min-height chain needs
-   to be made explicit at every level so iOS Safari has the constraint
-   it needs to let `overflow-y: auto` actually take effect inside a
-   nested flex column.
+   ADR-021 follow-up — mobile pane scroll fix (kept under ADR-022).
+   iOS Safari needs the flex/min-height chain made explicit at every
+   level so `overflow-y: auto` actually takes effect inside a nested
+   flex column. With two-step navigation we no longer cap the sidebar:
+   each pane is full-screen when active.
    ───────────────────────────────────────────────────────────────────── */
 @media (max-width: 720px) {
   .notes-popup-folio {
@@ -563,7 +610,7 @@
     flex: 1 1 0;
     min-height: 0;
   }
-  .notes-popup-pane {
+  .notes-popup-folio[data-view='reader'] .notes-popup-pane {
     flex: 1 1 0;
     min-height: 0;
     display: flex;
@@ -575,9 +622,49 @@
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
-  /* Tighten the sidebar cap so the reader gets the lion's share of
-     the screen. */
-  .notes-popup-sidebar {
-    max-height: 32vh;
+  /* Sidebar fills the screen when on tree view; the cap from the old
+     stacked layout is gone. */
+  .notes-popup-folio[data-view='tree'] .notes-popup-sidebar {
+    flex: 1 1 0;
+    min-height: 0;
+    max-height: none;
   }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   Back button styling (ADR-022)
+   Top-left circular chip, mirrors the close button's chrome (size,
+   hover, focus) but pairs an arrow with a short label so the
+   affordance reads as "step back" rather than "close".
+   ───────────────────────────────────────────────────────────────────── */
+.notes-popup-back {
+  position: absolute;
+  top: 0.65rem;
+  left: 0.65rem;
+  height: 1.8rem;
+  padding: 0 0.7rem 0 0.55rem;
+  align-items: center;
+  gap: 0.2rem;
+  border: 0;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+  color: var(--text-1);
+  font-family: var(--face-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  text-transform: lowercase;
+  line-height: 1;
+  cursor: pointer;
+  z-index: 5;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.notes-popup-back:hover,
+.notes-popup-back:focus-visible {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--text-0);
+  outline: none;
+}
+.notes-popup-back-arrow {
+  font-size: 0.95rem;
+  line-height: 1;
 }

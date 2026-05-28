@@ -31,6 +31,8 @@ interface NoteRef {
 
 interface PopupInstance {
   root: HTMLElement;
+  /** The folio element — holds the `data-view` attribute for two-step mobile nav. */
+  folio: HTMLElement | null;
   slug: string;
   /** Depth-first reading order — drives prev/next + slug-only open. */
   order: NoteRef[];
@@ -45,6 +47,21 @@ interface PopupInstance {
   scrollEl: HTMLElement | null;
   /** The element that opened the popup; focus returns there on close. */
   trigger: HTMLElement | null;
+}
+
+/** ADR-022 — viewport gate for the mobile two-step nav. Desktop ignores
+ *  data-view entirely (CSS pins both panes side-by-side); on mobile,
+ *  data-view='tree' / 'reader' toggles which pane is visible. We still
+ *  flip the attribute on both viewports so resizing across the
+ *  breakpoint leaves the popup in a sensible state. */
+const MOBILE_BREAKPOINT_PX = 720;
+function isMobileWidth(): boolean {
+  if (typeof window === 'undefined') return false;
+  return window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX}px)`).matches;
+}
+function setView(inst: PopupInstance, view: 'tree' | 'reader'): void {
+  if (!inst.folio) return;
+  inst.folio.dataset.view = view;
 }
 
 const BODY_SCROLL_LOCK_CLASS = 'notes-popup-open';
@@ -200,6 +217,8 @@ function open(inst: PopupInstance, ref: NoteRef | null): void {
   if (inst.root.dataset.open === 'true') {
     if (ref) {
       setActiveNote(inst, ref);
+      // Specific note → if mobile, surface the reader. Desktop ignores.
+      if (isMobileWidth()) setView(inst, 'reader');
       writeHash(inst.slug, ref);
     }
     return;
@@ -223,8 +242,22 @@ function open(inst: PopupInstance, ref: NoteRef | null): void {
   setActiveNote(inst, target);
   writeHash(inst.slug, target);
 
-  const closeBtn = inst.root.querySelector<HTMLElement>('[data-notes-close]');
-  closeBtn?.focus();
+  // ADR-022 — opening from a deep-link (specific note path) jumps straight
+  // to the reader on mobile; opening from a chapter trigger or bare-slug
+  // hash starts on the tree so the user can browse folders first.
+  if (isMobileWidth()) {
+    setView(inst, ref ? 'reader' : 'tree');
+  } else {
+    setView(inst, 'reader');
+  }
+
+  // Focus target: on mobile-tree we want the first tree item, on
+  // reader we want the close button. Default to close button.
+  const initialFocus =
+    isMobileWidth() && !ref
+      ? inst.root.querySelector<HTMLElement>('[data-tree-note]')
+      : inst.root.querySelector<HTMLElement>('[data-notes-close]');
+  initialFocus?.focus();
 }
 
 function close(inst: PopupInstance, clearTheHash: boolean = true): void {
@@ -232,6 +265,10 @@ function close(inst: PopupInstance, clearTheHash: boolean = true): void {
   inst.root.dataset.open = 'false';
   inst.root.setAttribute('aria-hidden', 'true');
   document.body.classList.remove(BODY_SCROLL_LOCK_CLASS);
+  // ADR-022 — reset view so the next open starts on the tree (mobile
+  // users expect "open notes" to land on the folder list, not the
+  // previously-active note).
+  setView(inst, 'tree');
   window.setTimeout(() => {
     if (inst.root.dataset.open !== 'true') inst.root.setAttribute('hidden', '');
   }, 220);
@@ -300,6 +337,7 @@ function buildInstance(root: HTMLElement): PopupInstance | null {
 
   return {
     root,
+    folio: root.querySelector<HTMLElement>('.notes-popup-folio'),
     slug,
     order,
     byId,
@@ -320,6 +358,14 @@ function wire(inst: PopupInstance): void {
       if (!ref) return;
       setActiveNote(inst, ref);
       writeHash(inst.slug, ref);
+      // ADR-022 — mobile two-step: tapping a note slides into the reader.
+      // Desktop ignores data-view (CSS pins both panes), but we still set
+      // it so a resize down to mobile lands on the right pane.
+      setView(inst, 'reader');
+      // Move focus to the close button so screen readers + keyboard users
+      // land somewhere sensible inside the reader rather than back at
+      // the tree button that triggered the switch.
+      inst.root.querySelector<HTMLElement>('[data-notes-close]')?.focus({ preventScroll: true });
     });
   }
 
@@ -346,6 +392,18 @@ function wire(inst: PopupInstance): void {
   inst.root.querySelector<HTMLElement>('[data-notes-backdrop]')?.addEventListener('click', () =>
     close(inst),
   );
+
+  // ADR-022 — back button. Returns the mobile sheet to the folder tree
+  // view. We also rewrite the hash to drop the leaf so a reload or
+  // back/forward navigation reproduces the tree view rather than
+  // bouncing the user back into the reader they just stepped out of.
+  inst.root.querySelector<HTMLElement>('[data-notes-back]')?.addEventListener('click', () => {
+    setView(inst, 'tree');
+    writeHash(inst.slug, null);
+    inst.treeNoteBtns
+      .get(inst.root.dataset.activeNote ?? '')
+      ?.focus({ preventScroll: true });
+  });
 
   // keyboard
   inst.root.addEventListener('keydown', (e) => {

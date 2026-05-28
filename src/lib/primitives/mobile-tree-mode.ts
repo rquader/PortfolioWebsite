@@ -112,12 +112,21 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
 
   function pushKnobs(): void {
     syncValues();
-    // The tree handle's setOverrides accepts whatever shape the
-    // backdrop's tree algorithm consumes. We pass the same keys the
-    // desktop controller uses.
-    (tree as unknown as {
-      setOverrides?: (o: { depth: number; angleDeg: number; ratio: number }) => void;
-    }).setOverrides?.(readKnobs());
+    // ADR-024 — pass the *backdrop algorithm's* constant keys, not the
+    // UI's friendly names. The desktop controller (tree-mode.ts) uses
+    // MAX_DEPTH / LEAF_DEPTH_MIN / BRANCH_ANGLE / LENGTH_RATIO — those
+    // are what `tree-algorithm.ts → buildBranches()` reads from
+    // `consts`. The previous shape (`{ depth, angleDeg, ratio }`) was
+    // silently merged into `consts` as extra keys and never consumed,
+    // so dragging the mobile sliders updated the value labels but had
+    // no visible effect on the tree.
+    const k = readKnobs();
+    tree.setOverrides({
+      MAX_DEPTH: k.depth,
+      LEAF_DEPTH_MIN: k.depth,
+      BRANCH_ANGLE: (k.angleDeg * Math.PI) / 180,
+      LENGTH_RATIO: k.ratio,
+    });
   }
 
   for (const k of knobs) k.addEventListener('input', pushKnobs);
@@ -134,7 +143,20 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
   });
 
   function exitTreeMode(): void {
-    document.body.removeAttribute('data-tree-mode');
+    // The canonical enter/exit logic (opacity restore, base-Y reset, etc.)
+    // lives in the desktop controller (`tree-mode.ts`). On mobile we still
+    // render our own UI, but we must trigger the same exit() path —
+    // otherwise the tree can remain in its bright/full-opacity state after
+    // dismissing the sheet.
+    const desktopClose = document.querySelector<HTMLButtonElement>(
+      '.tree-mode-ui .tree-mode-close',
+    );
+    if (desktopClose) {
+      desktopClose.click();
+      return;
+    }
+    // Fallback: restore the attribute to the "off" state.
+    document.body.dataset.treeMode = 'off';
   }
   closeBtn.addEventListener('click', exitTreeMode);
 

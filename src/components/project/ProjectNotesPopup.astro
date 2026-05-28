@@ -51,6 +51,7 @@ const firstNoteId = tree.order[0]?.fileId ?? '';
       data-notes-popup
       data-project-slug={tree.slug}
       data-active-note={firstNoteId}
+      data-notes-resize-persist
       role="dialog"
       aria-modal="true"
       aria-labelledby={`notes-popup-title-${tree.slug}`}
@@ -58,7 +59,7 @@ const firstNoteId = tree.order[0]?.fileId ?? '';
       hidden
     >
       <div class="notes-popup-backdrop" data-notes-backdrop aria-hidden="true" />
-      <div class="notes-popup-folio" role="document">
+      <div class="notes-popup-folio" data-view="tree" role="document">
         <div class="notes-popup-grain" aria-hidden="true" />
 
         <button
@@ -68,6 +69,20 @@ const firstNoteId = tree.order[0]?.fileId ?? '';
           aria-label="close notes (esc)"
         >
           ×
+        </button>
+
+        {/* ADR-022 — mobile two-step nav: on ≤720px the popup starts on the
+            folder tree; tapping a note slides into the reader and reveals
+            this back button. CSS hides it on tablet/desktop where both
+            panes are visible side-by-side. */}
+        <button
+          type="button"
+          class="notes-popup-back"
+          data-notes-back
+          aria-label="back to folders"
+        >
+          <span class="notes-popup-back-arrow" aria-hidden="true">‹</span>
+          <span class="notes-popup-back-label">folders</span>
         </button>
 
         <header class="notes-popup-head">

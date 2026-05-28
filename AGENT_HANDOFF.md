@@ -2,7 +2,7 @@
 
 > **Read [SESSION_HANDOFF.md](SESSION_HANDOFF.md) first** for a compressed brief. This file is the detailed checklist and implementation history.
 
-**Latest update:** 2026-05-27 — notes restructured to mirror `_Sanitized_Copy/` 1:1 + folder-tree notes popup (ADR-020); project-title hover-wiggle fix. (Earlier same day: project media; ADR-019.)
+**Latest update:** 2026-05-28 — design-handoff integration pass: mobile notes two-step (ADR-022), dual-shell hiding fix (specificity leak), tree-slider key-mismatch fix (ADR-024), Claude Design fonts now **self-hosted** (ADR-025, supersedes ADR-023's CDN stopgap) via `scripts/get-fonts.sh`, notes-resize persistence enabled.
 
 **Site repo:** `/Users/rafanquader/Developer/Portfolio_Website/`
 
@@ -21,7 +21,7 @@ The site is **built, content-filled, and media-complete on `/projects`**. Home s
 3. Vault `decisions/ADR-019-project-media-carousel.md` if touching project media
 4. Vault `specs/2026-05-24-projects-page-redesign-design.md` if touching `/projects` layout
 
-**ADRs:** 015–020 (projects redesign + WIP + media + notes folder-tree), plus earlier stack/aesthetic ADRs in vault `decisions/_index.md`.
+**ADRs:** 015–025 (projects redesign + WIP + media + notes folder-tree + desktop overhaul + dual-shell + mobile two-step notes + tree-slider fix + self-hosted fonts; ADR-023 superseded by 025), plus earlier stack/aesthetic ADRs in vault `decisions/_index.md`.
 
 ---
 
@@ -78,6 +78,7 @@ The site is **built, content-filled, and media-complete on `/projects`**. Home s
 3. Deploy — Cloudflare Pages
 4. Deeper note curation — vault pipeline
 5. Optional: re-encode heavy GIFs to WebM if deploy weight is an issue
+6. OnMe field-card content → content collection (currently hardcoded)
 
 ---
 

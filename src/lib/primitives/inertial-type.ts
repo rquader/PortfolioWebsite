@@ -92,7 +92,10 @@ function splitTextNodes(root: HTMLElement): HTMLElement[] {
       }
     }
     for (const ch of text) {
-      if (ch === ' ' || ch === '\t' || ch === '\n') {
+      // Treat all "breaking" whitespace as boundaries between words.
+      // Note: NBSP (U+00A0) is also treated as a boundary, but it is not a
+      // break opportunity in layout — it remains non-breaking as a text node.
+      if (ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r' || ch === '\u00A0') {
         flushWord();
         frag.appendChild(document.createTextNode(ch));
       } else {
@@ -146,8 +149,11 @@ function refreshCenters(g: Group): void {
   const sy = window.scrollY;
   for (const L of g.letters) {
     const rect = L.span.getBoundingClientRect();
-    L.cx = rect.left + rect.width / 2 + sx;
-    L.cy = rect.top + rect.height / 2 + sy;
+    // `getBoundingClientRect()` includes current transforms; we want the
+    // "rest" center so pointer distance remains stable during resizes /
+    // font loads even if a letter is mid-wobble.
+    L.cx = rect.left + rect.width / 2 + sx - L.x;
+    L.cy = rect.top + rect.height / 2 + sy - L.y;
   }
   for (const L of g.colorOnly) {
     const rect = L.span.getBoundingClientRect();
@@ -197,6 +203,16 @@ export function initInertialType(root: HTMLElement | null = null): InertialTypeH
 
   if (groups.length === 0) return { stop: () => {} };
 
+  // Measurement scheduling (avoid repeated sync layouts on bursts).
+  let measureRaf: number | null = null;
+  const scheduleMeasureVisible = () => {
+    if (measureRaf != null) return;
+    measureRaf = window.requestAnimationFrame(() => {
+      measureRaf = null;
+      for (const g of groups) if (g.visible) refreshCenters(g);
+    });
+  };
+
   // Visibility gating
   const io = new IntersectionObserver(
     (entries) => {
@@ -204,7 +220,7 @@ export function initInertialType(root: HTMLElement | null = null): InertialTypeH
         const g = groups.find((x) => x.root === e.target);
         if (!g) continue;
         g.visible = e.isIntersecting;
-        if (g.visible) refreshCenters(g);
+        if (g.visible) scheduleMeasureVisible();
       }
     },
     { threshold: 0 },
@@ -216,15 +232,35 @@ export function initInertialType(root: HTMLElement | null = null): InertialTypeH
   const onResize = () => {
     if (resizeTimer) clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => {
-      for (const g of groups) if (g.visible) refreshCenters(g);
+      scheduleMeasureVisible();
     }, 100);
   };
   window.addEventListener('resize', onResize);
 
+  // Layout shifts not captured by window resize (container queries,
+  // async content, etc.).
+  const ro = new ResizeObserver(() => scheduleMeasureVisible());
+  for (const g of groups) ro.observe(g.root);
+
+  // Fonts can shift glyph metrics after initial layout; re-measure once
+  // they settle. (Guarded for older browsers / SSR.)
+  const fontSet = (document as unknown as { fonts?: FontFaceSet }).fonts;
+  const onFontsDone = () => scheduleMeasureVisible();
+  if (fontSet) {
+    // `ready` resolves when all fonts in use are loaded.
+    fontSet.ready.then(onFontsDone).catch(() => {});
+    // Some browsers fire incremental events during streaming font loads.
+    // If unsupported, these calls are harmless.
+    try {
+      fontSet.addEventListener('loadingdone', onFontsDone);
+      fontSet.addEventListener('loadingerror', onFontsDone);
+    } catch {
+      // ignore
+    }
+  }
+
   // Initial measurement on the next frame (after layout settles).
-  requestAnimationFrame(() => {
-    for (const g of groups) refreshCenters(g);
-  });
+  scheduleMeasureVisible();
 
   // Pointer tracking
   const pointer = { x: -1e6, y: -1e6 };
@@ -311,7 +347,17 @@ export function initInertialType(root: HTMLElement | null = null): InertialTypeH
       unregister();
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('resize', onResize);
+      if (measureRaf != null) window.cancelAnimationFrame(measureRaf);
       io.disconnect();
+      ro.disconnect();
+      if (fontSet) {
+        try {
+          fontSet.removeEventListener('loadingdone', onFontsDone);
+          fontSet.removeEventListener('loadingerror', onFontsDone);
+        } catch {
+          // ignore
+        }
+      }
     },
   };
 }

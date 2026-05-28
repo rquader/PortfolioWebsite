@@ -21,7 +21,8 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     <h2 class="section-heading" data-color-letters data-inertial-text>on me</h2>
 
     {/* Mobile-only photo: only shows in the mobile shell (<=720px).
-        The Threshold photo carries it on desktop. */}
+        The Threshold photo carries it on desktop. Includes the small
+        caption pill "rafan, speaking" per the design (m/sections.jsx). */}
     <div class="on-me-photo" data-shell="mobile">
       <Photo
         src={`${BASE_WITH_SLASH}${(hasPhoto ? photoPublicPath : '/images/rafan-speaking-1.svg').replace(/^\//, '')}`}
@@ -29,6 +30,7 @@ const hasPhoto = fs.existsSync(photoDiskPath);
         treatment="print"
         aspect="1/1"
       />
+      <span class="on-me-photo-cap" aria-hidden="true">rafan, speaking</span>
     </div>
 
     <div class="bio">
@@ -80,22 +82,46 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     .on-me .section-inner { grid-template-columns: 1fr; }
   }
 
-  /* Mobile photo wrapper — keeps the 1:1 framed-print treatment but
-     scales to mobile width with a sensible maximum. */
+  /* Mobile photo wrapper — frame, 1:1 crop, caption pill at bottom-left
+     (mirrors m/sections.css .on-me-photo-card). */
   .on-me-photo {
-    width: clamp(180px, 50vw, 280px);
-    margin: 0 0 1.5rem;
+    position: relative;
+    width: 100%;
+    max-width: 22rem;
+    aspect-ratio: 1 / 1;
+    margin: 0.2rem 0 1.4rem;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--bg-1);
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    box-shadow: var(--shadow-card);
   }
   .on-me-photo .photo,
   .on-me-photo .photo-picture {
     width: 100%;
+    height: 100%;
     aspect-ratio: 1 / 1;
+    box-shadow: none;
   }
   .on-me-photo .photo-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: 50% 38%;
+    object-position: 50% 40%;
+  }
+  .on-me-photo-cap {
+    position: absolute;
+    left: 0.65rem;
+    bottom: 0.55rem;
+    padding: 0.22rem 0.55rem;
+    font-family: var(--face-mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    text-transform: lowercase;
+    color: var(--text-0);
+    background: color-mix(in srgb, var(--bg-0) 78%, transparent);
+    border-radius: 3px;
+    pointer-events: none;
   }
 
   .on-me .bio {

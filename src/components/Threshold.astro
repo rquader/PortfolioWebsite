@@ -76,7 +76,7 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   </a>
 </section>
 
-<aside class="tree-mode-ui" aria-hidden="true" aria-label="recursive tree controls">
+<aside class="tree-mode-ui" data-shell="desktop" aria-hidden="true" aria-label="recursive tree controls">
   <button class="tree-mode-close" type="button" aria-label="exit tree mode">×</button>
   <span class="tree-mode-hint" aria-hidden="true">esc</span>
 
@@ -127,9 +127,89 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   </div>
 </aside>
 
+{/* ADR-021 — mobile-shell tree mode UI. Bottom sheet (with pull-handle
+    drag-to-dismiss) + top pills (reset / close). Hidden on desktop by
+    `data-shell="mobile"`. Same canvas click enters tree mode via the
+    existing controller (which toggles body[data-tree-mode='on']); both
+    controllers observe that attribute and render their respective UI. */}
+<div class="m-tree-mode-top" data-shell="mobile" data-mtree-top aria-hidden="true">
+  <button
+    type="button"
+    class="m-tree-mode-pill"
+    data-mtree-reset
+    aria-label="reset tree parameters"
+  >
+    <span class="ico" aria-hidden="true">↺</span>
+    <span>reset</span>
+  </button>
+  <button
+    type="button"
+    class="m-tree-mode-pill"
+    data-mtree-close
+    aria-label="exit tree mode"
+  >
+    <span>close</span>
+    <span class="ico" aria-hidden="true">×</span>
+  </button>
+</div>
+
+<aside
+  class="m-tree-mode-sheet"
+  data-shell="mobile"
+  data-mtree-sheet
+  data-label-mode="cs"
+  aria-label="tree parameters"
+  aria-hidden="true"
+>
+  <div class="m-tree-mode-handle" data-mtree-handle aria-hidden="true"></div>
+  <header class="m-tree-mode-sheet-head">
+    <span class="m-tree-mode-sheet-title">recursive tree</span>
+    <button
+      type="button"
+      class="m-tree-mode-sheet-toggle"
+      data-mtree-labels
+      aria-pressed="false"
+    >cs labels</button>
+  </header>
+  <label class="m-tree-knob">
+    <span class="m-tree-knob-label" data-label-cs="depth" data-label-bot="generations">depth</span>
+    <input
+      class="m-tree-knob-range"
+      type="range"
+      min="5" max="10" step="1" value="8"
+      data-mtree-knob="depth"
+      aria-label="depth"
+    />
+    <span class="m-tree-knob-value" data-mtree-value="depth">8</span>
+  </label>
+  <label class="m-tree-knob">
+    <span class="m-tree-knob-label" data-label-cs="angle" data-label-bot="spread">angle</span>
+    <input
+      class="m-tree-knob-range"
+      type="range"
+      min="14" max="40" step="1" value="27"
+      data-mtree-knob="angleDeg"
+      aria-label="angle"
+    />
+    <span class="m-tree-knob-value" data-mtree-value="angleDeg">27°</span>
+  </label>
+  <label class="m-tree-knob">
+    <span class="m-tree-knob-label" data-label-cs="ratio" data-label-bot="taper">ratio</span>
+    <input
+      class="m-tree-knob-range"
+      type="range"
+      min="60" max="85" step="1" value="74"
+      data-mtree-knob="ratio"
+      aria-label="ratio"
+    />
+    <span class="m-tree-knob-value" data-mtree-value="ratio">74%</span>
+  </label>
+</aside>
+
 <script>
   import { mountTree } from '../lib/backdrop/tree';
   import { initTreeMode } from '../lib/primitives/tree-mode';
+  import { initMobileTreeMode } from '../lib/primitives/mobile-tree-mode';
 
   const canvas = document.getElementById('tree-threshold') as HTMLCanvasElement | null;
   if (canvas) {
@@ -143,5 +223,9 @@ const hasPhoto = fs.existsSync(photoDiskPath);
       numParticles: 24,
     });
     initTreeMode(canvas, handle);
+    // Mobile UI uses the same tree handle; the canvas click in
+    // initTreeMode still toggles body[data-tree-mode] which the
+    // mobile controller observes.
+    initMobileTreeMode(handle);
   }
 </script>

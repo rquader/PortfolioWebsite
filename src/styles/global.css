@@ -475,3 +475,28 @@ body.mobile-drawer-open {
   overflow: hidden;
   touch-action: none;
 }
+
+/* ─────────────────────────────────────────────────────────────────────
+   ADR-021 follow-up — defensive word-break protection.
+   Browsers default to NOT breaking words mid-letter, but inline-block
+   letter spans (created by inertial-type) can each become independent
+   wrap candidates. The .inertial-word wrapper sets white-space: nowrap
+   so words stay intact; this rule prevents anything from setting
+   word-break: break-all on its descendants. Long single words (URLs,
+   IDs) can still overflow — fine; better than splitting "Disconnected"
+   in the middle of the word.
+   ───────────────────────────────────────────────────────────────────── */
+.inertial-word,
+.inertial-word > .inertial-letter {
+  overflow-wrap: normal;
+  word-break: normal;
+}
+/* Headings + display text — never break mid-word. */
+h1, h2, h3, h4, h5, h6,
+.section-heading,
+.project-chapter-title,
+.projects-title,
+.bio-lead {
+  overflow-wrap: normal;
+  word-break: normal;
+}

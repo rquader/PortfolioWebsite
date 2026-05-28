@@ -574,19 +574,32 @@
   top: 0.65rem;
   right: 0.65rem;
   z-index: 2;
-  padding: 0.28rem 0.55rem;
+  padding: 0.3rem 0.65rem;
   font-family: var(--face-display);
   font-style: italic;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   letter-spacing: 0.04em;
+  text-transform: lowercase;
   color: var(--text-0);
   background: color-mix(in srgb, var(--bg-0) 88%, var(--accent) 12%);
   border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
   border-radius: 3px;
   box-shadow: 0 4px 12px -6px color-mix(in srgb, var(--text-0) 25%, transparent);
-  transform: rotate(-4deg);
+  transform: rotate(-3deg);
   cursor: pointer;
   transition: transform 0.15s ease;
+  /* Keep words intact: "work in progress" should wrap as words, not
+     break mid-letter, if it ever has to wrap on a narrow viewport. */
+  white-space: nowrap;
+  max-width: calc(100% - 1.3rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 540px) {
+  .wip-sticker {
+    font-size: 0.62rem;
+    padding: 0.24rem 0.5rem;
+  }
 }
 
 .wip-sticker:hover,
@@ -727,16 +740,82 @@
   .project-chapter-flip .project-chapter-media { order: 1; }
   .project-chapter-flip .project-chapter-text  { order: 2; }
 
+  /* Sensible default — 16:10 mirrors the desktop default (wider than
+     4:3 was; 4:3 squished portrait/landscape content equally). */
   .project-media,
   .project-media-image,
   .project-media-empty,
   .project-media-single,
-  .project-media-carousel-viewport,
-  .project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:first-child,
-  .project-media-wrap[data-project-slug='insta-dm'] .project-media-single,
-  .project-media-wrap[data-project-slug='web-crossword-generator'] .project-media-carousel-viewport,
-  .project-media-wrap[data-project-slug='adhkar-counter'] .project-media-carousel-viewport {
+  .project-media-carousel-viewport {
+    aspect-ratio: 16 / 10;
+    max-height: 62vh;
+  }
+
+  /* ── per-project mobile aspect ratios (ADR-021 follow-up) ──
+     The user reviewed each chapter on iPhone Safari; these are the
+     ratios that show each project at its natural shape without
+     cropping the wrong axis. */
+
+  /* Arabic Dialect Map — diagram is landscape; carousel mode on
+     mobile (per media_mode_mobile), so the frame can be wider. */
+  .project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-frame,
+  .project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-single,
+  .project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-carousel-viewport {
     aspect-ratio: 4 / 3;
+    max-height: 65vh;
+  }
+
+  /* Web Crossword Generator — screenshot is wide-ish; show centered
+     without an awkward portrait crop. */
+  .project-media-wrap[data-project-slug='web-crossword-generator'] .project-media-carousel-viewport {
+    aspect-ratio: 16 / 9;
+    max-height: 58vh;
+  }
+  .project-media-wrap[data-project-slug='web-crossword-generator']
+    .project-media-carousel-slide[data-slide-index='0']
+    .photo-img {
+    /* The desktop rule sets width:auto/object-fit:cover so the image
+       scales to height and crops the sides. On mobile we'd rather see
+       the whole crossword — contain instead, centered. */
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  /* Portfolio Website demo — show the WHOLE demo (no crop), not just
+     a strip. Switch to object-fit: contain on mobile so the full
+     recursive-tree-and-text frame is visible. */
+  .project-media-wrap[data-project-slug='portfolio-website'] .project-media-single,
+  .project-media-wrap[data-project-slug='portfolio-website'] .project-media-image {
+    aspect-ratio: 16 / 10;
+    max-height: 60vh;
+  }
+  .project-media-wrap[data-project-slug='portfolio-website'] .project-media-gif,
+  .project-media-wrap[data-project-slug='portfolio-website'] .project-media-image img {
+    object-fit: contain;
+    background: var(--bg-1);
+  }
+
+  /* Adhkar Counter — keep the same wide-ish aspect as desktop (the
+     screenshot is 752×454). */
+  .project-media-wrap[data-project-slug='adhkar-counter'] .project-media-carousel-viewport {
+    aspect-ratio: 752 / 454;
+    max-height: 58vh;
+  }
+
+  /* Insta-DM — 16:9 demo, contain so the full window chrome is in
+     frame (desktop rule already sets this for the gif). */
+  .project-media-wrap[data-project-slug='insta-dm'] .project-media-single {
+    aspect-ratio: 16 / 9;
+    max-height: 60vh;
+  }
+
+  /* Legendary UI/UX + Manim wallpapers — single demos; 16:9 reads
+     well on phone widths. */
+  .project-media-wrap[data-project-slug='legendary-ui-ux'] .project-media-single,
+  .project-media-wrap[data-project-slug='manim-wallpapers'] .project-media-carousel-viewport {
+    aspect-ratio: 16 / 9;
     max-height: 60vh;
   }
 
@@ -769,11 +848,19 @@
 }
 @media (min-width: 1100px) {
   .projects-layout {
-    grid-template-columns: minmax(0, 1fr) var(--rail);
+    /* ADR-021 follow-up: narrowed the rail column from --rail (18rem)
+       to 13rem so the chapter content keeps more of the page. */
+    grid-template-columns: minmax(0, 1fr) 13rem;
   }
 }
 
-/* Sticky right rail (≥1100px). Hidden below. */
+/* Sticky right rail (≥1100px). Hidden below.
+   ADR-021 follow-up: the first pass had the rail too prominent — the
+   user felt it pulled focus away from the chapters themselves. Now it
+   rests at 0.32 opacity (just enough to read the active chapter at a
+   glance), lifts to 1.0 on hover/focus-within. The active chapter
+   itself stays at full color/opacity even when the rail is dimmed, so
+   the "where am I" signal isn't lost. */
 .projects-rail { display: none; }
 @media (min-width: 1100px) {
   .projects-rail {
@@ -783,8 +870,23 @@
     align-self: start;
     max-height: calc(100dvh - var(--nav-h) - 3rem);
     overflow-y: auto;
-    padding-left: 1.5rem;
-    border-left: 1px solid var(--hair);
+    padding-left: 1rem;
+    border-left: 1px solid color-mix(in srgb, var(--accent) 10%, transparent);
+    /* Drop the rail's resting opacity to a whisper — it should read
+       as "there if you need it" rather than "look at me". Lifts to
+       full on hover/focus-within. */
+    opacity: 0.22;
+    transition: opacity var(--d-med) var(--ease-out);
+  }
+  .projects-rail:hover,
+  .projects-rail:focus-within {
+    opacity: 1;
+    border-left-color: var(--hair);
+  }
+  /* Always-on slim spine — even at low opacity the active item should
+     read. Pull the current item out of the rail-wide opacity fade. */
+  .projects-rail-item.is-current {
+    opacity: 1;
   }
 }
 .projects-rail-eyebrow {
@@ -793,7 +895,7 @@
   letter-spacing: var(--tracking-eyebrow);
   text-transform: lowercase;
   color: var(--text-2);
-  margin: 0 0 0.85rem;
+  margin: 0 0 0.7rem;
 }
 .projects-rail-list {
   list-style: none;
@@ -801,19 +903,19 @@
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.05rem;
+  gap: 0;
 }
 .projects-rail-item {
   display: flex;
   align-items: baseline;
   gap: 0.55rem;
-  padding: 0.4rem 0 0.4rem 0.6rem;
+  padding: 0.32rem 0 0.32rem 0.6rem;
   margin-left: -0.6rem;
   text-decoration: none;
   color: var(--text-2);
   font-family: var(--face-text);
-  font-size: 0.92rem;
-  line-height: 1.4;
+  font-size: 0.86rem;
+  line-height: 1.35;
   border-left: 2px solid transparent;
   transition:
     color var(--d-fast) var(--ease-out),

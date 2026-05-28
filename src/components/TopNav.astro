@@ -87,14 +87,17 @@ const links: NavLink[] = [
     padding: 0 var(--gutter);
     z-index: 50;
     pointer-events: none;
+    /* ADR-021 follow-up — dropped the backdrop-filter blur. With the
+       tree backdrop at the new ambient opacity (0.35), the blur was
+       smearing the tree behind the nav into a milky band; the
+       gradient alone gives the nav enough "lift" without distorting
+       what's underneath. */
     background: linear-gradient(
       to bottom,
-      color-mix(in srgb, var(--bg-0) 90%, transparent) 0%,
-      color-mix(in srgb, var(--bg-0) 60%, transparent) 70%,
+      color-mix(in srgb, var(--bg-0) 94%, transparent) 0%,
+      color-mix(in srgb, var(--bg-0) 70%, transparent) 70%,
       transparent 100%
     );
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
   }
   .top-nav a,
   .top-nav button {

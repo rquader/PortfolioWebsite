@@ -1,9 +1,11 @@
 ---
 // On Me — bio with synesthesia hover-coloring on selected words.
+// ADR-021: adds a quiet field-card sidebar on the right at ≥880px
+// (education + focus / tools / club rows in JetBrains Mono).
 ---
 <section class="section on-me" id="on-me" data-section-id="on-me">
   <div class="section-inner">
-    <h2 data-color-letters data-inertial-text>on me</h2>
+    <h2 class="section-heading" data-color-letters data-inertial-text>on me</h2>
     <div class="bio">
       <p class="bio-lead">
         As a student beginning in <strong>Computer Science</strong>, one thing I can say in
@@ -18,31 +20,62 @@
         endeavors, build things, or simply message <span data-syn-word>Claude Code</span>.
       </p>
     </div>
+
+    {/* Quiet sidebar — quick facts, JetBrains Mono labels.
+        TODO (next session): move education / focus / tools / club into
+        the content collection so the user can edit without touching
+        components (see [[Mobile/Known Issue — Use real sanitized notes
+        (not placeholder)]] for the pattern). */}
+    <aside class="on-me-field" aria-label="quick facts">
+      <span class="on-me-field-eyebrow">at a glance</span>
+      <h3>field card</h3>
+      <p class="on-me-field-meta">
+        B.S. <strong>Computer Science</strong>, San José State University
+        (Aug 2025 &ndash; May 2029).
+      </p>
+      <div class="on-me-field-row"><span>focus</span><span>research · education · presentation</span></div>
+      <div class="on-me-field-row"><span>tools</span><span>java · git · claude code</span></div>
+      <div class="on-me-field-row"><span>club</span><span>SCE @ SJSU</span></div>
+    </aside>
   </div>
 </section>
 
 <style>
+  /* Two-column on wide viewports; bio + field card. The heading spans
+     both columns at the top. */
+  .on-me .section-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+    gap: clamp(2rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .on-me .section-heading { grid-column: 1 / -1; }
+  @media (max-width: 880px) {
+    .on-me .section-inner { grid-template-columns: 1fr; }
+  }
+
   .on-me .bio {
     display: flex;
     flex-direction: column;
-    gap: 1.15rem;
+    gap: 1.2rem;
     max-width: 38rem;
   }
 
   .on-me .bio p {
     margin: 0;
     font-family: var(--face-text);
-    font-size: clamp(1.02rem, 0.35vw + 0.98rem, 1.12rem);
+    font-size: clamp(1.05rem, 0.35vw + 1rem, 1.18rem);
     line-height: 1.72;
     letter-spacing: 0.01em;
     color: var(--text-1);
+    max-width: none;
   }
 
   .on-me .bio-lead {
     font-family: var(--face-display);
     font-variation-settings: 'SOFT' 75, 'WONK' 0;
-    font-size: clamp(1.08rem, 0.45vw + 1rem, 1.2rem);
-    line-height: 1.65;
+    font-size: clamp(1.15rem, 0.5vw + 1.05rem, 1.32rem);
+    line-height: 1.6;
     color: var(--text-0);
   }
 
@@ -56,6 +89,56 @@
     font-variation-settings: 'SOFT' 90;
     color: color-mix(in srgb, var(--text-0) 88%, var(--accent));
   }
+
+  /* Field card — quiet hairline border + half-tinted bg-1 panel,
+     mono labels separated by hairline dividers (last row no border). */
+  .on-me-field {
+    border: 1px solid var(--hair);
+    border-radius: 4px;
+    padding: 1.3rem 1.4rem;
+    background: color-mix(in srgb, var(--bg-1) 50%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .on-me-field-eyebrow {
+    font-family: var(--face-mono);
+    font-size: var(--type-tiny);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: lowercase;
+    color: var(--text-2);
+  }
+  .on-me-field h3 {
+    font-family: var(--face-display);
+    font-variation-settings: 'SOFT' 75, 'WONK' 0;
+    font-size: 1.1rem;
+    font-style: italic;
+    color: var(--text-0);
+    margin: 0;
+  }
+  .on-me-field-meta {
+    font-family: var(--face-text);
+    font-size: 0.94rem;
+    color: var(--text-1);
+    line-height: 1.6;
+    max-width: none;
+    margin: 0;
+  }
+  .on-me-field-meta strong { color: var(--text-0); font-weight: 600; }
+  .on-me-field-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-family: var(--face-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    color: var(--text-2);
+    text-transform: lowercase;
+    padding: 0.25rem 0;
+    border-bottom: 1px solid var(--hair);
+  }
+  .on-me-field-row:last-child { border-bottom: 0; }
+  .on-me-field-row span:last-child { color: var(--text-1); }
 
   :root[data-theme="dark"] .on-me {
     background-color: rgb(

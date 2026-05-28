@@ -48,16 +48,11 @@
   -webkit-mask-size: 100% 100%;
           mask-size: 100% 100%;
 }
-/* Brighten tree residue on threshold hover — but not when the pointer
-   is on the portrait (avoids fighting the photo hover state). */
-.threshold:hover:not(:has(.threshold-photo:hover)) .threshold-tree {
-  opacity: 0.85;
-}
-@media (prefers-reduced-motion: reduce) {
-  .threshold:hover:not(:has(.threshold-photo:hover)) .threshold-tree {
-    opacity: 1;
-  }
-}
+/* ADR-021 — the tree-handle opacity (0.35 at rest, set in Threshold.astro)
+   is what controls ambient visibility now; CSS opacity stays at 1 always.
+   Earlier the CSS dropped to 0.85 on section-hover, which multiplied with
+   the (then-0.05) handle opacity and effectively dimmed the tree on hover —
+   the opposite of intent at the new ambient level. */
 @keyframes tree-fade-in {
   to { opacity: 1; }
 }
@@ -117,18 +112,39 @@
   font-family: var(--face-mono);
 }
 
-/* Author print — top-right, companion-scale. Full-frame photograph
-   (no crop, no mask) so the speaking gesture and podium/mic context
-   stay visible. Small enough that the dark stage backdrop does NOT
-   read as a mass on parchment.
-   Spec: specs/2026-05-22-gallery-v2-photo-sticker-design.md §4.3 (rev4). */
+/* Author print — top-right, companion-scale.
+   ADR-021 refines the original "honest full frame, no crop" pass:
+   crop to 1:1 with object-position keeping the speaking gesture in
+   frame (hand-on-podium visible). Drop shadow + hairline accent
+   ring still carry the palette at the edge — the photograph itself
+   is otherwise untouched (no chroma shift). True pixels at rest;
+   brightness-only on hover.
+   Spec: specs/2026-05-22-gallery-v2-photo-sticker-design.md §4.3 +
+         [[decisions/ADR-021-desktop-overhaul-and-dual-shell-mobile]]. */
 .threshold-photo {
   position: absolute;
   top: clamp(4.5rem, 12vh, 7rem);
-  right: clamp(1.25rem, 5vw, 3rem);
-  width: clamp(168px, 18vw, 224px);
+  right: clamp(1.5rem, 5vw, 3rem);
+  width: clamp(180px, 18vw, 240px);
+  aspect-ratio: 1 / 1;
   z-index: 2;
   pointer-events: auto;
+}
+/* The Photo component renders a <figure class="photo print"> whose
+   inner <img class="photo-img"> is normally width:100%/height:auto
+   (full-frame). Here we want a 1:1 crop, so force the picture to
+   fill and cover with the gesture in frame. */
+.threshold-photo .photo,
+.threshold-photo .photo-picture {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+}
+.threshold-photo .photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 38%;
 }
 
 .scroll-cue {

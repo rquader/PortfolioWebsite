@@ -34,6 +34,7 @@
     'Newsreader',
     'New York', 'Iowan Old Style', 'Sitka Text', Charter, Georgia, serif;
   --face-mono:
+    'JetBrains Mono',
     'SF Mono', 'Menlo', 'Consolas', 'Liberation Mono', monospace;
 
   /* Legacy alias — Phase 4 stylesheets reference --face-serif. */
@@ -45,21 +46,54 @@
   --display-soft: 60;
   --display-wonk: 0;
 
-  --type-name:   clamp(5rem,    12vw, 9rem);
-  --type-h2:     clamp(2.2rem,  4vw,  3.4rem);
-  --type-h3:     clamp(1.3rem,  2vw,  1.6rem);
-  --type-body:   clamp(1.05rem, 1.5vw, 1.25rem);
+  /* Type scale — desktop. Mobile overrides live below 720px. ADR-021
+     (Claude Design handoff) tightened the rhythm: --type-name 12vw→10vw,
+     --type-body upper bound 1.25rem→1.18rem, added --type-h1 / --type-h4 /
+     --type-tiny + display + eyebrow tracking variables. */
+  --type-name:   clamp(5rem,    10vw, 8.5rem);
+  --type-h1:     clamp(2.6rem,  5vw,  4rem);
+  --type-h2:     clamp(2rem,    3.6vw, 3rem);
+  --type-h3:     clamp(1.25rem, 1.8vw, 1.55rem);
+  --type-h4:     clamp(1.05rem, 1.4vw, 1.2rem);
+  --type-body:   clamp(1.05rem, 1.4vw, 1.18rem);
   --type-small:  0.875rem;
-  --leading-tight: 1.15;
-  --leading-body:  1.55;
+  --type-tiny:   0.74rem;
+  --leading-tight: 1.12;
+  --leading-body:  1.62;
+  --tracking-display: -0.018em;
+  --tracking-eyebrow: 0.08em;
 
   /* ============================================================
      LAYOUT (mode-invariant)
   ============================================================ */
-  --max-content: 38ch;
-  --section-pad: clamp(4rem, 8vw, 6rem);
-  --gutter:      clamp(1rem, 4vw, 3rem);
+  --max-content: 38ch;       /* prose column */
+  --max-page:    72rem;      /* page outer (section-inner cap) */
+  --max-wide:    88rem;      /* wider layouts (project rows) */
+  --section-pad: clamp(4.5rem, 9vh, 7rem);
+  --gutter:      clamp(1.4rem, 4vw, 2.8rem);
   --nav-h:       3.5rem;
+  --rail:        18rem;      /* projects-page TOC rail */
+  --tap-min:     44px;
+
+  /* ============================================================
+     MOTION (mode-invariant)
+  ============================================================ */
+  --ease-out:    cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-spring: cubic-bezier(0.16, 1.1, 0.3, 1);
+  --d-fast:  150ms;
+  --d-med:   260ms;
+  --d-slow:  440ms;
+}
+
+/* Mobile token overrides — applies in both light + dark, both shells. */
+@media (max-width: 720px) {
+  :root {
+    --type-name:   clamp(3.6rem, 17vw, 5.5rem);
+    --type-h2:     clamp(1.6rem, 6.5vw, 2.2rem);
+    --type-body:   clamp(0.98rem, 3.6vw, 1.08rem);
+    --section-pad: clamp(2.4rem, 8vw, 3.4rem);
+    --gutter:      clamp(1.1rem, 5vw, 1.6rem);
+  }
 }
 
 /* ============================================================
@@ -110,9 +144,24 @@
   --accent-on-the-artifacts: var(--accent);
   --accent-on-the-trail:     var(--accent-bright);
   --accent-coda:             var(--accent);
+  --accent-projects:         var(--accent);
 
   --selection-bg: var(--accent);
   --selection-fg: var(--bg-0);
+
+  /* Hairline borders + scrims (ADR-021 — Claude Design handoff). The
+     site previously used hard-coded color-mix calls per-component;
+     these tokens make the values shareable across cards, dividers, and
+     popover chrome. */
+  --hair:        color-mix(in srgb, var(--accent) 18%, transparent);
+  --hair-strong: color-mix(in srgb, var(--accent) 32%, transparent);
+  --scrim:       rgba(58, 38, 21, 0.5);
+  --shadow-card:
+    0 1px 0 rgba(58, 38, 21, 0.08),
+    0 14px 28px -16px rgba(58, 38, 21, 0.38);
+  --shadow-floating:
+    0 6px 24px -10px rgba(58, 38, 21, 0.35),
+    0 2px 6px rgba(58, 38, 21, 0.10);
 
   /* === Legacy aliases — keep Phase 4 stylesheets working === */
   --ink-0: var(--bg-0);
@@ -136,7 +185,10 @@
      Goal: present the photograph honestly — full frame, gesture and
      speaking context preserved — with palette integration done at the
      EDGE (hairline ring + soft drop shadow), not via pixel-altering
-     filters or masks. True pixels at rest; brightness-only on hover. */
+     filters or masks. True pixels at rest; brightness-only on hover.
+     ADR-021 adds --photo-ring / --photo-shadow as the shared names for
+     the d/-track components; the older --photo-print-* aliases stay so
+     the existing Photo.astro keeps working without a rename. */
   --photo-print-rest: none;
   --photo-print-hover: brightness(1.06);
   --photo-print-radius: 6px;
@@ -144,6 +196,8 @@
   --photo-print-shadow:
     0 1px 0 color-mix(in srgb, var(--text-0) 8%, transparent),
     0 14px 28px -16px color-mix(in srgb, var(--text-0) 38%, transparent);
+  --photo-ring:   var(--photo-print-ring);
+  --photo-shadow: var(--photo-print-shadow);
 }
 
 /* ============================================================
@@ -187,9 +241,20 @@
   --accent-on-the-artifacts: var(--accent);
   --accent-on-the-trail:     var(--accent-bright);
   --accent-coda:             var(--accent);
+  --accent-projects:         var(--accent);
 
   --selection-bg: var(--accent);
   --selection-fg: var(--bg-0);
+
+  --hair:        color-mix(in srgb, var(--accent) 22%, transparent);
+  --hair-strong: color-mix(in srgb, var(--accent) 38%, transparent);
+  --scrim:       rgba(0, 0, 0, 0.62);
+  --shadow-card:
+    0 1px 0 rgba(0, 0, 0, 0.5),
+    0 16px 34px -16px rgba(0, 0, 0, 0.7);
+  --shadow-floating:
+    0 8px 28px -10px rgba(0, 0, 0, 0.65),
+    0 2px 6px rgba(0, 0, 0, 0.5);
 
   /* Legacy aliases (dark mode) */
   --ink-0: var(--bg-0);
@@ -213,7 +278,9 @@
      defines the photo's edge so it doesn't dissolve completely.
      Subject is still readable in the source photo at native exposure
      against the dark site, so no rest-state lift is needed; hover
-     still brightens for the "look closer" cue. */
+     still brightens for the "look closer" cue. ADR-021 keeps the
+     legacy --photo-print-* aliases AND re-exposes them as the
+     d/-track names --photo-ring / --photo-shadow. */
   --photo-print-rest: none;
   --photo-print-hover: brightness(1.1);
   --photo-print-radius: 6px;
@@ -221,6 +288,8 @@
   --photo-print-shadow:
     0 1px 0 rgba(0, 0, 0, 0.5),
     0 16px 34px -16px rgba(0, 0, 0, 0.78);
+  --photo-ring:   var(--photo-print-ring);
+  --photo-shadow: var(--photo-print-shadow);
 }
 
 /* ============================================================
@@ -233,3 +302,4 @@
 :root[data-section="on-the-artifacts"] { --companion-color: var(--accent-on-the-artifacts); }
 :root[data-section="on-the-trail"]     { --companion-color: var(--accent-on-the-trail); }
 :root[data-section="coda"]             { --companion-color: var(--accent-coda); }
+:root[data-section="projects"]         { --companion-color: var(--accent-projects); }

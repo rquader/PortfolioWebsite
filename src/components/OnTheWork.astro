@@ -1,11 +1,19 @@
 ---
 // On The Work — DDD research narrative.
+// ADR-021 — refined: accent eyebrow dot on the card; sibling SVG mesh
+// sketch shows the wifi-direct hop (villager's phone ↔ bus driver's
+// phone ↔ internet) with a drifting accent dot tracing all four arrows
+// at 8s/loop with 0.5s gaps so the dot never overlaps an arrowhead.
+// Story copy carries the explicit villager/bus-driver example and the
+// "same path works in reverse" sentence (from the chat refinement).
 ---
 <section class="section on-the-work" id="on-the-work" data-section-id="on-the-work">
   <div class="section-inner">
-    <h2 data-color-letters data-inertial-text>on the work</h2>
+    <h2 class="section-heading" data-color-letters data-inertial-text>on the work</h2>
+
     <article class="ddd-card">
-      <header class="ddd-header">
+      <header>
+        <span class="ddd-card-eyebrow">research · undergraduate</span>
         <h3>Disconnected Data Distribution (DDD)</h3>
         <p class="role">
           Undergraduate Research Assistant · Reed Systems Group, SJSU · From Sept. 2025
@@ -14,71 +22,254 @@
       <div class="story">
         <p>
           Over the last year, I've gotten the opportunity to work on DDD. Working with
-          labmates and Dr. Ben Reed, we utilize WiFi-Direct to create a system of internet
-          where internet is gone — whether due to natural disaster, war, and the like — for
-          free, utilizing current infrastructure.
+          labmates and Dr. Ben Reed, we utilized WiFi-Direct to create a way to communicate
+          for people where there isn't internet — whether due to natural disaster, war, and
+          the like — for free, utilizing current infrastructure.
         </p>
         <p>
-          Think of a villager who wants to send a message: when they send it using
-          WiFi-Direct, that message, encrypted, makes it to say a bus driver's phone who is
-          driving to where there is internet, where the villager's message is amplified.
+          Think of, let's say a "villager", who wants to send a message: when they send it
+          using WiFi-Direct, that message, encrypted, makes it to, let's say a "bus driver"'s
+          phone who is driving to where there is internet, where the villager's message is
+          amplified. The same path works in reverse, so the villager can receive messages
+          back too.
         </p>
       </div>
 
-      <div class="project-links ddd-links" role="list" aria-label="DDD links">
+      <div class="ddd-links">
         <a
-          class="project-link"
-          role="listitem"
+          class="chip"
           href="https://sjsu-cs-systems-group.github.io/discdd.net/index.html"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <span class="project-link-icon" aria-hidden="true">⊕</span>
-          <span class="project-link-label">about</span>
+          <span class="chip-icon" aria-hidden="true">⊕</span>
+          <span>about</span>
         </a>
         <a
-          class="project-link"
-          role="listitem"
+          class="chip"
           href="https://github.com/SJSU-CS-systems-group/DDD"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <span class="project-link-icon" aria-hidden="true">↗</span>
-          <span class="project-link-label">github</span>
+          <span class="chip-icon" aria-hidden="true">↗</span>
+          <span>github</span>
         </a>
       </div>
     </article>
+
+    <aside class="ddd-diagram" aria-label="DDD mesh sketch">
+      <span class="ddd-diagram-eyebrow">the hop, in three nodes</span>
+      <svg
+        class="ddd-svg"
+        viewBox="0 0 360 160"
+        role="img"
+        aria-label="three nodes: villager's phone and bus driver's phone connected by wifi-direct, bus driver's phone and internet connected by wifi. Messages flow both ways."
+      >
+        <defs>
+          <marker id="ddd-arrow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="currentColor" />
+          </marker>
+        </defs>
+
+        {/* TOP row — send (left → right). Concave down (bulges up). */}
+        <g stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="3 5">
+          <path d="M78,52 C100,38 140,38 162,52" marker-end="url(#ddd-arrow)" />
+          <path d="M198,52 C220,38 260,38 282,52" marker-end="url(#ddd-arrow)" />
+        </g>
+
+        {/* BOTTOM row — receive (right → left). Concave up (bulges down). */}
+        <g stroke="currentColor" stroke-width="1.2" fill="none" stroke-dasharray="3 5">
+          <path d="M282,98 C260,112 220,112 198,98" marker-end="url(#ddd-arrow)" />
+          <path d="M162,98 C140,112 100,112 78,98" marker-end="url(#ddd-arrow)" />
+        </g>
+
+        {/* Node 1 — villager's phone */}
+        <g transform="translate(60,75)" class="ddd-node">
+          <circle r="18" />
+          <rect x="-5" y="-9" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.3" />
+          <line x1="-2.5" y1="-6" x2="2.5" y2="-6" stroke="currentColor" stroke-width="1" />
+          <circle cx="0" cy="6" r="0.9" fill="currentColor" />
+        </g>
+
+        {/* Node 2 — bus driver's phone (same glyph; label disambiguates) */}
+        <g transform="translate(180,75)" class="ddd-node">
+          <circle r="18" />
+          <rect x="-5" y="-9" width="10" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.3" />
+          <line x1="-2.5" y1="-6" x2="2.5" y2="-6" stroke="currentColor" stroke-width="1" />
+          <circle cx="0" cy="6" r="0.9" fill="currentColor" />
+        </g>
+
+        {/* Node 3 — internet (wifi arcs over a dot) */}
+        <g transform="translate(300,75)" class="ddd-node">
+          <circle r="18" />
+          <circle cx="0" cy="6" r="1.3" fill="currentColor" />
+          <path d="M-3,3 Q0,0 3,3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+          <path d="M-6.5,0 Q0,-5 6.5,0" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+          <path d="M-10,-3 Q0,-10 10,-3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+        </g>
+
+        {/* Drifting message dot. Motion path is IDENTICAL to the visual
+            arrows; keyPoints stop at ~94% of each subpath (6 units short
+            of the arrowhead) so the dot never overlaps the tip. Opacity
+            holds at 1 across each arrow, fades to 0 for the 0.5s pause,
+            re-appears at the start of the next subpath. */}
+        <circle r="2.4" fill="var(--accent-on-the-work)" class="ddd-dot">
+          <animateMotion
+            dur="8s"
+            repeatCount="indefinite"
+            keyTimes="0;0.1875;0.25;0.4375;0.5;0.6875;0.75;0.9375;1"
+            keyPoints="0;0.235;0.25;0.485;0.5;0.735;0.75;0.985;1"
+            calcMode="linear"
+            path="M78,52 C100,38 140,38 162,52 M198,52 C220,38 260,38 282,52 M282,98 C260,112 220,112 198,98 M162,98 C140,112 100,112 78,98"
+          />
+          <animate
+            attributeName="opacity"
+            dur="8s"
+            repeatCount="indefinite"
+            calcMode="linear"
+            values="1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0"
+            keyTimes="0;0.17;0.1875;0.25;0.2625;0.42;0.4375;0.5;0.5125;0.67;0.6875;0.75;0.7625;0.92;0.9375;1"
+          />
+        </circle>
+
+        {/* Edge labels — between the two arrow rows, vertically centered.
+            y=32 keeps clearance above the curve apex at y=38. */}
+        <g font-family="var(--face-mono)" font-size="8" fill="var(--text-2)" opacity="0.75" text-anchor="middle">
+          <text x="120" y="32">wifi-direct</text>
+          <text x="240" y="32">wifi</text>
+        </g>
+
+        {/* Node labels — below nodes, centered. */}
+        <g font-family="var(--face-mono)" font-size="8.5" fill="var(--text-2)" text-anchor="middle">
+          <text x="60"  y="138">villager's phone</text>
+          <text x="180" y="138">bus driver's phone</text>
+          <text x="300" y="138">internet</text>
+        </g>
+      </svg>
+      <p class="ddd-diagram-caption">
+        Phone&nbsp;A holds an encrypted message until it meets phone&nbsp;B,
+        which carries it within range of the internet.
+      </p>
+    </aside>
   </div>
 </section>
 
 <style>
-  .ddd-card {
-    background: var(--ink-1);
-    border-left: 2px solid var(--accent-on-the-work);
-    padding: clamp(1.5rem, 3vw, 2.5rem);
-    border-radius: 0 4px 4px 0;
-    max-width: 56rem;
+  /* Two-column on wide viewports; card + companion diagram. */
+  .on-the-work .section-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
+    gap: clamp(2rem, 5vw, 3.5rem);
+    align-items: start;
   }
-  .ddd-header {
-    margin-bottom: 1.5rem;
-  }
-  .ddd-header h3 {
-    margin-bottom: 0.25rem;
-  }
-  .role {
-    font-size: var(--type-small);
-    color: var(--paper-2);
-    margin-bottom: 0;
-  }
-  .story p {
-    color: var(--paper-1);
-    max-width: 48rem;
-  }
-  .story p + p {
-    margin-top: 1em;
+  .on-the-work .section-heading { grid-column: 1 / -1; }
+  @media (max-width: 880px) {
+    .on-the-work .section-inner { grid-template-columns: 1fr; }
   }
 
+  .ddd-card {
+    background: var(--bg-1);
+    border-left: 2px solid var(--accent-on-the-work);
+    padding: clamp(1.6rem, 3vw, 2.4rem);
+    border-radius: 0 5px 5px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    box-shadow: var(--shadow-card);
+    max-width: none;
+  }
+  .ddd-card header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+  .ddd-card-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-family: var(--face-mono);
+    font-size: var(--type-tiny);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: lowercase;
+    color: var(--text-2);
+    white-space: nowrap;
+  }
+  .ddd-card-eyebrow::before {
+    content: '';
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: var(--accent-on-the-work);
+    display: inline-block;
+    flex-shrink: 0;
+    box-shadow: 0 0 8px color-mix(in srgb, var(--accent-on-the-work) 60%, transparent);
+  }
+  .ddd-card h3 {
+    margin: 0;
+    font-size: var(--type-h3);
+  }
+  .ddd-card .role {
+    font-family: var(--face-text);
+    font-style: italic;
+    font-size: var(--type-small);
+    color: var(--text-2);
+    margin: 0;
+  }
+  .ddd-card .story p {
+    color: var(--text-1);
+    margin: 0 0 0.85rem;
+    max-width: 56ch;
+  }
+  .ddd-card .story p:last-child { margin-bottom: 0; }
   .ddd-links {
-    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  /* SVG mesh sketch — three nodes, dashed paths, accent dot. */
+  .ddd-diagram {
+    border: 1px solid var(--hair);
+    border-radius: 4px;
+    padding: 1.2rem 1.3rem;
+    background: color-mix(in srgb, var(--bg-1) 45%, transparent);
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+  }
+  .ddd-diagram-eyebrow {
+    font-family: var(--face-mono);
+    font-size: var(--type-tiny);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: lowercase;
+    color: var(--text-2);
+  }
+  .ddd-svg {
+    width: 100%;
+    height: auto;
+    color: var(--accent-on-the-work);
+    display: block;
+  }
+  .ddd-svg .ddd-node circle {
+    fill: color-mix(in srgb, var(--bg-0) 80%, var(--accent-on-the-work) 12%);
+    stroke: var(--accent-on-the-work);
+    stroke-width: 1.2;
+    opacity: 0.95;
+  }
+  .ddd-svg .ddd-dot {
+    filter: drop-shadow(0 0 4px color-mix(in srgb, var(--accent-on-the-work) 60%, transparent));
+  }
+  .ddd-diagram-caption {
+    font-family: var(--face-text);
+    font-style: italic;
+    font-size: 0.88rem;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin: 0;
+    max-width: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ddd-svg .ddd-dot { animation: none; }
+    .ddd-svg .ddd-dot * { display: none; }
   }
 </style>

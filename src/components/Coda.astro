@@ -1,5 +1,9 @@
 ---
-// Coda — closing tagline + profile links (same chips as ProjectLinks).
+// Coda — closing tagline + 3 profile chips.
+// ADR-021 — switched chips to the shared .chip utility for visual
+// parity with OnTheWork DDD links. The previously-proposed
+// "built by hand · no third-party trackers" mono footer was dropped
+// during the design chat review (felt over-labeled).
 
 const links = [
   { href: 'https://github.com/rquader', label: 'github', icon: '↗' },
@@ -13,18 +17,17 @@ const links = [
     <p class="tagline tagline-secondary">
       Research · Claude Code · Education
     </p>
-    <div class="project-links coda-links" role="list">
+    <div class="coda-links">
       {
         links.map(({ href, label, icon }) => (
           <a
-            class="project-link"
-            role="listitem"
+            class="chip"
             href={href}
             target={href.startsWith('mailto:') ? undefined : '_blank'}
             rel={href.startsWith('mailto:') ? undefined : 'noopener noreferrer'}
           >
-            <span class="project-link-icon" aria-hidden="true">{icon}</span>
-            <span class="project-link-label">{label}</span>
+            <span class="chip-icon" aria-hidden="true">{icon}</span>
+            <span>{label}</span>
           </a>
         ))
       }
@@ -34,7 +37,7 @@ const links = [
 
 <style>
   .coda {
-    border-top: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    border-top: 1px solid var(--hair);
     padding-bottom: clamp(6rem, 12vh, 10rem);
   }
 
@@ -45,17 +48,19 @@ const links = [
     line-height: var(--leading-body);
     max-width: var(--max-content);
     color: var(--text-0);
-    margin: 0 0 0.35rem;
+    margin: 0 0 0.3rem;
   }
 
   .coda .tagline-secondary {
     font-family: var(--face-text);
     font-size: var(--type-small);
     color: var(--text-2);
-    margin: 0 0 1.25rem;
+    margin: 0 0 1.3rem;
   }
 
   .coda-links {
-    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
   }
 </style>

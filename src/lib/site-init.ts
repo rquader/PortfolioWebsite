@@ -19,6 +19,7 @@ import { initProjectMediaCarousels } from './primitives/project-media-carousel';
 import { initTreeHint } from './primitives/tree-hint';
 import { initChapterProgress } from './primitives/chapter-progress';
 import { initNotesResize } from './primitives/notes-resize';
+import { initMobileDrawer } from './primitives/mobile-drawer';
 
 export function initSite(): void {
   startBoot();
@@ -49,4 +50,7 @@ export function initSite(): void {
   // ADR-021 — drag-to-resize for the notes folio sidebar. No-op when no
   // popup is present.
   initNotesResize();
+  // ADR-021 — mobile-shell drawer nav. No-op when no MobileTopNav on
+  // the page.
+  initMobileDrawer();
 }

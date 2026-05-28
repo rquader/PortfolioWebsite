@@ -59,7 +59,10 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     </button>
   </div>
 
-  <div class="threshold-photo">
+  {/* ADR-021 — desktop shell only. On phone widths the photo moves
+      into OnMe (rendered in OnMe.astro), giving Threshold the full
+      width for name + tagline + tree. */}
+  <div class="threshold-photo" data-shell="desktop">
     <Photo
       src={`${BASE_WITH_SLASH}${(hasPhoto ? photoPublicPath : '/images/rafan-speaking-1.svg').replace(/^\//, '')}`}
       alt="Rafan Quader speaking at an event"

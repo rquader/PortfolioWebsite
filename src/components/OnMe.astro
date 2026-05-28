@@ -1,11 +1,36 @@
 ---
 // On Me — bio with synesthesia hover-coloring on selected words.
 // ADR-021: adds a quiet field-card sidebar on the right at ≥880px
-// (education + focus / tools / club rows in JetBrains Mono).
+// (education + focus / tools / club rows in JetBrains Mono). On phone
+// widths the Threshold photo is hidden and rendered here instead
+// (data-shell="mobile"), giving Threshold the full hero width.
+
+import Photo from './photo/Photo.astro';
+
+import fs from 'node:fs';
+import path from 'node:path';
+
+const BASE = import.meta.env.BASE_URL;
+const BASE_WITH_SLASH = BASE.endsWith('/') ? BASE : `${BASE}/`;
+const photoPublicPath = '/images/rafan-speaking-1.jpg';
+const photoDiskPath = path.join(process.cwd(), 'public', photoPublicPath);
+const hasPhoto = fs.existsSync(photoDiskPath);
 ---
 <section class="section on-me" id="on-me" data-section-id="on-me">
   <div class="section-inner">
     <h2 class="section-heading" data-color-letters data-inertial-text>on me</h2>
+
+    {/* Mobile-only photo: only shows in the mobile shell (<=720px).
+        The Threshold photo carries it on desktop. */}
+    <div class="on-me-photo" data-shell="mobile">
+      <Photo
+        src={`${BASE_WITH_SLASH}${(hasPhoto ? photoPublicPath : '/images/rafan-speaking-1.svg').replace(/^\//, '')}`}
+        alt="Rafan Quader speaking at an event"
+        treatment="print"
+        aspect="1/1"
+      />
+    </div>
+
     <div class="bio">
       <p class="bio-lead">
         As a student beginning in <strong>Computer Science</strong>, one thing I can say in
@@ -50,8 +75,27 @@
     align-items: start;
   }
   .on-me .section-heading { grid-column: 1 / -1; }
+  .on-me .on-me-photo { grid-column: 1 / -1; }
   @media (max-width: 880px) {
     .on-me .section-inner { grid-template-columns: 1fr; }
+  }
+
+  /* Mobile photo wrapper — keeps the 1:1 framed-print treatment but
+     scales to mobile width with a sensible maximum. */
+  .on-me-photo {
+    width: clamp(180px, 50vw, 280px);
+    margin: 0 0 1.5rem;
+  }
+  .on-me-photo .photo,
+  .on-me-photo .photo-picture {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+  }
+  .on-me-photo .photo-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 38%;
   }
 
   .on-me .bio {

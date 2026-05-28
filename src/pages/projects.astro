@@ -2,6 +2,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import TopNav from '../components/TopNav.astro';
+import MobileTopNav from '../components/MobileTopNav.astro';
 import ProjectChapter from '../components/project/ProjectChapter.astro';
 import ProjectModeToggle from '../components/project/ProjectModeToggle.astro';
 import ProjectNotesPopup from '../components/project/ProjectNotesPopup.astro';
@@ -38,6 +39,7 @@ for (const s of allStories) {
   description="The things I've built, with the working notes attached."
 >
   <TopNav />
+  <MobileTopNav />
   <main class="projects-page">
     <header class="projects-header">
       <span class="projects-eyebrow">essays · in chapters</span>

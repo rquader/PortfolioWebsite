@@ -15,6 +15,10 @@ wip_note: >-
 github_url: https://github.com/rquader/ArabicDialectMap
 web_url: https://rquader.github.io/ArabicDialectMap/
 media_mode: stack
+# ADR-021 — on phone widths the stack pairs poorly (the demo GIF is a
+# tall portrait, the diagram is landscape, so stacking dwarfs the
+# diagram). Carousel keeps each at its native aspect ratio.
+media_mode_mobile: carousel
 media_items:
   - src: ./images/arabic_dialect_map_photo.png
     label: screenshot

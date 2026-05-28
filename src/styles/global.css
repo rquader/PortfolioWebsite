@@ -276,9 +276,8 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
   z-index: 90;
 }
-@media (pointer: coarse) {
-  #phosphor-canvas { display: none; }
-}
+/* ADR-021: phosphor canvas stays on coarse pointers so the mobile
+   shell gets the touch trail — the primitive now handles both. */
 
 /* ---- ADR-021 shared utilities ----
    The d/ track introduces a few names the Astro components reach for:
@@ -438,4 +437,41 @@ h1, h2, h3, h4, h5, h6 {
   a[href^="/"]::after {
     content: "";
   }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────
+   ADR-021 — Dual-shell visibility (desktop / mobile)
+
+   The mobile "shell" lives alongside the desktop shell in the SAME DOM
+   tree, with chrome elements (top nav, drawer, fullscreen notes sheet,
+   bottom-sheet tree mode) gated by CSS. Page-level content sections
+   (Threshold, OnMe, OnTheWork, OnTheTrail, Coda) keep their canonical
+   IDs and adapt internally — except for the threshold author photo,
+   which is rendered TWICE: once in Threshold (visible on desktop /
+   tablet ≥768px), once in OnMe (visible on phone <768px) so the
+   composition can differ without duplicating section IDs.
+
+   Breakpoint: ≤720px is the phone-shell bracket; 768px is the
+   tablet hybrid bracket (drawer nav stays, editorial layout returns).
+   ───────────────────────────────────────────────────────────────────── */
+
+/* `data-shell="desktop"` — desktop-shell-only element (default visible). */
+[data-shell="desktop"] { /* visible */ }
+@media (max-width: 720px) {
+  [data-shell="desktop"] { display: none !important; }
+}
+
+/* `data-shell="mobile"` — mobile-shell-only element (default hidden). */
+[data-shell="mobile"] { display: none; }
+@media (max-width: 720px) {
+  [data-shell="mobile"] { display: revert; }
+}
+
+/* Mobile drawer body-scroll-lock. While the drawer is open we freeze
+   the page beneath so taps on links underneath don't fire and the
+   scroll position is preserved across open/close. */
+body.mobile-drawer-open {
+  overflow: hidden;
+  touch-action: none;
 }

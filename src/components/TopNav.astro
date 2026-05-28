@@ -31,8 +31,8 @@ const links: NavLink[] = [
   { slug: 'coda', label: 'on the web', href: onProjects ? `${BASE_WITH_SLASH}#coda` : '#coda' },
 ];
 ---
-<div class="scroll-progress" aria-hidden="true"></div>
-<nav class="top-nav" aria-label="primary">
+<div class="scroll-progress" aria-hidden="true" data-shell="desktop"></div>
+<nav class="top-nav" aria-label="primary" data-shell="desktop">
   <a class="top-nav-home" href={homeHref} data-nav-link="threshold">rq</a>
   <ul>
     {

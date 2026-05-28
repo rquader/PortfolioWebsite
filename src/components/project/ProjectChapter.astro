@@ -45,7 +45,22 @@ const flipped = index % 2 === 1;
   data-project-slug={slug}
 >
   <div class="project-chapter-media">
-    <ProjectMedia project={project} />
+    {project.data.media_mode_mobile && project.data.media_mode_mobile !== project.data.media_mode ? (
+      <>
+        {/* ADR-021 — dual-shell media for projects that need different
+            modes per viewport (currently arabic-dialect-map: stack on
+            desktop, carousel on mobile). Both render at build time;
+            CSS visibility gates which is active. */}
+        <div data-shell="desktop">
+          <ProjectMedia project={project} />
+        </div>
+        <div data-shell="mobile">
+          <ProjectMedia project={project} modeOverride={project.data.media_mode_mobile} />
+        </div>
+      </>
+    ) : (
+      <ProjectMedia project={project} />
+    )}
   </div>
 
   <div class="project-chapter-text">

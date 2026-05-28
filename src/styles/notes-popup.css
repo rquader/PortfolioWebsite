@@ -154,16 +154,61 @@
   min-height: 0;
 }
 
-/* sidebar — the folder tree */
+/* sidebar — the folder tree. ADR-021: width driven by --notes-sidebar
+   so the resize divider (notes-resize.ts) can drag it.
+   right-border moves to the divider element so the dragger sits on the
+   visible seam rather than next to it. */
+.notes-popup-folio {
+  --notes-sidebar: 272px;
+}
 .notes-popup-sidebar {
-  flex: 0 0 234px;
-  width: 234px;
+  flex: 0 0 var(--notes-sidebar);
+  width: var(--notes-sidebar);
+  min-width: 180px;
   overflow-y: auto;
   scrollbar-width: thin;
   padding: 0.75rem 0.5rem 1rem;
-  border-right: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
   background: color-mix(in srgb, var(--bg-1) 60%, var(--bg-2));
   font-family: var(--face-mono);
+}
+
+/* Resize divider — sits between sidebar and pane. 6px hit-target with
+   a 1px visible hairline; ew-resize cursor; accent on hover/drag. */
+.notes-popup-divider {
+  flex: 0 0 6px;
+  align-self: stretch;
+  cursor: ew-resize;
+  background: linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(50% - 0.5px),
+    color-mix(in srgb, var(--accent) 14%, transparent) calc(50% - 0.5px),
+    color-mix(in srgb, var(--accent) 14%, transparent) calc(50% + 0.5px),
+    transparent calc(50% + 0.5px),
+    transparent 100%
+  );
+  transition: background var(--d-fast, 150ms) var(--ease-out, ease);
+  touch-action: none;
+}
+.notes-popup-divider:hover,
+.notes-popup-divider:focus-visible,
+.notes-popup-divider.is-dragging {
+  background: linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(50% - 1px),
+    color-mix(in srgb, var(--accent) 60%, transparent) calc(50% - 1px),
+    color-mix(in srgb, var(--accent) 60%, transparent) calc(50% + 1px),
+    transparent calc(50% + 1px),
+    transparent 100%
+  );
+  outline: none;
+}
+@media (max-width: 720px) {
+  /* On phone widths the popup goes fullscreen (handled elsewhere in
+     this stylesheet). The divider isn't useful there; hide it so the
+     two panes can flow without an extra column. */
+  .notes-popup-divider { display: none; }
 }
 
 /* tree lists */
@@ -427,4 +472,43 @@
   .notes-popup-folio {
     transform: translate(-50%, -50%);
   }
+}
+
+
+/* ─────────────────────────────────────────────────────────────────────
+   ADR-021 — metadata strip above the reader.
+   Shows `path · <full path>` and `reading · N / total` inline. Sits
+   between the breadcrumb and the scroll region, in mono with hairline
+   bottom border so it reads as a quiet location bar.
+   ───────────────────────────────────────────────────────────────────── */
+.notes-popup-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.45rem 1.1rem;
+  padding: 0.4rem 0 0.55rem;
+  border-bottom: 1px solid var(--hair);
+  font-family: var(--face-mono);
+  font-size: var(--type-tiny);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: lowercase;
+  color: var(--text-2);
+}
+.notes-popup-meta-item {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.notes-popup-meta-item strong {
+  color: var(--text-1);
+  font-weight: 500;
+  letter-spacing: var(--tracking-eyebrow);
+}
+.notes-popup-meta-item span[data-meta-path] {
+  color: var(--text-1);
+}
+.notes-popup-meta-item span[data-meta-pos] {
+  color: var(--text-0);
+  font-style: italic;
 }

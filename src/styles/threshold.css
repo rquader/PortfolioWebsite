@@ -281,8 +281,11 @@ body[data-tree-mode="on"] .tree-mode-ui {
   opacity: 0;
   transform: translateX(-50%) translateY(12px);
   /* Resting opacity is lower so the card recedes; full opacity on
-     hover/focus-within so you know it's interactive. */
-  --rest-opacity: 0.42;
+     hover/focus-within so you know it's interactive. ADR-021 bumped
+     the resting opacity 0.42 → 0.55 — at 0.42 the card read as
+     "broken" when the tree was active and bright; 0.55 keeps it
+     receded but legible. */
+  --rest-opacity: 0.55;
   transition: opacity 0.3s ease;
 }
 body[data-tree-mode="on"] .tree-mode-card {

@@ -50,6 +50,12 @@ const flipped = index % 2 === 1;
 
   <div class="project-chapter-text">
     <header class="project-chapter-head">
+      {/* Eyebrow: NN chapter · status. ADR-021 — visible in story mode
+          only; CSS hides it when :root[data-page-mode="info"]. */}
+      <span class="project-chapter-eyebrow" aria-hidden="true">
+        <span class="project-chapter-num">{String(index + 1).padStart(2, '0')}</span>
+        <span>chapter · {project.data.status}</span>
+      </span>
       <h2 class="project-chapter-title" data-color-letters data-inertial-text>
         {project.data.title}
       </h2>
@@ -95,6 +101,13 @@ const flipped = index % 2 === 1;
     <p class="project-meta">
       <span class={`project-status status-${project.data.status}`}>{project.data.status}</span>
     </p>
+  </div>
+
+  {/* Per-chapter reading-progress bar — driven by
+      src/lib/primitives/chapter-progress.ts. Width animates from 0% to
+      100% as the chapter passes through the viewport. */}
+  <div class="project-chapter-progress" aria-hidden="true">
+    <span class="project-chapter-progress-bar"></span>
   </div>
 </article>
 

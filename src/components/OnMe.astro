@@ -72,9 +72,12 @@ const hasPhoto = fs.existsSync(photoDiskPath);
      both columns at the top. */
   .on-me .section-inner {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
     gap: clamp(2rem, 5vw, 4rem);
-    align-items: start;
+    /* The field card is the small companion artifact (ADR-015) — keep the
+       side-by-side duet, but center it against the taller bio so it isn't
+       stranded at the top with an empty gap below. (ADR-028.) */
+    align-items: center;
   }
   .on-me .section-heading { grid-column: 1 / -1; }
   .on-me .on-me-photo { grid-column: 1 / -1; }

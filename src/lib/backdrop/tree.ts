@@ -79,6 +79,21 @@ export interface TreeHandle {
    *  broke any per-shell mount opacity (e.g. mobile's 0.22). */
   getOpacity(): number;
   setOverrides(p: Partial<TreeConstants>): void;
+  /**
+   * Tree-mode fit support. The tree's pixel scale is `u = cssH / frameHeightUnits`;
+   * controlling `frameHeightUnits` at runtime lets the tree-mode fit logic hold a
+   * constant pixel-per-unit while the canvas (scroll content) grows taller than
+   * the viewport. Ambient mounts never call these — they pass `frameHeightUnits`
+   * once via mount opts.
+   */
+  setFrameHeightUnits(n: number): void;
+  getFrameHeightUnits(): number;
+  /**
+   * Unit-space (Manim coords, +y up) bounding box of the current tree at rest
+   * (t=0, no sway), computed from the current constants. Used by tree-mode to
+   * size + center the whole tree inside the frame.
+   */
+  getExtent(): { minX: number; maxX: number; minY: number; maxY: number };
   stop(): void;
 }
 
@@ -101,7 +116,7 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
   const ctx = canvas.getContext('2d');
   if (!ctx) throw new Error('mountTree: 2d context unavailable');
 
-  const frameHeightUnits =
+  let frameHeightUnits =
     typeof opts.frameHeightUnits === 'number' && Number.isFinite(opts.frameHeightUnits)
       ? Math.max(4, opts.frameHeightUnits)
       : FRAME_UNITS_HEIGHT;
@@ -209,6 +224,40 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
       consts = { ...consts, ...p };
       rebuildState();
       draw(isReducedMotion() ? 0 : performance.now() / 1000);
+    },
+    setFrameHeightUnits(n: number): void {
+      if (!Number.isFinite(n)) return;
+      frameHeightUnits = Math.max(4, n);
+      // Re-map (u depends on frameHeightUnits) and rebuild (particle frame
+      // width depends on it too), then redraw.
+      configure();
+      rebuildState();
+      draw(isReducedMotion() ? 0 : performance.now() / 1000);
+    },
+    getFrameHeightUnits(): number {
+      return frameHeightUnits;
+    },
+    getExtent(): { minX: number; maxX: number; minY: number; maxY: number } {
+      if (branches.length === 0) return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+      // Resolve into a throwaway frame at t=0 with no sway so the box is the
+      // tree's static silhouette, independent of the live animation phase.
+      const tmp = makeResolvedFrame(branches.length);
+      resolveTree(branches, 0, tmp, 0, consts);
+      let minX = Infinity;
+      let maxX = -Infinity;
+      let minY = Infinity;
+      let maxY = -Infinity;
+      for (let i = 0; i < branches.length; i++) {
+        for (const arr of [tmp.starts, tmp.ends]) {
+          const x = arr[i * 2] as number;
+          const y = arr[i * 2 + 1] as number;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+      return { minX, maxX, minY, maxY };
     },
     stop(): void {
       unregister();

@@ -12,6 +12,15 @@
   isolation: isolate;
 }
 
+/* Ambient: the wrapper is just the absolute full-section layer behind the
+   hero content; the canvas fills it. (In tree-mode it becomes the scroll
+   container — see the body[data-tree-mode] rules below.) */
+.threshold-tree-scroll {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
 .threshold-tree {
   position: absolute;
   inset: 0;
@@ -237,12 +246,24 @@ body[data-tree-mode="on"] .scroll-cue {
   pointer-events: none;
 }
 
-body[data-tree-mode="on"] .threshold-tree {
+/* In tree-mode the wrapper becomes a fixed, vertically-scrollable pane
+   (fit-first, scroll-as-backup — ADR-027). The canvas becomes a flow child
+   whose pixel height the fit controller sets inline; when that exceeds the
+   viewport (because slider edits grew the tree) the pane scrolls. */
+body[data-tree-mode="on"] .threshold-tree-scroll {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100dvh;
   z-index: 50;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+body[data-tree-mode="on"] .threshold-tree {
+  position: static;
+  display: block;
+  width: 100vw;
+  height: 100dvh; /* fallback; the fit controller sets an inline px height */
   cursor: zoom-out;
   /* In tree-mode the photo is hidden — drop the clearing so the tree
      reads at full opacity edge-to-edge. */
@@ -273,10 +294,18 @@ body[data-tree-mode="on"] .scroll-progress {
   transition: opacity 0.4s ease, visibility 0s linear 0.4s;
 }
 body[data-tree-mode="on"] .tree-mode-ui {
-  pointer-events: auto;
+  /* The overlay itself must NOT eat pointer events, or it would block the
+     scroll/click reaching the tree pane beneath it (z 50). Only the actual
+     controls opt back in. Clicking the tree (canvas) exits — handled in
+     tree-mode.ts via the canvas click, not an overlay catch. */
+  pointer-events: none;
   opacity: 1;
   visibility: visible;
   transition: opacity 0.4s ease 0.25s, visibility 0s linear 0.25s;
+}
+body[data-tree-mode="on"] .tree-mode-card,
+body[data-tree-mode="on"] .tree-mode-close {
+  pointer-events: auto;
 }
 
 /* Slim horizontal "knobs" strip. Lives bottom-center; lowered opacity

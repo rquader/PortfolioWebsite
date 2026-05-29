@@ -185,16 +185,15 @@
 </section>
 
 <style>
-  /* Two-column on wide viewports; card + companion diagram. */
+  /* Stacked editorial layout: narrative card, then the mesh diagram
+     promoted to a wider FIGURE beneath it. The diagram is a *teaching*
+     artifact (the animated hop), not a stamp-sized companion — so unlike
+     the on-me field card it earns full figure scale rather than a starved
+     side rail. (2026-05-28 design-debate decision — ADR-028.) */
   .on-the-work .section-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
-    gap: clamp(2rem, 5vw, 3.5rem);
-    align-items: start;
-  }
-  .on-the-work .section-heading { grid-column: 1 / -1; }
-  @media (max-width: 880px) {
-    .on-the-work .section-inner { grid-template-columns: 1fr; }
+    display: flex;
+    flex-direction: column;
+    gap: clamp(1.8rem, 4vw, 2.8rem);
   }
 
   .ddd-card {
@@ -206,7 +205,9 @@
     flex-direction: column;
     gap: 1.2rem;
     box-shadow: var(--shadow-card);
-    max-width: none;
+    /* Narrative stays at a comfortable measure rather than stretching the
+       full 64rem inner (the body text caps at 56ch anyway). */
+    max-width: 46rem;
   }
   .ddd-card header {
     display: flex;
@@ -257,15 +258,19 @@
     gap: 0.4rem;
   }
 
-  /* SVG mesh sketch — three nodes, dashed paths, accent dot. */
+  /* SVG mesh sketch — promoted to a wide figure beneath the card. The SVG
+     fills the figure width (its viewBox scales up), so a wider box ⇒ a
+     bigger, more legible diagram. Capped so it never spans the full inner. */
   .ddd-diagram {
     border: 1px solid var(--hair);
     border-radius: 4px;
-    padding: 1.2rem 1.3rem;
+    padding: clamp(1.3rem, 2.4vw, 2rem) clamp(1.4rem, 2.6vw, 2.2rem);
     background: color-mix(in srgb, var(--bg-1) 45%, transparent);
     display: flex;
     flex-direction: column;
     gap: 0.7rem;
+    width: 100%;
+    max-width: 44rem; /* SVG fills this (≈40rem) — ~2× the old 24rem rail */
   }
   .ddd-diagram-eyebrow {
     font-family: var(--face-mono);

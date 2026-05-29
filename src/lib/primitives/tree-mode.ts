@@ -27,15 +27,11 @@
  */
 
 import type { TreeHandle } from '../backdrop/tree';
+import { createTreeModeFit, isPhoneShell } from './tree-mode-fit';
 
 const DEFAULT_DEPTH = 8;
 const DEFAULT_ANGLE_DEG = 27;
 const DEFAULT_RATIO_PCT = 74;
-// Threshold (backdrop) anchor — base near the viewport bottom so the
-// canopy fills the top of the hero. Tree-mode wants more vertical
-// centering, so the base shifts up.
-const BASE_Y_THRESHOLD = -3.5;
-const BASE_Y_TREE_MODE = -2.5;
 
 const LABEL_STORAGE_KEY = 'rq-tree-labels';
 type LabelMode = 'cs' | 'bot';
@@ -64,6 +60,16 @@ export function initTreeMode(canvas: HTMLCanvasElement, tree: TreeHandle): TreeM
   const labelToggles = Array.from(
     ui.querySelectorAll<HTMLButtonElement>('[data-label]'),
   );
+
+  // Fit-first/scroll-backup controller (shared with the mobile shell).
+  const scroller = canvas.closest<HTMLElement>('.threshold-tree-scroll');
+  const fit = scroller
+    ? createTreeModeFit(tree, canvas, scroller, {
+        bottomEl: card, // slider card sits bottom-center
+        topFallbackPx: 72, // close/esc pills top-right
+        bottomFallbackPx: 96,
+      })
+    : null;
 
   function applyParams(): void {
     if (!depthInput || !angleInput || !ratioInput) return;
@@ -135,11 +141,16 @@ export function initTreeMode(canvas: HTMLCanvasElement, tree: TreeHandle): TreeM
     body.dataset.treeMode = 'on';
     ui.removeAttribute('aria-hidden');
     tree.setOpacity(1.0);
-    // Recenter the tree in the now-fullscreen viewport.
-    tree.setOverrides({ TRUNK_BASE_Y: BASE_Y_TREE_MODE });
-    // Apply current slider values on top of the recenter.
+    // Apply current slider values, then fit the whole tree in frame, centered.
+    // rAF so the card has laid out and its height is measurable by the fit.
     applyParams();
-    requestAnimationFrame(() => closeBtn?.focus());
+    requestAnimationFrame(() => {
+      // The mobile shell runs its own fit (and focus) — this controller owns
+      // the canvas click + body toggle on both shells, but only fits desktop.
+      if (isPhoneShell()) return;
+      fit?.refit(true);
+      closeBtn?.focus();
+    });
   }
 
   function exit(): void {
@@ -147,12 +158,24 @@ export function initTreeMode(canvas: HTMLCanvasElement, tree: TreeHandle): TreeM
     body.dataset.treeMode = 'off';
     ui.setAttribute('aria-hidden', 'true');
     tree.setOpacity(ambientOpacity);
-    tree.setOverrides({ TRUNK_BASE_Y: BASE_Y_THRESHOLD });
+    // Restore ambient framing (the user's parameter edits are kept). On a phone
+    // the mobile controller owns the restore (its sync() reacts to the toggle).
+    if (!isPhoneShell()) fit?.restore();
+  }
+
+  // Re-apply params from a slider drag, then re-fit *without* recentering the
+  // scroll (keeps the user where they are; the pane grows + scrolls if their
+  // edit pushed the tree past the frame).
+  function onSliderInput(): void {
+    applyParams();
+    if (body.dataset.treeMode === 'on' && !isPhoneShell()) fit?.refit(false);
   }
 
   function onCanvasClick(): void {
-    if (body.dataset.treeMode === 'on') return;
-    enter();
+    // Click the tree to toggle: enter from ambient, exit from tree-mode.
+    // (A scroll gesture drags rather than clicks, so it won't fire this.)
+    if (body.dataset.treeMode === 'on') exit();
+    else enter();
   }
 
   function onCanvasKey(e: KeyboardEvent): void {
@@ -198,7 +221,7 @@ export function initTreeMode(canvas: HTMLCanvasElement, tree: TreeHandle): TreeM
     if (depthInput) depthInput.value = String(DEFAULT_DEPTH);
     if (angleInput) angleInput.value = String(DEFAULT_ANGLE_DEG);
     if (ratioInput) ratioInput.value = String(DEFAULT_RATIO_PCT);
-    applyParams();
+    onSliderInput();
   }
 
   canvas.addEventListener('click', onCanvasClick);
@@ -208,7 +231,7 @@ export function initTreeMode(canvas: HTMLCanvasElement, tree: TreeHandle): TreeM
   resetBtn?.addEventListener('click', onReset);
   window.addEventListener('keydown', onKey);
   for (const inp of [depthInput, angleInput, ratioInput]) {
-    inp?.addEventListener('input', applyParams);
+    inp?.addEventListener('input', onSliderInput);
   }
   for (const t of openTriggers) t.addEventListener('click', onOpenTrigger);
   for (const lbl of labelToggles) lbl.addEventListener('click', onLabelClick);
@@ -224,7 +247,7 @@ export function initTreeMode(canvas: HTMLCanvasElement, tree: TreeHandle): TreeM
       resetBtn?.removeEventListener('click', onReset);
       window.removeEventListener('keydown', onKey);
       for (const inp of [depthInput, angleInput, ratioInput]) {
-        inp?.removeEventListener('input', applyParams);
+        inp?.removeEventListener('input', onSliderInput);
       }
       for (const t of openTriggers) t.removeEventListener('click', onOpenTrigger);
       for (const lbl of labelToggles) lbl.removeEventListener('click', onLabelClick);

@@ -19,9 +19,22 @@
  */
 
 import type { TreeHandle } from '../backdrop/tree';
+import { createTreeModeFit, isPhoneShell } from './tree-mode-fit';
 
-const DEFAULTS = { depth: 8, angleDeg: 27, ratio: 0.74 };
+// Mobile taper default is 0.64 (vs desktop's 0.74). The lower length-ratio
+// shrinks each branch generation faster, so the canopy stays inside the
+// narrow phone viewport. See ADR-026 / the threshold mount's overrideConst.
+const DEFAULTS = { depth: 8, angleDeg: 27, ratio: 0.64 };
 const LABEL_STORAGE_KEY = 'rq-tree-labels';
+
+// The mobile UI elements live in the DOM on *every* viewport — they're only
+// CSS-hidden on desktop via `data-shell="mobile"`. So this controller runs on
+// desktop too, and because it shares the desktop controller's `TreeHandle`,
+// any write here leaks into the desktop tree. Critically, the desktop taper
+// (0.74) and the mobile taper (0.64) differ, so a leak is *visible*: entering
+// then exiting tree-mode on desktop would strand the desktop tree at 0.64.
+// Gate every handle-write behind a live phone-viewport check (`isPhoneShell`,
+// shared from tree-mode-fit). Desktop is driven solely by tree-mode.ts.
 
 type LabelMode = 'cs' | 'bot';
 
@@ -49,6 +62,20 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
   if (!top || !sheet || !handle || !closeBtn || !resetBtn || !labelsBtn) {
     return { stop: () => {} };
   }
+
+  // ─── Fit-first/scroll-backup controller (shared with desktop) ─────
+  // Phone-only: the desktop controller owns the fit on wide viewports.
+  const canvasEl = document.getElementById('tree-threshold') as HTMLCanvasElement | null;
+  const scroller = canvasEl?.closest<HTMLElement>('.threshold-tree-scroll') ?? null;
+  const fit =
+    canvasEl && scroller
+      ? createTreeModeFit(tree, canvasEl, scroller, {
+          topEl: top, // top pills (reset/close)
+          bottomEl: sheet, // bottom sheet of knobs
+          topFallbackPx: 64,
+          bottomFallbackPx: 220,
+        })
+      : null;
 
   // ─── Label mode (cs ⇄ botanical) ──────────────────────────
   let labelMode: LabelMode = 'cs';
@@ -111,6 +138,10 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
   }
 
   function pushKnobs(): void {
+    // Never write to the shared handle on desktop — that's tree-mode.ts's job.
+    // Otherwise the mobile taper (0.64) would clobber the desktop tree (0.74)
+    // on tree-mode entry and never get restored on exit.
+    if (!isPhoneShell()) return;
     syncValues();
     // ADR-024 — pass the *backdrop algorithm's* constant keys, not the
     // UI's friendly names. The desktop controller (tree-mode.ts) uses
@@ -129,7 +160,13 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
     });
   }
 
-  for (const k of knobs) k.addEventListener('input', pushKnobs);
+  // Slider drag: apply params, then re-fit without recentering (the pane grows
+  // + scrolls if the edit pushed the tree past the frame).
+  function onKnobInput(): void {
+    pushKnobs();
+    if (isPhoneShell()) fit?.refit(false);
+  }
+  for (const k of knobs) k.addEventListener('input', onKnobInput);
 
   // ─── Reset / close ────────────────────────────────────────
   resetBtn.addEventListener('click', () => {
@@ -140,6 +177,8 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
       else if (id === 'ratio') k.value = String(DEFAULTS.ratio * 100);
     }
     pushKnobs();
+    // Re-fit and recenter — reset returns to the fitted default tree.
+    if (isPhoneShell()) fit?.refit(true);
   });
 
   function exitTreeMode(): void {
@@ -195,6 +234,7 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
   document.addEventListener('pointercancel', onUp);
 
   // ─── Observe tree-mode state ──────────────────────────────
+  let wasOn = false;
   function sync(): void {
     const on = document.body.getAttribute('data-tree-mode') === 'on';
     top!.setAttribute('aria-hidden', String(!on));
@@ -203,7 +243,14 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
     sheet!.classList.toggle('is-open', on);
     if (on) {
       pushKnobs();
+      // On entry only, fit the whole tree in frame, centered. rAF so the
+      // sheet + top pills have laid out (their heights feed the fit reserves).
+      if (isPhoneShell() && !wasOn) requestAnimationFrame(() => fit?.refit(true));
+    } else if (wasOn && isPhoneShell()) {
+      // Leaving tree-mode: restore ambient framing (parameter edits are kept).
+      fit?.restore();
     }
+    wasOn = on;
   }
   sync();
   const observer = new MutationObserver(sync);
@@ -215,7 +262,7 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
   return {
     stop(): void {
       observer.disconnect();
-      for (const k of knobs) k.removeEventListener('input', pushKnobs);
+      for (const k of knobs) k.removeEventListener('input', onKnobInput);
       handle.removeEventListener('pointerdown', onHandleDown);
       document.removeEventListener('pointermove', onMove);
       document.removeEventListener('pointerup', onUp);

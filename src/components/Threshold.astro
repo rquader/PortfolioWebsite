@@ -23,14 +23,19 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   data-section-id="threshold"
   aria-label="introduction"
 >
-  <canvas
-    id="tree-threshold"
-    class="threshold-tree"
-    aria-hidden="true"
-    role="button"
-    tabindex="0"
-    aria-label="open the recursive tree"
-  ></canvas>
+  {/* The canvas lives in a wrapper that becomes a fixed vertical scroll
+      container in tree-mode (fit-first, scroll-as-backup — ADR-027). In
+      ambient mode the wrapper is just the absolute full-section layer. */}
+  <div class="threshold-tree-scroll">
+    <canvas
+      id="tree-threshold"
+      class="threshold-tree"
+      aria-hidden="true"
+      role="button"
+      tabindex="0"
+      aria-label="open the recursive tree"
+    ></canvas>
+  </div>
 
   <div class="threshold-content">
     <h1 class="name" data-color-letters>
@@ -198,11 +203,11 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     <input
       class="m-tree-knob-range"
       type="range"
-      min="60" max="85" step="1" value="74"
+      min="60" max="85" step="1" value="64"
       data-mtree-knob="ratio"
       aria-label="ratio"
     />
-    <span class="m-tree-knob-value" data-mtree-value="ratio">74%</span>
+    <span class="m-tree-knob-value" data-mtree-value="ratio">64%</span>
   </label>
 </aside>
 
@@ -225,6 +230,11 @@ const hasPhoto = fs.existsSync(photoDiskPath);
       // Render the same tree "smaller" on phones (more margin inside the
       // canvas) without changing its underlying shape constants.
       frameHeightUnits: isPhoneShell ? 9.5 : undefined,
+      // Phones also get a tighter taper (length-ratio 0.64 vs the desktop
+      // 0.74): each generation shrinks faster so the canopy fully fits the
+      // narrow viewport. Matches the mobile tree-mode knob/reset default
+      // (mobile-tree-mode.ts) so ambient + tree-mode read the same shape.
+      overrideConst: isPhoneShell ? { LENGTH_RATIO: 0.64 } : undefined,
       // ADR-021 — baseline opacity raised from 0.05 to 0.35 so the tree
       // reads as ambient texture, not a ghost. Tree mode still pushes
       // this to 1 when active.

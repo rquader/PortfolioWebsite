@@ -79,6 +79,15 @@ function quench(letters: HTMLElement[]): void {
 export function initSynesthesia(section: HTMLElement): SynesthesiaHandle {
   if (typeof document === 'undefined') return { stop: () => {} };
 
+  // Coarse-pointer guard: synesthesia is driven by pointer hover (pointerenter /
+  // pointerleave on words). Touch screens never fire hover events in the same
+  // way, and splitting words into per-letter spans on mobile would be pure DOM
+  // overhead with no effect the user could trigger. Early-return before any DOM
+  // mutation or event registration.
+  if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
+    return { stop: () => {} };
+  }
+
   const words = Array.from(section.querySelectorAll<HTMLElement>('[data-syn-word]'));
   if (words.length === 0) return { stop: () => {} };
 

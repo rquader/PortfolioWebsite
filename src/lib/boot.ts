@@ -91,4 +91,17 @@ export function startBoot(): void {
     if (reduced) stopLoop();
     else startLoop();
   });
+
+  // Visibility gate: pause the rAF loop when the tab/window is hidden so
+  // the browser doesn't burn CPU/battery for an invisible canvas. Resume
+  // when the tab comes back — but only if reduced-motion is not active
+  // (reduced-motion already stopped the loop; we must not restart it here).
+  // The existing MAX_DT clamp in `frame()` absorbs the time gap on resume.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      stopLoop();
+    } else if (!isReducedMotion()) {
+      startLoop();
+    }
+  });
 }

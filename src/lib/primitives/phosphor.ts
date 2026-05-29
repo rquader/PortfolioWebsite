@@ -18,6 +18,7 @@
 
 import { registerTick } from '../boot';
 import { isReducedMotion } from '../reduced-motion';
+import { THEME_EVENT } from '../theme-toggle';
 
 const MAX_PARTICLES = 200;
 const FADE_S = 0.65;
@@ -79,11 +80,23 @@ export function initPhosphor(): PhosphorHandle {
   let lastX = -10000;
   let lastY = -10000;
 
+  // Accent color cache — `--companion-color` changes only on theme toggle
+  // (rq:theme) or section change (scroll-spy mutates data-section). Reading
+  // getComputedStyle on every frame with live particles is wasteful; cache
+  // the value and invalidate only when it can actually change.
+  let accentCache: string | null = null;
+
   function readAccent(): string {
+    if (accentCache !== null) return accentCache;
     const v = getComputedStyle(document.documentElement)
       .getPropertyValue('--companion-color')
       .trim();
-    return v || '#E8DEC5';
+    accentCache = v || '#E8DEC5';
+    return accentCache;
+  }
+
+  function invalidateAccent(): void {
+    accentCache = null;
   }
 
   function spawnAlong(x0: number, y0: number, x1: number, y1: number): void {
@@ -107,6 +120,20 @@ export function initPhosphor(): PhosphorHandle {
     // Cap from the oldest end.
     while (particles.length > MAX_PARTICLES) particles.shift();
   }
+
+  // Theme change → accent variable value changes → invalidate cache.
+  window.addEventListener(THEME_EVENT, invalidateAccent);
+
+  // Section change → scroll-spy writes data-section on <html> → accent CSS
+  // var resolves to a new value → invalidate cache.
+  const sectionObserver =
+    typeof MutationObserver !== 'undefined'
+      ? new MutationObserver(invalidateAccent)
+      : null;
+  sectionObserver?.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-section'],
+  });
 
   const onMove = (e: PointerEvent) => {
     if (isReducedMotion()) return;
@@ -158,6 +185,8 @@ export function initPhosphor(): PhosphorHandle {
       unregister();
       window.removeEventListener('pointermove', onMove);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener(THEME_EVENT, invalidateAccent);
+      sectionObserver?.disconnect();
       canvas.remove();
     },
   };

@@ -229,7 +229,9 @@ export function initMobileTreeMode(tree: TreeHandle): MobileTreeModeHandle {
   }
 
   handle.addEventListener('pointerdown', onHandleDown);
-  document.addEventListener('pointermove', onMove);
+  // { passive: true } — onMove never calls preventDefault; marking passive
+  // lets the browser skip asking JS whether to cancel scrolling on every move.
+  document.addEventListener('pointermove', onMove, { passive: true });
   document.addEventListener('pointerup', onUp);
   document.addEventListener('pointercancel', onUp);
 

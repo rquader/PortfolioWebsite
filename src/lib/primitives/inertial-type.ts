@@ -167,6 +167,16 @@ export function initInertialType(root: HTMLElement | null = null): InertialTypeH
     return { stop: () => {} };
   }
 
+  // Coarse-pointer guard: inertial physics and color-reveal are driven by
+  // precise pointer hover/movement — they have no meaningful analogue on
+  // touch devices where pointermove only fires during active drags and the
+  // spring wobble is never triggered by a finger hovering over the screen.
+  // Skip all DOM splitting, observer setup, and tick registration; the
+  // letters render as plain text (their default state).
+  if (window.matchMedia('(pointer: coarse)').matches) {
+    return { stop: () => {} };
+  }
+
   const scope = root ?? document.body;
   const groups: Group[] = [];
 

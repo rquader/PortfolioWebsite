@@ -195,9 +195,30 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
       : null;
   ro?.observe(canvas);
 
+  // Offscreen pause: track whether the canvas is in the viewport. When it
+  // is scrolled out of view, skip the expensive resolveTree + draw calls.
+  // The falling-leaves canvas is position:fixed full-page and is never
+  // mounted via mountTree — only this (threshold) tree needs the gate.
+  // We still call draw() at reduced-motion time (a static rest frame), so
+  // the initial draw above covers that path regardless of visibility.
+  let canvasVisible = true;
+  const visibilityObserver =
+    typeof IntersectionObserver !== 'undefined'
+      ? new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              if (e.target === canvas) canvasVisible = e.isIntersecting;
+            }
+          },
+          { threshold: 0 },
+        )
+      : null;
+  visibilityObserver?.observe(canvas);
+
   // rAF tick
   const unregister = registerTick((_dt, t) => {
     if (isReducedMotion()) return;
+    if (!canvasVisible) return;
     draw(t / 1000);
   });
 
@@ -262,6 +283,7 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
     stop(): void {
       unregister();
       ro?.disconnect();
+      visibilityObserver?.disconnect();
       window.removeEventListener(THEME_EVENT, onThemeChange);
     },
   };

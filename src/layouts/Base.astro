@@ -57,8 +57,28 @@ const fontsHref = `${BASE_WITH_SLASH}fonts/fonts.css`;
         relative URLs so the path resolves correctly under any base
         (GitHub Pages project pages serve under `/<repo>/`). No
         third-party request at runtime. Acquisition / refresh:
-        `bash scripts/get-fonts.sh`. */}
-    <link rel="stylesheet" href={fontsHref} />
+        `bash scripts/get-fonts.sh`.
+
+        Preload hints for above-the-fold fonts so they are fetched in
+        parallel with (not after) the fonts.css stylesheet parse.
+        crossorigin is required even for same-origin font fetches — the
+        browser issues font requests in CORS mode, and a mismatched
+        credentials mode causes a duplicate fetch. */}
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href={`${BASE_WITH_SLASH}fonts/6NUG8FyLNQOQZAnv9ZwNjucMAkn8xNi7emAe9nimTfdtuFo2.woff2`} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href={`${BASE_WITH_SLASH}fonts/cY9AfjOCX1hbuyalUrK4397yjIJFJpc.woff2`} />
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+      href={`${BASE_WITH_SLASH}fonts/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2`} />
+
+    {/* fonts.css loaded async so it is non-render-blocking. The preloads
+        above ensure the three above-fold woff2 files are already in
+        flight before the @font-face rules are even parsed. font-display:
+        swap (set in fonts.css) handles the remaining swap window. The
+        <noscript> fallback restores synchronous loading for the small
+        fraction of users with JS disabled. */}
+    <link rel="stylesheet" href={fontsHref} media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href={fontsHref} /></noscript>
 
     {/* FOUC-prevention: sets data-theme on <html> before first paint.
         Reads rq-theme from localStorage; default is light. Matches the

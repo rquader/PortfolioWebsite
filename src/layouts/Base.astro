@@ -9,15 +9,13 @@
 //
 // Spec: [[02 - Architecture]].
 
+// Global styles only — tokens, global, falling-leaves (#page-leaves canvas is
+// in this layout so both pages need it), and photo (lightbox is in this layout).
+// Page-specific sheets are imported by each page (index.astro, projects.astro).
 import '../styles/tokens.css';
 import '../styles/global.css';
 import '../styles/falling-leaves.css';
-import '../styles/obsidian-notes.css';
 import '../styles/photo.css';
-import '../styles/tree-hint.css';
-import '../styles/projects.css';
-import '../styles/notes-popup.css';
-import '../styles/wip-dialog.css';
 
 interface Props {
   title?: string;

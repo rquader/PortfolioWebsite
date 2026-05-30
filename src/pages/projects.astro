@@ -1,6 +1,11 @@
 ---
 import { getCollection, type CollectionEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
+// Projects-page-specific styles (not loaded on home page).
+import '../styles/projects.css';
+import '../styles/notes-popup.css';
+import '../styles/obsidian-notes.css';
+import '../styles/wip-dialog.css';
 import TopNav from '../components/TopNav.astro';
 import MobileTopNav from '../components/MobileTopNav.astro';
 import ProjectChapter from '../components/project/ProjectChapter.astro';
@@ -50,8 +55,8 @@ for (const s of allStories) {
         Working on DDD, learning about Computer Science in school, and scrolling
         LinkedIn helped me gain a better understanding of the industry today and
         its often transactional nature. For me, beyond the impact of DDD, each of
-        my projects — from an Arabic Dialect Map to a message-only Instagram macOS
-        app — have been developed for a primary purpose for myself especially. You
+        my projects from an Arabic Dialect Map to a message-only Instagram macOS
+        app, have been developed for a primary purpose for myself especially. You
         can select <strong>info</strong> for information on each project straight
         and individually. You can select <strong>story</strong> to go through a story
         in the code.

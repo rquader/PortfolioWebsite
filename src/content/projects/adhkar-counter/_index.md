@@ -13,4 +13,4 @@ media_items:
     label: demo
 ---
 
-I imagine many Muslims are in this situation: they sit down, want to do adhkar, but have work to do. **Adhkar Counter** solves this by putting it on your screen — by clicking a hotkey you can lower the counter. It also comes with deep customization.
+I imagine there are many members of the large Muslim population of the world who sit down at their desk, have work to do on their laptop, and would like to do Adhkar (remembrances, a form of religious worship). Adhkar Counter attempts to solve this, by putting the counter on the screen. Muslims can recite Adhkar and use the counter to count how many, change the theme, move it around their screen, or stick a hotkey to it which is persistent even as they are using different applications on their laptop.

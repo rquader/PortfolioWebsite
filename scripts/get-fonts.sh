@@ -24,8 +24,18 @@ cd "$(dirname "$0")/.."
 
 # Same URL the Claude Design prototype uses (Fraunces with SOFT + opsz
 # axes, Newsreader with opsz, JetBrains Mono at 400/500). Keep in
-# lock-step with the prototype.
-CSS_URL='https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=JetBrains+Mono:wght@400;500&display=swap'
+# lock-step with the prototype. The subset parameter is `latin,latin-ext`
+# — this site is English/Latin-only; Vietnamese, Cyrillic, and Greek
+# subsets are not needed.
+#
+# IMPORTANT: After running this script, fonts.css requires manual edits:
+#   1. Remove any non-latin/latin-ext @font-face blocks that Google
+#      includes (cyrillic-ext, cyrillic, greek, vietnamese).
+#   2. JetBrains Mono 400 and 500 share identical woff2 files — merge
+#      each pair into a single @font-face with `font-weight: 400 500`.
+#   3. Set `font-display: optional` (not `swap`) on all JetBrains Mono
+#      rules — it is used only for small metadata labels.
+CSS_URL='https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..700,0..100&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=JetBrains+Mono:wght@400;500&display=swap&subset=latin,latin-ext'
 
 # Modern Chrome UA so Google serves variable woff2 (not legacy ttf/woff).
 UA='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'

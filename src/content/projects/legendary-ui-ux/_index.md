@@ -10,4 +10,4 @@ media_items:
     label: demo
 ---
 
-What if I just instructed Claude to make a site that was super cool and fit in a single HTML file? That's basically what this is — with a little back-and-forth from a human. The product of **Claude**, a little bit of **Cursor**, and back-and-forth with me: a website that is simply **beautiful**, **clean**, and **feature-filled**.
+What would AI do if asked to put together an incredible, aesthetically-pleasing site. Albeit with a little bit back and forth from a human. That's basically what this is. The product of Claude, a little bit of Cursor, and back and forth with me, a website that is simply beautiful, clean, and feature-filled.

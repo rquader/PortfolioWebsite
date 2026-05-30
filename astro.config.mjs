@@ -19,7 +19,7 @@ const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL ?? '/';
 export default defineConfig({
   site: SITE,
   base: PUBLIC_BASE_URL,
-  integrations: [sitemap()],
+  integrations: [sitemap({ filter: (page) => !page.includes('/notes/') })],
   build: {
     inlineStylesheets: 'auto',
   },

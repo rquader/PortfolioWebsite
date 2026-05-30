@@ -11,6 +11,12 @@
  *     depth-first reading order
  *   - focus management: trap focus while open, restore on close
  *   - lock body scroll while open
+ *   - ON-DEMAND FETCH: note bodies are NOT inlined in the page. On the
+ *     first "open notes" for a given slug, the controller fetches the
+ *     static fragment at `/notes/<slug>/`, injects the returned
+ *     articles into `[data-notes-scroll]`, then wires the noteEls map.
+ *     The HTML is cached in `fragmentCache` so re-opens are instant.
+ *     The folio open animation (200 ms) masks the single RTT.
  *
  * Hash shapes we recognize (path segments are %-decoded so they match
  * the literal note ids, which contain spaces):
@@ -18,6 +24,7 @@
  *   #notes/<slug>/<...path>/<leaf>         → open that specific note
  *
  * Spec: [[decisions/ADR-020-notes-popup-folder-tree]].
+ * Workstream H: move notes out of initial HTML.
  */
 
 interface NoteRef {
@@ -34,10 +41,12 @@ interface PopupInstance {
   /** The folio element — holds the `data-view` attribute for two-step mobile nav. */
   folio: HTMLElement | null;
   slug: string;
-  /** Depth-first reading order — drives prev/next + slug-only open. */
+  /** Depth-first reading order — drives prev/next + slug-only open.
+   *  Built from `data-notes-order` JSON at init time (NOT from DOM articles). */
   order: NoteRef[];
   byId: Map<string, NoteRef>;
-  /** Note body articles, keyed by fileId. */
+  /** Note body articles, keyed by fileId.
+   *  Empty until the fragment is fetched+injected on first open. */
   noteEls: Map<string, HTMLElement>;
   /** Sidebar tree note buttons, keyed by fileId. */
   treeNoteBtns: Map<string, HTMLElement>;
@@ -47,6 +56,11 @@ interface PopupInstance {
   scrollEl: HTMLElement | null;
   /** The element that opened the popup; focus returns there on close. */
   trigger: HTMLElement | null;
+  /** Whether a fragment fetch is currently in-flight. Prevents duplicate requests. */
+  fetching: boolean;
+  /** Deferred activation: if open() is called before the fetch resolves,
+   *  store the target ref here and activate it once inject completes. */
+  pendingRef: NoteRef | null;
 }
 
 /** ADR-022 — viewport gate for the mobile two-step nav. Desktop ignores
@@ -213,10 +227,97 @@ function setActiveNote(inst: PopupInstance, ref: NoteRef): void {
   updateMeta(inst, ref);
 }
 
+// ---------------------------------------------------------------------------
+// Fragment fetch + inject
+// ---------------------------------------------------------------------------
+
+/** In-memory cache: slug → fetched fragment HTML string. */
+const fragmentCache = new Map<string, string>();
+
+/**
+ * Compute the BASE_URL-aware fragment URL for a given slug.
+ * Mirrors how Base.astro builds BASE_WITH_SLASH, but at runtime
+ * from `import.meta.env.BASE_URL` (Astro inlines this at build time).
+ */
+function fragmentUrl(slug: string): string {
+  const base = import.meta.env.BASE_URL ?? '/';
+  const baseWithSlash = base.endsWith('/') ? base : `${base}/`;
+  return `${baseWithSlash}notes/${encodeURIComponent(slug)}/`;
+}
+
+/**
+ * Fetch the notes fragment for `inst.slug` (if not already cached),
+ * inject the articles into `[data-notes-scroll]`, wire `noteEls`,
+ * remove the loading indicator, and activate `pendingRef` (or the
+ * first note if no specific note was requested).
+ *
+ * Safe to call multiple times — `inst.fetching` prevents duplicate
+ * in-flight requests; a cached result is injected synchronously.
+ */
+async function fetchAndInjectNotes(inst: PopupInstance): Promise<void> {
+  if (inst.noteEls.size > 0) return; // Already injected.
+  if (inst.fetching) return; // Fetch already in-flight.
+
+  const cached = fragmentCache.get(inst.slug);
+  if (cached !== undefined) {
+    injectFragment(inst, cached);
+    return;
+  }
+
+  inst.fetching = true;
+  try {
+    const res = await fetch(fragmentUrl(inst.slug));
+    if (!res.ok) {
+      console.error(`[notes] fragment fetch failed: ${res.status} ${fragmentUrl(inst.slug)}`);
+      return;
+    }
+    const html = await res.text();
+    fragmentCache.set(inst.slug, html);
+    injectFragment(inst, html);
+  } catch (err) {
+    console.error('[notes] fragment fetch error:', err);
+  } finally {
+    inst.fetching = false;
+  }
+}
+
+/** Inject fragment HTML into the scroll container, wire noteEls, activate note. */
+function injectFragment(inst: PopupInstance, html: string): void {
+  if (!inst.scrollEl) return;
+
+  // Remove the loading indicator.
+  const loadingEl = inst.scrollEl.querySelector('[data-notes-loading]');
+  loadingEl?.remove();
+
+  // Inject the fragment's article elements.
+  const temp = document.createElement('div');
+  temp.innerHTML = html;
+  while (temp.firstChild) {
+    inst.scrollEl.appendChild(temp.firstChild);
+  }
+
+  // Build noteEls map from the injected articles.
+  populateNoteEls(inst);
+
+  // Activate the pending note (or fall back to first).
+  const target = inst.pendingRef ?? inst.order[0] ?? null;
+  inst.pendingRef = null;
+  if (target) setActiveNote(inst, target);
+}
+
+// ---------------------------------------------------------------------------
+// Open / close
+// ---------------------------------------------------------------------------
+
 function open(inst: PopupInstance, ref: NoteRef | null): void {
   if (inst.root.dataset.open === 'true') {
     if (ref) {
-      setActiveNote(inst, ref);
+      if (inst.noteEls.size > 0) {
+        setActiveNote(inst, ref);
+      } else {
+        // Still loading — update the pending ref so it activates when ready.
+        inst.pendingRef = ref;
+      }
       // Specific note → if mobile, surface the reader. Desktop ignores.
       if (isMobileWidth()) setView(inst, 'reader');
       writeHash(inst.slug, ref);
@@ -239,9 +340,6 @@ function open(inst: PopupInstance, ref: NoteRef | null): void {
   inst.root.dataset.open = 'true';
   document.body.classList.add(BODY_SCROLL_LOCK_CLASS);
 
-  setActiveNote(inst, target);
-  writeHash(inst.slug, target);
-
   // ADR-022 — opening from a deep-link (specific note path) jumps straight
   // to the reader on mobile; opening from a chapter trigger or bare-slug
   // hash starts on the tree so the user can browse folders first.
@@ -249,6 +347,25 @@ function open(inst: PopupInstance, ref: NoteRef | null): void {
     setView(inst, ref ? 'reader' : 'tree');
   } else {
     setView(inst, 'reader');
+  }
+
+  writeHash(inst.slug, target);
+
+  if (inst.noteEls.size > 0) {
+    // Fragment already injected (re-open after first load) — activate
+    // immediately; re-opens are instant.
+    setActiveNote(inst, target);
+  } else {
+    // First open — store the desired note, start the fetch, and show
+    // the loading indicator. The folio's open animation (200 ms) masks
+    // the single RTT on a warm CDN. `fetchAndInjectNotes` will call
+    // `setActiveNote` once the fragment is injected.
+    inst.pendingRef = target;
+    // Update stepper/meta using order metadata even before bodies arrive.
+    updateStepper(inst, target);
+    updateMeta(inst, target);
+    if (inst.breadcrumb) renderBreadcrumb(inst.breadcrumb, target);
+    fetchAndInjectNotes(inst);
   }
 
   // Focus target: on mobile-tree we want the first tree item, on
@@ -294,6 +411,7 @@ function trapFocus(inst: PopupInstance, e: KeyboardEvent): void {
 }
 
 function stepBy(inst: PopupInstance, dir: -1 | 1): void {
+  if (inst.noteEls.size === 0) return; // Notes not yet loaded — ignore step.
   const activeId = inst.root.dataset.activeNote ?? '';
   const i = inst.order.findIndex((n) => n.fileId === activeId);
   const target = inst.order[i + dir];
@@ -302,26 +420,51 @@ function stepBy(inst: PopupInstance, dir: -1 | 1): void {
   writeHash(inst.slug, target);
 }
 
+/** Wire noteEls from already-injected `.notes-popup-note` articles into inst. */
+function populateNoteEls(inst: PopupInstance): void {
+  if (!inst.scrollEl) return;
+  for (const el of inst.scrollEl.querySelectorAll<HTMLElement>('.notes-popup-note')) {
+    const fileId = el.dataset.noteId;
+    if (fileId) inst.noteEls.set(fileId, el);
+  }
+}
+
 function buildInstance(root: HTMLElement): PopupInstance | null {
   const slug = root.dataset.projectSlug;
   if (!slug) return null;
 
+  // Build order + byId from the compact JSON embedded in data-notes-order.
+  // This attribute is always present (set by ProjectNotesPopup.astro) and
+  // contains [{id, t, p}] in depth-first reading order — same shape the
+  // old loop over `.notes-popup-note` elements produced, just lighter.
   const order: NoteRef[] = [];
   const byId = new Map<string, NoteRef>();
-  const noteEls = new Map<string, HTMLElement>();
 
-  for (const el of root.querySelectorAll<HTMLElement>('.notes-popup-note')) {
-    const fileId = el.dataset.noteId;
-    if (!fileId) continue;
-    const title = el.dataset.noteTitle ?? fileId.split('/').pop() ?? fileId;
-    const pathStr = el.dataset.notePath ?? '';
-    const path = pathStr ? pathStr.split('/') : [];
-    const leaf = fileId.split('/').pop()!;
-    const ref: NoteRef = { slug, fileId, title, path, leaf };
-    order.push(ref);
-    byId.set(fileId, ref);
-    noteEls.set(fileId, el);
+  try {
+    const raw = root.dataset.notesOrder;
+    if (raw) {
+      const parsed = JSON.parse(raw) as Array<{ id: string; t: string; p: string[] }>;
+      for (const entry of parsed) {
+        const leaf = entry.id.split('/').pop()!;
+        const ref: NoteRef = {
+          slug,
+          fileId: entry.id,
+          title: entry.t,
+          path: entry.p,
+          leaf,
+        };
+        order.push(ref);
+        byId.set(entry.id, ref);
+      }
+    }
+  } catch {
+    // JSON.parse failure — order stays empty; notes popup will be non-functional
+    // but won't crash the page.
+    console.warn(`[notes] failed to parse data-notes-order for slug "${slug}"`);
   }
+
+  // noteEls starts empty — populated after fragment fetch+inject.
+  const noteEls = new Map<string, HTMLElement>();
 
   const treeNoteBtns = new Map<string, HTMLElement>();
   for (const btn of root.querySelectorAll<HTMLElement>('[data-tree-note]')) {
@@ -347,6 +490,8 @@ function buildInstance(root: HTMLElement): PopupInstance | null {
     breadcrumb: root.querySelector<HTMLElement>('[data-note-breadcrumb]'),
     scrollEl: root.querySelector<HTMLElement>('[data-notes-scroll]'),
     trigger: null,
+    fetching: false,
+    pendingRef: null,
   };
 }
 
@@ -356,12 +501,19 @@ function wire(inst: PopupInstance): void {
     btn.addEventListener('click', () => {
       const ref = inst.byId.get(fileId);
       if (!ref) return;
-      setActiveNote(inst, ref);
       writeHash(inst.slug, ref);
       // ADR-022 — mobile two-step: tapping a note slides into the reader.
-      // Desktop ignores data-view (CSS pins both panes), but we still set
-      // it so a resize down to mobile lands on the right pane.
       setView(inst, 'reader');
+      if (inst.noteEls.size > 0) {
+        setActiveNote(inst, ref);
+      } else {
+        // Fragment not yet fetched — update pending and metadata.
+        inst.pendingRef = ref;
+        updateStepper(inst, ref);
+        updateMeta(inst, ref);
+        if (inst.breadcrumb) renderBreadcrumb(inst.breadcrumb, ref);
+        fetchAndInjectNotes(inst);
+      }
       // Move focus to the close button so screen readers + keyboard users
       // land somewhere sensible inside the reader rather than back at
       // the tree button that triggered the switch.

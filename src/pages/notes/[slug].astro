@@ -1,0 +1,90 @@
+---
+/**
+ * @file pages/_notes/[slug].astro
+ *
+ * Static fragment route — one file per project slug. Emitted at build
+ * time as `/_notes/<slug>.html`. Contains ONLY the `.notes-popup-note`
+ * article elements (full rendered note bodies) with NO site chrome.
+ *
+ * The main `/projects` page no longer inlines these bodies. Instead,
+ * the notes-popup-controller fetches this fragment on the first "open
+ * notes" click for a given slug, injects the articles into the popup's
+ * `[data-notes-scroll]` container, then builds the noteEls map and
+ * activates the first note. Re-opens are instant (HTML is cached in
+ * memory). The folio's open animation (200 ms) masks the single RTT.
+ *
+ * Why a bare HTML fragment (no doctype/html/body)?
+ *   - The controller uses `innerHTML` to inject, so a full document
+ *     would result in nested <html> — browsers handle it but it's
+ *     ugly. A bare fragment is the correct primitive here.
+ *   - File size stays minimal.
+ *
+ * BASE_URL: no internal links in the note bodies reference other pages,
+ * so no BASE_URL prefixing is needed in the fragment itself. The fetch
+ * URL in the controller IS base-prefixed (see notes-popup-controller.ts).
+ *
+ * Spec: Workstream H (move notes out of initial HTML, fetch on demand).
+ * Related: ADR-020-notes-popup-folder-tree, ADR-016-notes-popup-centered-folio.
+ */
+
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import { buildNotesTree } from '../../lib/notes-graph';
+
+export async function getStaticPaths() {
+  const projects = await getCollection('projects');
+  const allFiles = await getCollection('projectFiles');
+
+  // Build a slug → files map (same logic as projects.astro).
+  function slugFor(id: string): string {
+    return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
+  }
+
+  const filesBySlug = new Map<string, CollectionEntry<'projectFiles'>[]>();
+  for (const f of allFiles) {
+    const top = f.id.split('/')[0]!;
+    if (!filesBySlug.has(top)) filesBySlug.set(top, []);
+    filesBySlug.get(top)!.push(f);
+  }
+
+  return projects
+    .map((project) => {
+      const slug = slugFor(project.id);
+      const files = filesBySlug.get(slug) ?? [];
+      return { params: { slug }, props: { project, files } };
+    })
+    // Only emit a fragment if the project actually has notes.
+    .filter(({ props }) => props.files.length > 0);
+}
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  files: CollectionEntry<'projectFiles'>[];
+}
+
+const { project, files } = Astro.props;
+const tree = buildNotesTree(project, files);
+
+// SSR-render every note body. Same logic as the old ProjectNotesPopup,
+// now living here instead of in the main page HTML.
+const renderedNotes = await Promise.all(
+  tree.order.map(async (note) => ({
+    fileId: note.fileId,
+    title: note.title,
+    path: note.path,
+    Content: (await render(note.file)).Content,
+  })),
+);
+---
+{renderedNotes.map((note) => (
+  <article
+    class="notes-popup-note"
+    data-note-id={note.fileId}
+    data-note-title={note.title}
+    data-note-path={note.path.join('/')}
+    hidden
+  >
+    <div class="rp-content notes-popup-note-body">
+      <note.Content />
+    </div>
+  </article>
+))}

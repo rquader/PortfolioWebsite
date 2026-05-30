@@ -22,6 +22,7 @@ interface Props {
   treatment?: 'print' | 'frame' | 'plain';
   aspect?: string;
   lightbox?: boolean;
+  loading?: 'eager' | 'lazy';
 }
 
 const {
@@ -31,6 +32,7 @@ const {
   treatment = 'print',
   aspect = 'auto',
   lightbox = true,
+  loading = 'eager',
 } = Astro.props;
 ---
 <figure
@@ -41,7 +43,7 @@ const {
     <img
       src={src}
       alt={alt}
-      loading="eager"
+      loading={loading}
       decoding="async"
       class="photo-img"
       data-lightbox-trigger={lightbox ? src : undefined}

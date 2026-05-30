@@ -20,6 +20,6 @@ media_items:
     label: demo
 ---
 
-Have you ever wanted to put together a crossword or word search about a specific topic, maybe for school children, maybe for studying, maybe just to make life a little more interesting! **Web Crossword Generator** is a collaborative effort primarily between fellow SJSU student Armaan Saini and I to make that possible and easy.
+Have you ever wanted to put together a crossword or word search about a specific topic, maybe for school children, maybe for studying, maybe just to make life a little more interesting! **Web Crossword Generator** is a collaborative effort primarily between fellow SJSU student **Armaan Saini** and I to make that possible and easy.
 
-It was initially forked from [Crossword Generator](https://github.com/s-armaan/CrosswordGenerator), though being refactored into TypeScript. It has a clean skeleton architecture that allows you to select a grid size, provide words to strictly include, and has a clean UI for entering words to clean it up. Wonderfully, you can **print** the crossword for students (or play it on the site yourself!).
+It was initially forked from [Crossword Generator](https://github.com/s-armaan/CrosswordGenerator), though having been refactored into **TypeScript**. It has a clean skeleton architecture that allows you to select a grid size, provide words to strictly include, and has a clean UI for entering words to clean it up. Wonderfully, you can **print** the crossword for students (or play it on the site yourself!).

@@ -8,7 +8,7 @@ wip_note: >-
   This portfolio is a work in progress. I might add more flair with an
   introduction video and possibly video demos when the time is right.
 media_items:
-  - src: ./images/portfolio_website_demo.gif
+  - src: ./images/portfolio_website_demo.mp4
     label: demo
 ---
 

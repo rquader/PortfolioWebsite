@@ -7,25 +7,25 @@ github_url: https://github.com/rquader/Manim_Wallpaper
 media_mode: carousel
 media_default: 4
 media_items:
-  - src: ./images/01_recursive_tree.gif
+  - src: ./images/01_recursive_tree.mp4
     label: recursive tree
-  - src: ./images/02_falling_leaves.gif
+  - src: ./images/02_falling_leaves.mp4
     label: falling leaves
-  - src: ./images/03_phyllotaxis.gif
+  - src: ./images/03_phyllotaxis.mp4
     label: phyllotaxis
-  - src: ./images/04_constellation.gif
+  - src: ./images/04_constellation.mp4
     label: constellation
-  - src: ./images/05_recursive_tree_v2.gif
+  - src: ./images/05_recursive_tree_v2.mp4
     label: recursive tree v2
-  - src: ./images/06_aurora.gif
+  - src: ./images/06_aurora.mp4
     label: aurora
-  - src: ./images/07_network_nodes.gif
+  - src: ./images/07_network_nodes.mp4
     label: network nodes
-  - src: ./images/08_falling_leaves_forest.gif
+  - src: ./images/08_falling_leaves_forest.mp4
     label: falling leaves forest
-  - src: ./images/09_drift_field.gif
+  - src: ./images/09_drift_field.mp4
     label: drift field
-  - src: ./images/10_aurora_subtle.gif
+  - src: ./images/10_aurora_subtle.mp4
     label: aurora subtle
 ---
 

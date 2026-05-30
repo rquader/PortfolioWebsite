@@ -3,14 +3,49 @@
  *
  * Lazy-loaded project media carousels on /projects.
  * Defers init until the carousel intersects the viewport; only visible
- * slides load their image src (GIF/PNG) on demand.
+ * slides load their image src (GIF/PNG/video) on demand.
+ * Video slides: active slide plays, inactive slides pause + unload sources.
  */
 
 export interface ProjectMediaCarouselHandle {
   stop(): void;
 }
 
+function setVideoSlideActive(video: HTMLVideoElement, active: boolean): void {
+  if (active) {
+    // Load sources from data-* if not yet loaded
+    if (!video.src && !video.querySelector('source')) {
+      const webm = video.dataset.webm;
+      const mp4 = video.dataset.mp4;
+      if (webm) {
+        const s1 = document.createElement('source');
+        s1.src = webm;
+        s1.type = 'video/webm';
+        video.appendChild(s1);
+      }
+      if (mp4) {
+        const s2 = document.createElement('source');
+        s2.src = mp4;
+        s2.type = 'video/mp4';
+        video.appendChild(s2);
+      }
+      video.load();
+    }
+    video.play().catch(() => {/* autoplay blocked — poster stays visible */});
+  } else {
+    video.pause();
+  }
+}
+
 function setSlideLoaded(slide: HTMLElement, loaded: boolean): void {
+  // Video slide
+  const video = slide.querySelector<HTMLVideoElement>('video.project-media-video');
+  if (video) {
+    setVideoSlideActive(video, loaded);
+    return;
+  }
+
+  // Image slide (GIF / photo-img)
   const img = slide.querySelector<HTMLImageElement>('img.project-media-gif, img.photo-img');
   if (!img) return;
   if (loaded) {
@@ -26,7 +61,17 @@ function preloadAdjacent(root: HTMLElement, index: number): void {
   const slides = [...root.querySelectorAll<HTMLElement>('[data-carousel-slide]')];
   for (const offset of [-1, 1]) {
     const slide = slides[index + offset];
-    if (slide) setSlideLoaded(slide, true);
+    if (!slide) continue;
+    // For image slides: preload src. For video slides: do NOT preload —
+    // loading a hidden video would start downloading unnecessarily.
+    const video = slide.querySelector<HTMLVideoElement>('video.project-media-video');
+    if (video) continue;
+    const img = slide.querySelector<HTMLImageElement>('img.project-media-gif, img.photo-img');
+    if (img) {
+      const dataSrc = img.dataset.src ?? img.getAttribute('data-lightbox-trigger');
+      if (dataSrc && !img.src) img.src = dataSrc;
+      img.loading = 'eager';
+    }
   }
 }
 
@@ -68,6 +113,7 @@ function initCarousel(root: HTMLElement): () => void {
     }
   }
 
+  // Normalize GIF data-src (video slides use data-webm/data-mp4, already set by template)
   for (const slide of slides) {
     const img = slide.querySelector<HTMLImageElement>('img.project-media-gif');
     if (img && !img.dataset.src) {

@@ -16,6 +16,7 @@ import { initObsidianBolds } from './markdown/obsidian-bolds';
 import { initThemeToggle } from './theme-toggle';
 import { initPhotoLightbox } from './primitives/photo-lightbox';
 import { initProjectMediaCarousels } from './primitives/project-media-carousel';
+import { initProjectMediaVideo } from './primitives/project-media-video';
 import { initTreeHint } from './primitives/tree-hint';
 import { initChapterProgress } from './primitives/chapter-progress';
 import { initNotesResize } from './primitives/notes-resize';
@@ -42,6 +43,7 @@ export function initSite(): void {
 
   initPhotoLightbox();
   initProjectMediaCarousels();
+  initProjectMediaVideo();
   initTreeHint();
   initScrollSpy();
   // ADR-021 — /projects per-chapter progress + rail active state. No-op

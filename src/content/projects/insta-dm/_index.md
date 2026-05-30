@@ -9,7 +9,7 @@ wip_note: >-
   may reload a few times on launch).
 github_url: https://github.com/rquader/InstaDM
 media_items:
-  - src: ./images/instagram_demo_real.gif
+  - src: ./images/instagram_demo_real.mp4
     label: demo
 ---
 

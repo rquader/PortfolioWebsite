@@ -16,7 +16,7 @@ media_default: 0
 media_items:
   - src: ./images/web_crossword_generator_photo.png
     label: screenshot
-  - src: ./images/web_crossword_generator_demo.gif
+  - src: ./images/web_crossword_generator_demo.mp4
     label: demo
 ---
 

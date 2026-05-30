@@ -1,6 +1,6 @@
 ---
 import Photo from '../photo/Photo.astro';
-import { isAnimatedMedia, resolveProjectMediaUrl } from '../../lib/project-media-url';
+import { isAnimatedMedia, isVideoMedia, resolveProjectMediaUrl, resolveProjectVideoSources } from '../../lib/project-media-url';
 
 interface Props {
   projectId: string;
@@ -22,12 +22,39 @@ const {
   class: className = '',
 } = Astro.props;
 
-const resolved = resolveProjectMediaUrl(projectId, src);
-const animated = isAnimatedMedia(src);
+const video = isVideoMedia(src);
+const animated = !video && isAnimatedMedia(src);
+const resolved = video ? '' : resolveProjectMediaUrl(projectId, src);
+const videoSources = video ? resolveProjectVideoSources(projectId, src) : null;
 const loadNow = !deferLoad;
 ---
 {
-  animated ? (
+  video && videoSources ? (
+    // --- video branch (mp4/webm) ---
+    // Lazy case: omit src, put URLs on data-* so the carousel controller
+    // sets them on activation (mirrors the GIF data-src lazy pattern).
+    // Eager/single: provide src directly so the browser can start loading.
+    <video
+      class:list={['project-media-asset', 'project-media-video', className]}
+      autoplay
+      muted
+      loop
+      playsinline
+      poster={videoSources.poster}
+      preload={eager ? 'metadata' : 'none'}
+      data-autoplay
+      data-webm={deferLoad ? videoSources.webm : undefined}
+      data-mp4={deferLoad ? videoSources.mp4 : undefined}
+      data-lightbox-trigger={lightbox ? videoSources.mp4 : undefined}
+      data-lightbox-type={lightbox ? 'video' : undefined}
+      data-lightbox-webm={lightbox ? videoSources.webm : undefined}
+      data-lightbox-poster={lightbox ? videoSources.poster : undefined}
+      data-lightbox-alt={lightbox ? alt : undefined}
+    >
+      {!deferLoad && <source src={videoSources.webm} type="video/webm" />}
+      {!deferLoad && <source src={videoSources.mp4} type="video/mp4" />}
+    </video>
+  ) : animated ? (
     <img
       class:list={['project-media-asset', 'project-media-gif', className]}
       src={loadNow ? resolved : undefined}

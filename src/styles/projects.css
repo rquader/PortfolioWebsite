@@ -267,6 +267,7 @@
 }
 
 .project-media-single .project-media-gif,
+.project-media-single .project-media-video,
 .project-media-single .project-media-static,
 .project-media-single .photo-img {
   width: 100%;
@@ -291,6 +292,16 @@
   display: block;
   border-radius: 2px;
   background: var(--bg-1);
+}
+
+.project-media-asset.project-media-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 2px;
+  background: var(--bg-1);
+  cursor: pointer;
 }
 
 /* ─── carousel ─── */
@@ -321,6 +332,7 @@
 
 .project-media-carousel-asset,
 .project-media-carousel-slide .project-media-gif,
+.project-media-carousel-slide .project-media-video,
 .project-media-carousel-slide .project-media-static,
 .project-media-carousel-slide .photo-img {
   width: 100%;
@@ -438,6 +450,7 @@
 }
 
 .project-media-stack-item .project-media-gif,
+.project-media-stack-item .project-media-video,
 .project-media-stack-item .project-media-static,
 .project-media-stack-item .photo-img {
   width: 100%;
@@ -447,21 +460,24 @@
 
 /* Arabic dialect map — show full screenshot without tight crop */
 .project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:first-child .project-media-gif,
+.project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:first-child .project-media-video,
 .project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:first-child .photo-img {
   object-fit: contain;
   object-position: center top;
 }
 
-.project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:last-child .project-media-gif {
+.project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:last-child .project-media-gif,
+.project-media-wrap[data-project-slug='arabic-dialect-map'] .project-media-stack-item:last-child .project-media-video {
   object-fit: contain;
 }
 
-/* InstaDM — 16:9 gif, fit entire frame */
+/* InstaDM — 16:9 demo, fit entire frame */
 .project-media-wrap[data-project-slug='insta-dm'] .project-media-single {
   aspect-ratio: 16 / 9;
 }
 
-.project-media-wrap[data-project-slug='insta-dm'] .project-media-single .project-media-gif {
+.project-media-wrap[data-project-slug='insta-dm'] .project-media-single .project-media-gif,
+.project-media-wrap[data-project-slug='insta-dm'] .project-media-single .project-media-video {
   object-fit: contain;
 }
 
@@ -543,7 +559,10 @@
 
 .project-media-wrap[data-project-slug='adhkar-counter']
   .project-media-carousel-slide[data-slide-index='1']
-  .project-media-gif {
+  .project-media-gif,
+.project-media-wrap[data-project-slug='adhkar-counter']
+  .project-media-carousel-slide[data-slide-index='1']
+  .project-media-video {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -792,6 +811,7 @@
     max-height: 60vh;
   }
   .project-media-wrap[data-project-slug='portfolio-website'] .project-media-gif,
+  .project-media-wrap[data-project-slug='portfolio-website'] .project-media-video,
   .project-media-wrap[data-project-slug='portfolio-website'] .project-media-image img {
     object-fit: contain;
     background: var(--bg-1);
@@ -805,7 +825,7 @@
   }
 
   /* Insta-DM — 16:9 demo, contain so the full window chrome is in
-     frame (desktop rule already sets this for the gif). */
+     frame (desktop rule already sets this for the gif/video). */
   .project-media-wrap[data-project-slug='insta-dm'] .project-media-single {
     aspect-ratio: 16 / 9;
     max-height: 60vh;

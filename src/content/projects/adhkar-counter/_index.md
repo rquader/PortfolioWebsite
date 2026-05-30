@@ -9,7 +9,7 @@ media_default: 0
 media_items:
   - src: ./images/adhkar_counter_photo.png
     label: screenshot
-  - src: ./images/adhkar_counter_demo.gif
+  - src: ./images/adhkar_counter_demo.mp4
     label: demo
 ---
 

@@ -22,7 +22,7 @@ media_mode_mobile: carousel
 media_items:
   - src: ./images/arabic_dialect_map_photo.png
     label: screenshot
-  - src: ./images/arabic_dialect_map_demo.gif
+  - src: ./images/arabic_dialect_map_demo.mp4
     label: demo
 ---
 

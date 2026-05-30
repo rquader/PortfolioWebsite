@@ -6,7 +6,7 @@ status: shipped
 github_url: https://github.com/rquader/Legendary-UI-UX
 web_url: https://rquader.github.io/Legendary-UI-UX/
 media_items:
-  - src: ./images/legendary_ui_ux_demo.gif
+  - src: ./images/legendary_ui_ux_demo.mp4
     label: demo
 ---
 

@@ -6,8 +6,8 @@
  * hover, the word's letters reveal hand-picked colors and the section
  * takes a faint tint of the averaged word color.
  *
- * Palette inherited from Legendary's synesthesia (informed by Rimbaud
- * and Sean Day). The room tint transitions slowly via CSS — primitive
+ * Per-letter palette from syn-colors.ts (ADR-030, site-native OKLCH).
+ * The room tint transitions slowly via CSS — primitive
  * just sets the `--syn-r/g/b` variables and a `syn-tinted` class.
  *
  * Reduced motion: section-tint transition still works (it's a color
@@ -60,11 +60,19 @@ function splitWordIntoLetters(wordSpan: HTMLElement): HTMLElement[] {
 function ignite(wordSpan: HTMLElement, letters: HTMLElement[]): void {
   const reduced = isReducedMotion();
   const palette = activeSynPalette();
+  const isDark =
+    typeof document !== 'undefined' &&
+    document.documentElement.getAttribute('data-theme') === 'dark';
   for (const letter of letters) {
     const c = palette[(letter.textContent ?? '').toLowerCase()];
     if (!c) continue;
     letter.style.color = c;
-    if (!reduced) letter.style.textShadow = `0 0 6px ${c}88`;
+    if (!reduced) {
+      // Dark walnut: softer halo so cool letters don't read as neon UI.
+      letter.style.textShadow = isDark
+        ? `0 0 5px color-mix(in srgb, ${c} 45%, transparent)`
+        : `0 0 4px color-mix(in srgb, ${c} 40%, transparent)`;
+    }
   }
   void wordSpan;
 }

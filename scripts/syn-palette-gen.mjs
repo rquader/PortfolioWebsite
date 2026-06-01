@@ -162,22 +162,34 @@ function hexToRgb(h) {
 const DARK_BG = '#1F1812';
 const LIGHT_BG = '#F5EAD4';
 
-// Per-theme L is nudged per-hue: very warm/yellow hues are intrinsically
-// lighter, cool hues darker, so a flat L would make blues too dim in dark
-// and yellows too weak in light. Small hue-aware tweak keeps perceived
-// brightness even AND keeps contrast within the target band.
+// Cool hues (teal / blue / violet) are identity anchors but read neon on
+// walnut if rendered like warm letters. Per-theme chroma scales mute them
+// so dark mode feels like amber candlelight on wood, not RGB rainbow.
+function isCoolHue(h) {
+  return h >= 175 && h <= 335;
+}
+
+// Per-theme L: warm letters glow; cools stay subdued (no extra lift in dark).
 function darkL(h) {
-  // base 0.745; cool hues (180–320) a touch brighter to clear 3:1.
-  if (h >= 180 && h <= 320) return 0.775;
-  if (h >= 70 && h <= 150) return 0.745; // yellow-greens already bright
-  return 0.74;
+  if (isCoolHue(h)) return 0.72;
+  if (h >= 70 && h <= 150) return 0.76; // ambers / golds — near --accent-glow
+  return 0.735;
 }
 function lightL(h) {
-  // base 0.41; yellows/ambers a touch darker (they're light → need it
-  // to clear 4.5:1 on parchment); cool hues a touch lighter is fine.
-  if (h >= 65 && h <= 110) return 0.385; // ambers/golds — darken for contrast
-  if (h >= 180 && h <= 320) return 0.43;  // cools read dark already
+  if (h >= 65 && h <= 110) return 0.385;
+  if (isCoolHue(h)) return 0.405;
   return 0.41;
+}
+
+function chromaForMode(mode, h, baseC) {
+  if (mode === 'dark') {
+    if (isCoolHue(h)) return baseC * 0.5;
+    if (h >= 115 && h <= 155) return baseC * 0.88;
+    return baseC * 0.95;
+  }
+  if (isCoolHue(h)) return baseC * 0.72;
+  if (h >= 115 && h <= 155) return baseC * 1.0;
+  return baseC * 1.06;
 }
 
 function buildTable(mode) {
@@ -188,10 +200,10 @@ function buildTable(mode) {
     let L, chroma;
     if (mode === 'dark') {
       L = darkL(h);
-      chroma = c * 1.05; // glow reads a bit richer
+      chroma = chromaForMode('dark', h, c);
     } else {
       L = lightL(h);
-      chroma = c * 1.12; // deep tones need a little more chroma to register
+      chroma = chromaForMode('light', h, c);
     }
     const res = oklchToHex(L, chroma, h);
     out[ch] = res.hex;

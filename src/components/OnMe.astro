@@ -218,8 +218,7 @@ const hasPhoto = fs.existsSync(photoDiskPath);
      (0–255 ints, the hovered word's averaged letter color) and toggles
      `.syn-tinted`. We mix that color into the theme's own --bg-0 so the
      tint works in BOTH modes off one rule:
-       - DARK: --bg-0 is walnut (#1F1812); mixing toward the high-L glow
-         LIFTS the room toward the word color (the prior behavior).
+       - DARK: walnut + a whisper of --accent-glow so tints stay on-brand.
        - LIGHT: --bg-0 is parchment (#F5EAD4); the word color is deep
          ink, so mixing toward it DEEPENS / warms the paper a touch
          (letters are dark — the tint darkens, never washes out).
@@ -231,11 +230,15 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     transition: background-color 1.2s ease;
   }
   .on-me.syn-tinted {
-    /* dark lifts more (glow), light deepens less (keep paper legible) */
-    background-color: color-mix(in srgb, var(--syn-word) 10%, var(--bg-0));
+    background-color: color-mix(in srgb, var(--syn-word) 8%, var(--bg-0));
   }
   :root[data-theme="dark"] .on-me.syn-tinted {
-    background-color: color-mix(in srgb, var(--syn-word) 18%, var(--bg-0));
+    /* Warm-tinted word averages → subtle lift toward accent-glow territory */
+    background-color: color-mix(
+      in srgb,
+      var(--syn-word) 12%,
+      color-mix(in srgb, var(--accent-glow) 4%, var(--bg-0))
+    );
   }
 
   /* Reduced motion: the color still changes (it's information, not

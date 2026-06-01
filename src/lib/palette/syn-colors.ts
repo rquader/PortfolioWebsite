@@ -12,8 +12,8 @@
  * principle: each letter keeps a CONSTANT HUE (its identity); only
  * LIGHTNESS / chroma adapt per theme for legibility.
  *
- *   - DARK  (walnut #1F1812): letters glow at L ≈ 0.74–0.78.
- *   - LIGHT (parchment #F5EAD4): letters are deep ink at L ≈ 0.385–0.43.
+ *   - DARK  (walnut #1F1812): warm letters glow; cool letters muted.
+ *   - LIGHT (parchment #F5EAD4): deep ink; cools slightly desaturated.
  *
  * Hues are WARM-BIASED toward the site's aged-ink / sepia / walnut /
  * terracotta / amber world — ~20 letters in the warm arc (reds→ambers→
@@ -107,29 +107,28 @@ function oklchToHex(L: number, c: number, hDeg: number): string {
 void oklchToHex;
 
 // ── Baked tables (output of scripts/syn-palette-gen.mjs) ─────────────
-// DARK: rendered at L ≈ 0.74–0.78, chroma ×1.05. Glow on walnut
-// #1F1812 — every letter ≥ 7.2:1 contrast (target ≥ 3:1).
+// DARK: L ≈ 0.72–0.76; cool hues at ~50% chroma (slate, not neon).
+// Glow on walnut #1F1812 — every letter ≥ 6.9:1 (target ≥ 3:1).
 export const SYN_COLORS_DARK: Record<string, string> = {
-  a: '#dd9785', b: '#77bdf8', c: '#d6a24b', d: '#d59c81',
-  e: '#b2aba4', f: '#e89362', g: '#9ab973', h: '#c4aa5a',
-  i: '#e99172', j: '#d292c8', k: '#b3b15f', l: '#b4a89f',
-  m: '#e8907f', n: '#e1985e', o: '#92b8ef', p: '#9ab9da',
-  q: '#c0a7ef', r: '#eb8e82', s: '#cca848', t: '#6ac8c7',
-  u: '#86bd87', v: '#a7b0f5', w: '#91ba83', x: '#b7a7a1',
-  y: '#d2a449', z: '#66c9c1',
+  a: '#d79787', b: '#8aa9c4', c: '#d7a85c', d: '#d09c84',
+  e: '#b6b0a9', f: '#e19469', g: '#a2bc82', h: '#c7b068',
+  i: '#e29277', j: '#b89ab3', k: '#b7b66d', l: '#b2a79f',
+  m: '#e19282', n: '#db9865', o: '#94a6c0', p: '#98a6b6',
+  q: '#a99ec0', r: '#e48f84', s: '#cead5a', t: '#86adad',
+  u: '#92bf92', v: '#9da2c3', w: '#9abd8f', x: '#b5a6a0',
+  y: '#d4aa5b', z: '#85aeaa',
 };
 
-// LIGHT: rendered at L ≈ 0.385–0.43, chroma ×1.12. Deep ink on
-// parchment #F5EAD4 — every letter ≥ 6.5:1 contrast (target ≥ 4.5:1).
-// Hue per letter is identical to the dark table; only L/chroma differ.
+// LIGHT: L ≈ 0.385–0.41; cool hues at ~72% chroma (ink, not poster).
+// Parchment #F5EAD4 — every letter ≥ 7.1:1 (target ≥ 4.5:1).
 export const SYN_COLORS_LIGHT: Record<string, string> = {
-  a: '#753424', b: '#005487', c: '#5b3d00', d: '#6f3a20',
-  e: '#48433c', f: '#773400', g: '#395401', h: '#534200',
-  i: '#7f2b07', j: '#6c3065', k: '#484600', l: '#534840',
-  m: '#7e2b1d', n: '#713a00', o: '#2d5083', p: '#355270',
-  q: '#5a3f83', r: '#802821', s: '#554000', t: '#005c5c',
-  u: '#205825', v: '#434889', w: '#2e561f', x: '#564741',
-  y: '#593f00', z: '#005d57',
+  a: '#733627', b: '#214d6f', c: '#5b3d00', d: '#6d3b23',
+  e: '#48433c', f: '#773400', g: '#3b5412', h: '#534200',
+  i: '#7c2e0e', j: '#603a5a', k: '#484600', l: '#524840',
+  m: '#7b2e20', n: '#713a00', o: '#344a6a', p: '#394b5e',
+  q: '#4f406a', r: '#7e2b24', s: '#554000', t: '#145353',
+  u: '#26572a', v: '#40456e', w: '#325525', x: '#554742',
+  y: '#593f00', z: '#10544f',
 };
 
 /** Backwards-compatible export — old code that imports SYN_COLORS gets

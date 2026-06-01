@@ -1,6 +1,6 @@
 ---
 title: Portfolio Website
-tagline: this site — projects, notes, and the recursive tree
+tagline: Rafan Quader's portfolio website
 sort_order: 70
 status: active
 wip: true

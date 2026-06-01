@@ -29,4 +29,4 @@ media_items:
     label: aurora subtle
 ---
 
-You ever see those jaw-dropping videos by 3Blue1Brown whether explaining Linear Algebra, Calculus, or many other topics. You might be intrigued to know that he uses a Python library he developed called Manim. Manim Wallpapers is basically an effort of utilizing the Manim library with Claude Code to see if it could put together high-quality animated outputs which could serve as laptop wallpapers.
+You ever see those jaw-dropping videos by **3Blue1Brown** whether explaining Linear Algebra, Calculus, or many other topics. You might be intrigued to know that he uses a Python library he developed called Manim. **Manim Wallpapers** is basically an effort of utilizing the Manim library with **Claude Code** to see if it could put together high-quality animated outputs which could serve as laptop wallpapers.

@@ -14,4 +14,4 @@ media_items:
     label: demo
 ---
 
-You ever wanted, deeply, to get an internship, some opportunity, or a cool way to spend your summer somehow, sometime soon? Or for a recruiter, or friend, or anyone else to understand who you want to position yourself as? Those ideas integrate deeply into this Portfolio website! It’s meant to serve as a way to showcase what I’ve learned and to largely amalgamate them into a really clean UI that’s fresh, interesting, and effective. and fresh.
+You ever wanted, deeply, to get an internship, some opportunity, or a cool way to spend your summer somehow, sometime soon? Or for a recruiter, or friend, or anyone else to understand who you want to position yourself as? Those ideas integrate deeply into this **Portfolio website**! It’s meant to serve as a way to showcase what I’ve learned and to largely amalgamate them into a really clean UI that’s fresh, interesting, and effective. and fresh.

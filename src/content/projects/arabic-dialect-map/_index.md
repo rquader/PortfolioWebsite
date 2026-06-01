@@ -30,4 +30,4 @@ media_items:
     label: demo
 ---
 
-Arabic has a LOT of dialects. It can be difficult to understand how they vary, the details they incur, how they relate to each other and the likes. Arabic Dialect Map is a clean application that maps how Arabic is connected. It works on both laptop and mobile (utilizing a cards view).
+Arabic has a LOT of dialects. It can be difficult to understand how they vary, the details they incur, how they relate to each other and the likes. **Arabic Dialect Map** is a clean application that maps how Arabic is connected. It works on both laptop and mobile (utilizing a cards view).

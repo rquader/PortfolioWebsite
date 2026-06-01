@@ -13,4 +13,4 @@ media_items:
     label: demo
 ---
 
-You ever feel like Instagram is too addicting with reels, stories, etc. Honestly, I felt the same and for a bit, I just had my Instagram account deleted entirely! I developed InstaDM, a light-weight Swift macOS application, that will allow you access Instagram messages while blocking the rest of the app. This can allow you to stay connected to people via Instagram while keeping you off its addictive reels and distracting feed.
+You ever feel like Instagram is too addicting with reels, stories, etc. Honestly, I felt the same and for a bit, I just had my Instagram account deleted entirely! I developed **InstaDM**, a light-weight **Swift** macOS application, that will allow you access Instagram messages while blocking the rest of the app. This can allow you to stay connected to people via Instagram while keeping you off its addictive reels and distracting feed.

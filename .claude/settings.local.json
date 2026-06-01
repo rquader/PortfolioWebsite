@@ -69,7 +69,11 @@
       "Bash(mkdir -p /tmp/design1_extract /tmp/design2_extract /tmp/design3_extract)",
       "Bash(tar -xf /tmp/design1.raw -C /tmp/design1_extract)",
       "Bash(tar -xf /tmp/design2.raw -C /tmp/design2_extract)",
-      "Bash(tar -xf /tmp/design3.raw -C /tmp/design3_extract)"
+      "Bash(tar -xf /tmp/design3.raw -C /tmp/design3_extract)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('deps:', json.dumps\\(d.get\\('dependencies',{}\\),indent=0\\)\\); print\\('devDeps:', json.dumps\\(d.get\\('devDependencies',{}\\),indent=0\\)\\)\")",
+      "Bash(grep -iE 'culori|colorjs|chroma|color-convert|^color$')",
+      "Bash(git commit -q -m 'synesthesia: rebuild palette as warm-biased per-theme OKLCH \\(ADR-030\\) *)",
+      "Bash(git commit -q -m 'perf\\(C\\): drop redundant projects-only selectors from global heading rule *)"
     ]
   },
   "hooks": {

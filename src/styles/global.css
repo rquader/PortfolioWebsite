@@ -497,11 +497,13 @@ body.mobile-drawer-open {
   overflow-wrap: normal;
   word-break: normal;
 }
-/* Headings + display text — never break mid-word. */
+/* Headings + display text — never break mid-word.
+   .project-chapter-title (h2) and .projects-title (h1) were dropped from
+   this list: they're already covered by the h1–h6 element selectors below,
+   so naming the classes was redundant and only pushed projects-only selector
+   text into the global (home) CSS bundle. */
 h1, h2, h3, h4, h5, h6,
 .section-heading,
-.project-chapter-title,
-.projects-title,
 .bio-lead {
   overflow-wrap: normal;
   word-break: normal;

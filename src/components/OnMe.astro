@@ -214,9 +214,9 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   .on-me-field-row:last-child { border-bottom: 0; }
   .on-me-field-row span:last-child { color: var(--text-1); }
 
-  /* Word emphasis (portfolio synesthesia) — four accent slots from tokens.
-     JS toggles [data-syn-active] on the word and data-syn-active-slot on
-     the section; no per-letter palette. Spec: Concept - Synesthesia Goals. */
+  /* Word emphasis (portfolio synesthesia). Dark: warm glow on walnut.
+     Light: sunlit slots (brighter accents on parchment) + soft marker wash.
+     Spec: Concept - Synesthesia Goals. */
   .on-me {
     --syn-slot-0: var(--accent-warm);
     --syn-slot-1: var(--accent-glow);
@@ -226,13 +226,24 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     transition: background-color 1.2s ease;
   }
 
+  /* Light mirrors dark: luminance lifts off the page, not deeper ink. */
+  :root[data-theme='light'] .on-me {
+    --syn-slot-0: var(--accent-bright);
+    --syn-slot-1: var(--accent-glow);
+    --syn-slot-2: var(--accent-bright);
+    --syn-slot-3: var(--accent-warm);
+  }
+
   .on-me [data-syn-word] {
     cursor: pointer;
     text-decoration: underline;
     text-decoration-style: dotted;
     text-decoration-color: color-mix(in srgb, var(--accent-on-me) 45%, transparent);
     text-underline-offset: 0.18em;
-    transition: color 0.35s ease, text-decoration-color 0.35s ease;
+    transition:
+      color 0.35s ease,
+      text-decoration-color 0.35s ease,
+      background-color 0.35s ease;
   }
 
   .on-me [data-syn-word][data-syn-active][data-syn-slot='0'] { color: var(--syn-slot-0); }
@@ -258,17 +269,52 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     text-decoration-color: color-mix(in srgb, var(--syn-slot-3) 70%, transparent);
   }
 
-  .on-me.syn-tinted[data-syn-active-slot='0'] {
-    background-color: color-mix(in srgb, var(--syn-slot-0) 9%, var(--bg-0));
+  /* Light: manuscript marker + stronger room wash (parallel to dark candlelight). */
+  :root[data-theme='light'] .on-me [data-syn-word][data-syn-active] {
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    border-radius: 2px;
   }
-  .on-me.syn-tinted[data-syn-active-slot='1'] {
-    background-color: color-mix(in srgb, var(--syn-slot-1) 9%, var(--bg-0));
+  :root[data-theme='light'] .on-me [data-syn-word][data-syn-active][data-syn-slot='0'] {
+    background-color: color-mix(in srgb, var(--syn-slot-0) 16%, transparent);
   }
-  .on-me.syn-tinted[data-syn-active-slot='2'] {
-    background-color: color-mix(in srgb, var(--syn-slot-2) 8%, var(--bg-0));
+  :root[data-theme='light'] .on-me [data-syn-word][data-syn-active][data-syn-slot='1'] {
+    background-color: color-mix(in srgb, var(--syn-slot-1) 14%, transparent);
   }
-  .on-me.syn-tinted[data-syn-active-slot='3'] {
-    background-color: color-mix(in srgb, var(--syn-slot-3) 8%, var(--bg-0));
+  :root[data-theme='light'] .on-me [data-syn-word][data-syn-active][data-syn-slot='2'] {
+    background-color: color-mix(in srgb, var(--accent-pale) 18%, transparent);
+  }
+  :root[data-theme='light'] .on-me [data-syn-word][data-syn-active][data-syn-slot='3'] {
+    background-color: color-mix(in srgb, var(--syn-slot-3) 12%, transparent);
+  }
+
+  :root[data-theme='light'] .on-me.syn-tinted[data-syn-active-slot='0'] {
+    background-color: color-mix(
+      in srgb,
+      var(--syn-slot-0) 14%,
+      color-mix(in srgb, var(--accent-glow) 5%, var(--bg-0))
+    );
+  }
+  :root[data-theme='light'] .on-me.syn-tinted[data-syn-active-slot='1'] {
+    background-color: color-mix(
+      in srgb,
+      var(--syn-slot-1) 15%,
+      color-mix(in srgb, var(--accent-glow) 5%, var(--bg-0))
+    );
+  }
+  :root[data-theme='light'] .on-me.syn-tinted[data-syn-active-slot='2'] {
+    background-color: color-mix(
+      in srgb,
+      var(--accent-pale) 14%,
+      color-mix(in srgb, var(--accent-glow) 5%, var(--bg-0))
+    );
+  }
+  :root[data-theme='light'] .on-me.syn-tinted[data-syn-active-slot='3'] {
+    background-color: color-mix(
+      in srgb,
+      var(--syn-slot-3) 12%,
+      color-mix(in srgb, var(--accent-glow) 4%, var(--bg-0))
+    );
   }
 
   :root[data-theme='dark'] .on-me.syn-tinted[data-syn-active-slot='0'] {

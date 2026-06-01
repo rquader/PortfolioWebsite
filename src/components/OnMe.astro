@@ -38,14 +38,14 @@ const hasPhoto = fs.existsSync(photoDiskPath);
       <p class="bio-lead">
         As a student beginning in <strong>Computer Science</strong>, one thing I can say in
         <em>high confidence</em>,
-        <span data-syn-word>massive change</span> is not only imminent but already fast in motion.
+        <span data-syn-word data-syn-slot="0">massive change</span> is not only imminent but already fast in motion.
       </p>
       <p>
         In that change, people can, like much other change, push towards a
-        <span data-syn-word>better world</span> or break it down as we know it. For me, that
+        <span data-syn-word data-syn-slot="1">better world</span> or break it down as we know it. For me, that
         makes my goal discovering the fields I am most interested in and joining initiatives
-        utilizing this program to participate in <span data-syn-word>meaningful</span>
-        endeavors, build things, or simply message <span data-syn-word>Claude Code</span>.
+        utilizing this program to participate in <span data-syn-word data-syn-slot="2">meaningful</span>
+        endeavors, build things, or simply message <span data-syn-word data-syn-slot="3">Claude Code</span>.
       </p>
     </div>
 
@@ -214,36 +214,78 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   .on-me-field-row:last-child { border-bottom: 0; }
   .on-me-field-row span:last-child { color: var(--text-1); }
 
-  /* Synesthesia section tint (ADR-030). synesthesia.ts sets --syn-r/g/b
-     (0–255 ints, the hovered word's averaged letter color) and toggles
-     `.syn-tinted`. We mix that color into the theme's own --bg-0 so the
-     tint works in BOTH modes off one rule:
-       - DARK: walnut + a whisper of --accent-glow so tints stay on-brand.
-       - LIGHT: --bg-0 is parchment (#F5EAD4); the word color is deep
-         ink, so mixing toward it DEEPENS / warms the paper a touch
-         (letters are dark — the tint darkens, never washes out).
-     Rest state is plain --bg-0 (0% mix); hover lifts to a small mix %.
-     The ~1.2s transition + .syn-tinted mechanism are unchanged. */
+  /* Word emphasis (portfolio synesthesia) — four accent slots from tokens.
+     JS toggles [data-syn-active] on the word and data-syn-active-slot on
+     the section; no per-letter palette. Spec: Concept - Synesthesia Goals. */
   .on-me {
-    --syn-word: rgb(var(--syn-r, 200), var(--syn-g, 180), var(--syn-b, 160));
+    --syn-slot-0: var(--accent-warm);
+    --syn-slot-1: var(--accent-glow);
+    --syn-slot-2: var(--accent-pale);
+    --syn-slot-3: var(--accent);
     background-color: var(--bg-0);
     transition: background-color 1.2s ease;
   }
-  .on-me.syn-tinted {
-    background-color: color-mix(in srgb, var(--syn-word) 8%, var(--bg-0));
-  }
-  :root[data-theme="dark"] .on-me.syn-tinted {
-    /* Warm-tinted word averages → subtle lift toward accent-glow territory */
-    background-color: color-mix(
-      in srgb,
-      var(--syn-word) 12%,
-      color-mix(in srgb, var(--accent-glow) 4%, var(--bg-0))
-    );
+
+  .on-me [data-syn-word] {
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-decoration-color: color-mix(in srgb, var(--accent-on-me) 45%, transparent);
+    text-underline-offset: 0.18em;
+    transition: color 0.35s ease, text-decoration-color 0.35s ease;
   }
 
-  /* Reduced motion: the color still changes (it's information, not
-     motion) but the slow cross-fade is dropped — it snaps. */
-  @media (prefers-reduced-motion: reduce) {
-    .on-me { transition: none; }
+  .on-me [data-syn-word][data-syn-active][data-syn-slot='0'] { color: var(--syn-slot-0); }
+  .on-me [data-syn-word][data-syn-active][data-syn-slot='1'] { color: var(--syn-slot-1); }
+  .on-me [data-syn-word][data-syn-active][data-syn-slot='2'] { color: var(--syn-slot-2); }
+  .on-me [data-syn-word][data-syn-active][data-syn-slot='3'] { color: var(--syn-slot-3); }
+
+  .on-me [data-syn-word][data-syn-active] {
+    font-weight: 500;
+    text-decoration-style: solid;
+  }
+
+  .on-me [data-syn-word][data-syn-active][data-syn-slot='0'] {
+    text-decoration-color: color-mix(in srgb, var(--syn-slot-0) 70%, transparent);
+  }
+  .on-me [data-syn-word][data-syn-active][data-syn-slot='1'] {
+    text-decoration-color: color-mix(in srgb, var(--syn-slot-1) 70%, transparent);
+  }
+  .on-me [data-syn-word][data-syn-active][data-syn-slot='2'] {
+    text-decoration-color: color-mix(in srgb, var(--syn-slot-2) 70%, transparent);
+  }
+  .on-me [data-syn-word][data-syn-active][data-syn-slot='3'] {
+    text-decoration-color: color-mix(in srgb, var(--syn-slot-3) 70%, transparent);
+  }
+
+  .on-me.syn-tinted[data-syn-active-slot='0'] {
+    background-color: color-mix(in srgb, var(--syn-slot-0) 9%, var(--bg-0));
+  }
+  .on-me.syn-tinted[data-syn-active-slot='1'] {
+    background-color: color-mix(in srgb, var(--syn-slot-1) 9%, var(--bg-0));
+  }
+  .on-me.syn-tinted[data-syn-active-slot='2'] {
+    background-color: color-mix(in srgb, var(--syn-slot-2) 8%, var(--bg-0));
+  }
+  .on-me.syn-tinted[data-syn-active-slot='3'] {
+    background-color: color-mix(in srgb, var(--syn-slot-3) 8%, var(--bg-0));
+  }
+
+  :root[data-theme='dark'] .on-me.syn-tinted[data-syn-active-slot='0'] {
+    background-color: color-mix(in srgb, var(--syn-slot-0) 13%, var(--bg-0));
+  }
+  :root[data-theme='dark'] .on-me.syn-tinted[data-syn-active-slot='1'] {
+    background-color: color-mix(in srgb, var(--syn-slot-1) 14%, var(--bg-0));
+  }
+  :root[data-theme='dark'] .on-me.syn-tinted[data-syn-active-slot='2'] {
+    background-color: color-mix(in srgb, var(--syn-slot-2) 11%, var(--bg-0));
+  }
+  :root[data-theme='dark'] .on-me.syn-tinted[data-syn-active-slot='3'] {
+    background-color: color-mix(in srgb, var(--syn-slot-3) 10%, var(--bg-0));
+  }
+
+  .on-me.syn-reduced-motion,
+  .on-me.syn-reduced-motion [data-syn-word] {
+    transition: none;
   }
 </style>

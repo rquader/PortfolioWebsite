@@ -20,7 +20,7 @@
 
 import { registerTick } from '../boot';
 import { isReducedMotion } from '../reduced-motion';
-import { synColor } from '../palette/syn-colors';
+import { currentSectionAccentColor } from '../palette/section-accent';
 
 const K = 86;             // spring stiffness
 const C = 13;             // damping
@@ -314,10 +314,10 @@ export function initInertialType(root: HTMLElement | null = null): InertialTypeH
           if (lit !== L.colorLit) {
             L.colorLit = lit;
             if (lit) {
-              const c = synColor(L.span.textContent ?? '');
+              const c = currentSectionAccentColor();
               if (c) {
                 L.span.style.color = c;
-                L.span.style.textShadow = `0 0 14px ${c}aa, 0 0 4px ${c}`;
+                L.span.style.textShadow = `0 0 6px color-mix(in srgb, ${c} 28%, transparent)`;
               }
             } else {
               L.span.style.color = '';
@@ -338,10 +338,10 @@ export function initInertialType(root: HTMLElement | null = null): InertialTypeH
         if (lit !== L.colorLit) {
           L.colorLit = lit;
           if (lit) {
-            const c = synColor(L.span.textContent ?? '');
+            const c = currentSectionAccentColor();
             if (c) {
               L.span.style.color = c;
-              L.span.style.textShadow = `0 0 14px ${c}aa, 0 0 4px ${c}`;
+              L.span.style.textShadow = `0 0 6px color-mix(in srgb, ${c} 28%, transparent)`;
             }
           } else {
             L.span.style.color = '';

@@ -1,148 +1,152 @@
 /**
  * @file synesthesia.ts
  *
- * Hover-coloring on selected words inside the "on me" paragraph.
- * Each hover-active word is wrapped in `<span data-syn-word>`; on
- * hover, the word's letters reveal hand-picked colors and the section
- * takes a faint tint of the averaged word color.
+ * Portfolio "on me" word emphasis — spec: [[Concept - Synesthesia Goals]].
  *
- * Per-letter palette from syn-colors.ts (ADR-030, site-native OKLCH).
- * The room tint transitions slowly via CSS — primitive
- * just sets the `--syn-r/g/b` variables and a `syn-tinted` class.
+ * A small set of `[data-syn-word]` spans in the bio reveal site accent
+ * pigment on hover (desktop) or tap (touch). The on-me section takes a
+ * matching wash. One word color per span (design tokens), not per-letter
+ * grapheme colors.
  *
- * Reduced motion: section-tint transition still works (it's a color
- * change, not motion); letter `text-shadow` glow is dropped.
- *
- * Spec: [[Concept - Synesthesia Goals]] in the Obsidian docs.
+ * Spec: [[Concept - Synesthesia Goals]]; [[03 - Content Model#on me]].
  */
 
 import { isReducedMotion } from '../reduced-motion';
-import { activeSynPalette } from '../palette/syn-colors';
+import { THEME_EVENT } from '../theme-toggle';
 
-const GRACE_MS = 700; // ms — pointerleave delay before removing tint
+const GRACE_MS = 700;
+const SLOT_COUNT = 4;
 
 export interface SynesthesiaHandle {
   stop(): void;
 }
 
-interface AvgRgb { r: number; g: number; b: number; }
-
-function avgWordColor(word: string): AvgRgb {
-  const palette = activeSynPalette();
-  const letters = word.toLowerCase().replace(/[^a-z]/g, '');
-  let r = 0, g = 0, b = 0, n = 0;
-  for (const c of letters) {
-    const hex = palette[c];
-    if (!hex) continue;
-    r += parseInt(hex.slice(1, 3), 16);
-    g += parseInt(hex.slice(3, 5), 16);
-    b += parseInt(hex.slice(5, 7), 16);
-    n++;
-  }
-  if (n === 0) return { r: 200, g: 180, b: 160 };
-  return { r: r / n, g: g / n, b: b / n };
+function prefersTap(): boolean {
+  if (typeof window === 'undefined') return false;
+  return (
+    window.matchMedia('(hover: none)').matches ||
+    window.matchMedia('(pointer: coarse)').matches
+  );
 }
 
-function splitWordIntoLetters(wordSpan: HTMLElement): HTMLElement[] {
-  const text = wordSpan.textContent ?? '';
-  wordSpan.textContent = '';
-  const out: HTMLElement[] = [];
-  for (const ch of text) {
-    const span = document.createElement('span');
-    span.className = 'syn-letter';
-    span.textContent = ch;
-    wordSpan.appendChild(span);
-    out.push(span);
-  }
-  return out;
-}
-
-function ignite(wordSpan: HTMLElement, letters: HTMLElement[]): void {
-  const reduced = isReducedMotion();
-  const palette = activeSynPalette();
-  const isDark =
-    typeof document !== 'undefined' &&
-    document.documentElement.getAttribute('data-theme') === 'dark';
-  for (const letter of letters) {
-    const c = palette[(letter.textContent ?? '').toLowerCase()];
-    if (!c) continue;
-    letter.style.color = c;
-    if (!reduced) {
-      // Dark walnut: softer halo so cool letters don't read as neon UI.
-      letter.style.textShadow = isDark
-        ? `0 0 5px color-mix(in srgb, ${c} 45%, transparent)`
-        : `0 0 4px color-mix(in srgb, ${c} 40%, transparent)`;
-    }
-  }
-  void wordSpan;
-}
-
-function quench(letters: HTMLElement[]): void {
-  for (const letter of letters) {
-    letter.style.color = '';
-    letter.style.textShadow = '';
-  }
+function parseSlot(el: HTMLElement, index: number): number {
+  const raw = el.getAttribute('data-syn-slot');
+  if (raw == null || raw === '') return index % SLOT_COUNT;
+  const n = Number.parseInt(raw, 10);
+  if (!Number.isFinite(n)) return index % SLOT_COUNT;
+  return ((n % SLOT_COUNT) + SLOT_COUNT) % SLOT_COUNT;
 }
 
 export function initSynesthesia(section: HTMLElement): SynesthesiaHandle {
   if (typeof document === 'undefined') return { stop: () => {} };
 
-  // Coarse-pointer guard: synesthesia is driven by pointer hover (pointerenter /
-  // pointerleave on words). Touch screens never fire hover events in the same
-  // way, and splitting words into per-letter spans on mobile would be pure DOM
-  // overhead with no effect the user could trigger. Early-return before any DOM
-  // mutation or event registration.
-  if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) {
-    return { stop: () => {} };
-  }
-
   const words = Array.from(section.querySelectorAll<HTMLElement>('[data-syn-word]'));
   if (words.length === 0) return { stop: () => {} };
 
-  // Wrap each word's letters once.
-  const lettersByWord = new WeakMap<HTMLElement, HTMLElement[]>();
-  for (const w of words) {
-    lettersByWord.set(w, splitWordIntoLetters(w));
+  const useTap = prefersTap();
+  let graceTimer: ReturnType<typeof setTimeout> | null = null;
+  let activeWord: HTMLElement | null = null;
+
+  const clearSection = (): void => {
+    section.classList.remove('syn-tinted');
+    section.removeAttribute('data-syn-active-slot');
+  };
+
+  const deactivateWord = (word: HTMLElement): void => {
+    word.removeAttribute('data-syn-active');
+  };
+
+  const deactivateAll = (): void => {
+    for (const w of words) deactivateWord(w);
+    clearSection();
+    activeWord = null;
+  };
+
+  const activate = (word: HTMLElement, slot: number): void => {
+    if (activeWord && activeWord !== word) deactivateWord(activeWord);
+    activeWord = word;
+    word.setAttribute('data-syn-active', '');
+    word.setAttribute('data-syn-slot', String(slot));
+    section.classList.add('syn-tinted');
+    section.setAttribute('data-syn-active-slot', String(slot));
+  };
+
+  const onTheme = (): void => {
+    if (!activeWord) return;
+    const slot = parseSlot(activeWord, words.indexOf(activeWord));
+    activate(activeWord, slot);
+  };
+  window.addEventListener(THEME_EVENT, onTheme);
+
+  const enterHandlers: Array<[HTMLElement, () => void]> = [];
+  const leaveHandlers: Array<[HTMLElement, () => void]> = [];
+  const clickHandlers: Array<[HTMLElement, (e: Event) => void]> = [];
+  let onDocPointer: ((e: Event) => void) | null = null;
+
+  if (useTap) {
+    onDocPointer = (e: Event): void => {
+      const target = e.target;
+      if (target instanceof Node && words.some((w) => w.contains(target))) return;
+      deactivateAll();
+    };
+    document.addEventListener('pointerdown', onDocPointer);
+
+    words.forEach((word, index) => {
+      const onClick = (e: Event): void => {
+        e.preventDefault();
+        const slot = parseSlot(word, index);
+        if (word.hasAttribute('data-syn-active')) {
+          deactivateAll();
+          return;
+        }
+        activate(word, slot);
+      };
+      word.addEventListener('click', onClick);
+      clickHandlers.push([word, onClick]);
+    });
+  } else {
+    words.forEach((word, index) => {
+      const slot = parseSlot(word, index);
+
+      const onEnter = (): void => {
+        if (graceTimer) {
+          clearTimeout(graceTimer);
+          graceTimer = null;
+        }
+        activate(word, slot);
+      };
+
+      const onLeave = (): void => {
+        deactivateWord(word);
+        if (activeWord === word) activeWord = null;
+        if (graceTimer) clearTimeout(graceTimer);
+        graceTimer = setTimeout(() => {
+          clearSection();
+          graceTimer = null;
+        }, GRACE_MS);
+      };
+
+      word.addEventListener('pointerenter', onEnter);
+      word.addEventListener('pointerleave', onLeave);
+      enterHandlers.push([word, onEnter]);
+      leaveHandlers.push([word, onLeave]);
+    });
   }
 
-  let graceTimer: ReturnType<typeof setTimeout> | null = null;
-  const enterHandlers: Array<[HTMLElement, (e: PointerEvent) => void]> = [];
-  const leaveHandlers: Array<[HTMLElement, (e: PointerEvent) => void]> = [];
-
-  for (const word of words) {
-    const onEnter = () => {
-      if (graceTimer) {
-        clearTimeout(graceTimer);
-        graceTimer = null;
-      }
-      const text = word.textContent ?? '';
-      const { r, g, b } = avgWordColor(text);
-      const root = document.documentElement;
-      root.style.setProperty('--syn-r', String(Math.round(r)));
-      root.style.setProperty('--syn-g', String(Math.round(g)));
-      root.style.setProperty('--syn-b', String(Math.round(b)));
-      section.classList.add('syn-tinted');
-      ignite(word, lettersByWord.get(word) ?? []);
-    };
-    const onLeave = () => {
-      quench(lettersByWord.get(word) ?? []);
-      if (graceTimer) clearTimeout(graceTimer);
-      graceTimer = setTimeout(() => {
-        section.classList.remove('syn-tinted');
-        graceTimer = null;
-      }, GRACE_MS);
-    };
-    word.addEventListener('pointerenter', onEnter);
-    word.addEventListener('pointerleave', onLeave);
-    enterHandlers.push([word, onEnter]);
-    leaveHandlers.push([word, onLeave]);
+  if (isReducedMotion()) {
+    section.classList.add('syn-reduced-motion');
   }
 
   return {
     stop(): void {
+      window.removeEventListener(THEME_EVENT, onTheme);
+      if (onDocPointer) document.removeEventListener('pointerdown', onDocPointer);
+      for (const [w, h] of clickHandlers) w.removeEventListener('click', h);
       for (const [w, h] of enterHandlers) w.removeEventListener('pointerenter', h);
       for (const [w, h] of leaveHandlers) w.removeEventListener('pointerleave', h);
       if (graceTimer) clearTimeout(graceTimer);
+      section.classList.remove('syn-reduced-motion');
+      deactivateAll();
     },
   };
 }

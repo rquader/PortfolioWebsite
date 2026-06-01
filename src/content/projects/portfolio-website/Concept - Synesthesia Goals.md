@@ -4,133 +4,65 @@ tags: [concept, primitive, color]
 
 # Concept — Synesthesia Goals
 
-> Hover-coloring on a small set of words inside the "on me" paragraph. Each word lights up in its own color when the cursor passes over it. The room takes a faint tint of that color.
+> Hover-coloring on a small set of words inside the "on me" paragraph. Each chosen word reveals a site accent when the reader engages with it; the section takes a faint matching wash.
 
 ## What it is
 
-A scoped version of [[Legendary UI-UX/Concept - Synesthesia]]. In Legendary, synesthesia was its own four-paragraph room with every letter wrapped. Here it's narrower:
+Scoped to the user's bio in the **on me** section — not a site-wide grapheme-colour tab.
 
-- Applied to one paragraph (the user's bio in the "on me" section).
-- A small set of words inside that paragraph — wrapped in `<span data-syn-word>` — become hover-active.
-- On hover, each word's letters reveal their colors and the room takes a faint tint.
+- One paragraph, a handful of `<span data-syn-word>` spans the author marks up.
+- On engage (hover on desktop, tap on touch), the **whole word** takes one accent from the sepia palette; the section background shifts slightly toward that accent.
+- **No per-letter colour table.** No inherited Legendary / Rimbaud / Sean Day palette.
 
-The user picks which words. The default-suggested candidates are the "meaningful" / "applications" / "nudging" trio from his stated objective, but he can pick any.
+The user picks which words. Suggested candidates: language from his stated objective — e.g. "meaningful," "applications," "nudging" — but any words are fine.
 
 ## Why
 
-The Legendary synesthesia concept's claim is that *words carry hidden weights of pigment*. The portfolio applies that claim narrowly: the *important words* — values, goals — carry pigment that the reader can reveal. Less spectacle, more intent.
-
-This is the second-strongest medium-is-the-argument moment in the site (after the recursive tree). The reader is literally invited to interact with the user's values.
+*Words carry hidden weight* — here applied only to values and goals the author flags. Less spectacle than a colour chart; more intent. The reader is invited to interact with what matters to him.
 
 ## Algorithm
 
-### Letter palette
+### Accent slots (0–3)
 
-Same hand-picked palette as Legendary's synesthesia, lightly tuned for the warm-dark background:
+Each word maps to a slot via `data-syn-slot="0|1|2|3"` (or auto-cycles by DOM order). Slots are **CSS only**, wired to design tokens on `.on-me`:
 
-```ts
-const synColors: Record<string, string> = {
-  a: '#332019', b: '#3956c9', c: '#e0a82a', d: '#664439',
-  e: '#e2dac6', f: '#dc7240', g: '#3b6e30', h: '#dbcb6e',
-  i: '#c83a3a', j: '#b14274', k: '#7e58c9', l: '#c8c4b8',
-  m: '#b04140', n: '#dc8a40', o: '#3a78c8', p: '#39a5dc',
-  q: '#8e44b0', r: '#c43030', s: '#dcc23b', t: '#3c8a8a',
-  u: '#56a55c', v: '#7e6dc0', w: '#6a40a4', x: '#5a5651',
-  y: '#dcae3b', z: '#3cb8c8',
-};
-```
+| Slot | Token |
+|------|--------|
+| 0 | `--accent-warm` |
+| 1 | `--accent-glow` |
+| 2 | `--accent-pale` |
+| 3 | `--accent` |
 
-Same palette as Legendary's. The rationale ([[Legendary UI-UX/Concept - Synesthesia]]) is informed by Rimbaud and Sean Day; we inherit it without changes.
+Light and dark modes follow `tokens.css`; the primitive does not ship hex tables.
 
-### Word color
-
-Average of letter RGBs, stripped to A–Z:
+### Engage behaviour
 
 ```ts
-function avgWordColor(word: string): { r: number; g: number; b: number } {
-  const letters = word.toLowerCase().replace(/[^a-z]/g, '');
-  let r = 0, g = 0, b = 0;
-  for (const c of letters) {
-    const hex = synColors[c];
-    r += parseInt(hex.slice(1, 3), 16);
-    g += parseInt(hex.slice(3, 5), 16);
-    b += parseInt(hex.slice(5, 7), 16);
-  }
-  const n = Math.max(letters.length, 1);
-  return { r: r / n, g: g / n, b: b / n };
-}
-```
-
-### Hover behavior
-
-```ts
-// On pointerenter on a [data-syn-word]:
-const { r, g, b } = wordColor;
-document.documentElement.style.setProperty('--syn-r', String(r));
-document.documentElement.style.setProperty('--syn-g', String(g));
-document.documentElement.style.setProperty('--syn-b', String(b));
+// pointerenter (desktop) or click (touch / coarse pointer):
+word.setAttribute('data-syn-active', '');
 section.classList.add('syn-tinted');
+section.setAttribute('data-syn-active-slot', slot);
 
-// On pointerleave: wait 700ms, then remove tint. The 700ms grace
-// prevents flicker when the cursor traverses adjacent words.
+// pointerleave: 700ms grace, then clear section tint.
+// touch: tap word toggles; tap outside clears.
 ```
 
-CSS then transitions the section's background tint over ~1.2s:
+CSS transitions the section `background-color` (~1.2s) and the word `color` / underline. Reduced motion: drop transitions; colour change remains.
 
-```css
-.on-me {
-  background-color: rgb(
-    calc(20 + var(--syn-r, 200) * 0.06),
-    calc(18 + var(--syn-g, 180) * 0.06),
-    calc(16 + var(--syn-b, 160) * 0.06)
-  );
-  transition: background-color 1.2s ease;
-}
-.on-me.syn-tinted {
-  background-color: rgb(
-    calc(30 + var(--syn-r) * 0.22),
-    calc(27 + var(--syn-g) * 0.22),
-    calc(24 + var(--syn-b) * 0.22)
-  );
-}
-```
+### What we do *not* do
 
-### Letter-color reveal
-
-Inside a `[data-syn-word]`, each letter span receives its color via JS-set inline style on hover (default state is the section's body color). A subtle `text-shadow` of the same color provides the "glow" so the letter feels lit:
-
-```ts
-function ignite(wordSpan: HTMLElement) {
-  for (const letter of wordSpan.querySelectorAll<HTMLElement>('span.syn-letter')) {
-    const c = synColors[letter.textContent!.toLowerCase()];
-    if (!c) continue;
-    letter.style.color = c;
-    letter.style.textShadow = `0 0 6px ${c}88`;
-  }
-}
-function quench(wordSpan: HTMLElement) {
-  for (const letter of wordSpan.querySelectorAll<HTMLElement>('span.syn-letter')) {
-    letter.style.color = '';
-    letter.style.textShadow = '';
-  }
-}
-```
-
-### Spectrum strip — *deferred*
-
-Legendary's synesthesia tab includes a per-letter color strip below the passage. We **omit** it here. Reason: in Legendary the strip is part of the room's argument; in a portfolio bio paragraph it would feel like a teaching aid stapled to a personal statement. If the user wants it, easy to add later.
+- No 26-letter `synColors` map.
+- No averaging letter RGB for the room tint.
+- No letter spans for colour reveal (word-level only).
+- No spectrum strip (deferred; would read as a teaching aid on a personal statement).
 
 ## DOM model
 
-The bio prose has explicit `<span data-syn-word>` markup on user-chosen words. Inside each marked word, letters are wrapped at boot time (similar to inertial typography's split).
-
 ```html
-<p class="bio">
-  [PLACEHOLDER — your bio. Words you want to make hover-colorable get
-  wrapped like this:]
-  ... I work on
-  <span data-syn-word>meaningful</span>
-  things, hoping to nudge humanity ...
+<p>
+  … participate in
+  <span data-syn-word data-syn-slot="2">meaningful</span>
+  endeavors …
 </p>
 ```
 
@@ -138,26 +70,26 @@ The bio prose has explicit `<span data-syn-word>` markup on user-chosen words. I
 
 ```ts
 // src/lib/primitives/synesthesia.ts
-export interface SynHandle { stop: () => void }
-export function initSynesthesia(root: HTMLElement): SynHandle { /* ... */ }
+export interface SynesthesiaHandle { stop(): void }
+export function initSynesthesia(section: HTMLElement): SynesthesiaHandle
 ```
 
-Called once per scoped section. Inert outside the section.
+Called once on `#on-me`. Inert elsewhere.
 
-## Performance
+## Related primitives
 
-Negligible. A handful of words; hover events are sparse. The CSS transition on the section's background-color is the main "expense" and is browser-cheap (well under one paint frame).
+- **Inertial headings** (`data-color-letters`) use the **current section accent** (`--companion-color` from scroll-spy), not a letter palette.
+- **Obsidian bolds** share the inertial colour-only path; same section accent.
 
 ## Edge cases
 
-- **Words crossing line wraps** — fine; the span splits visually.
-- **Adjacent words** — 700ms grace timer on `pointerleave` prevents the section tint from flickering when the cursor moves from one synesthesia word to the next.
-- **Non-letter characters** — apostrophes, hyphens, etc. — left without color, included in the word's averaged color (their contribution is zero since they don't appear in `synColors`).
-- **Reduced motion** — disable the section tint transition; letter reveal still happens (it's not motion, just color). Letter `color` still changes; `text-shadow` is dropped.
-- **Mobile / touch** — `pointerenter` events fire from touch; first tap ignites the word and the section tints, second tap on another word switches. Acceptable but consider a `pointertype === 'touch'` branch that ignites on tap-and-hold rather than tap, if the touch behavior feels too sticky.
+- Adjacent words: 700ms grace on leave.
+- Touch: tap-to-toggle; tap outside deactivates.
+- Theme toggle: active word re-applies (tokens update via CSS).
+- Reduced motion: no background transition; word colour still updates.
 
 ## See also
 
-- [[Legendary UI-UX/Concept - Synesthesia]] — the parent
-- [[Concept - Inertial Headings]] — sister primitive (same DOM wrapping pattern)
 - [[03 - Content Model#on me]]
+- [[Concept - Inertial Headings]]
+- [[decisions/ADR-007-palette-sepia-shift]]

@@ -214,19 +214,33 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   .on-me-field-row:last-child { border-bottom: 0; }
   .on-me-field-row span:last-child { color: var(--text-1); }
 
-  :root[data-theme="dark"] .on-me {
-    background-color: rgb(
-      calc(20 + var(--syn-r, 200) * 0.06),
-      calc(18 + var(--syn-g, 180) * 0.06),
-      calc(16 + var(--syn-b, 160) * 0.06)
-    );
+  /* Synesthesia section tint (ADR-030). synesthesia.ts sets --syn-r/g/b
+     (0–255 ints, the hovered word's averaged letter color) and toggles
+     `.syn-tinted`. We mix that color into the theme's own --bg-0 so the
+     tint works in BOTH modes off one rule:
+       - DARK: --bg-0 is walnut (#1F1812); mixing toward the high-L glow
+         LIFTS the room toward the word color (the prior behavior).
+       - LIGHT: --bg-0 is parchment (#F5EAD4); the word color is deep
+         ink, so mixing toward it DEEPENS / warms the paper a touch
+         (letters are dark — the tint darkens, never washes out).
+     Rest state is plain --bg-0 (0% mix); hover lifts to a small mix %.
+     The ~1.2s transition + .syn-tinted mechanism are unchanged. */
+  .on-me {
+    --syn-word: rgb(var(--syn-r, 200), var(--syn-g, 180), var(--syn-b, 160));
+    background-color: var(--bg-0);
     transition: background-color 1.2s ease;
   }
+  .on-me.syn-tinted {
+    /* dark lifts more (glow), light deepens less (keep paper legible) */
+    background-color: color-mix(in srgb, var(--syn-word) 10%, var(--bg-0));
+  }
   :root[data-theme="dark"] .on-me.syn-tinted {
-    background-color: rgb(
-      calc(30 + var(--syn-r) * 0.22),
-      calc(27 + var(--syn-g) * 0.22),
-      calc(24 + var(--syn-b) * 0.22)
-    );
+    background-color: color-mix(in srgb, var(--syn-word) 18%, var(--bg-0));
+  }
+
+  /* Reduced motion: the color still changes (it's information, not
+     motion) but the slow cross-fade is dropped — it snaps. */
+  @media (prefers-reduced-motion: reduce) {
+    .on-me { transition: none; }
   }
 </style>

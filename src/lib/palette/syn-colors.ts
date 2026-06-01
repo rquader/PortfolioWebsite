@@ -1,58 +1,140 @@
 /**
  * @file syn-colors.ts
  *
- * Per-letter color palette inherited from Legendary UI/UX's synesthesia
- * concept (informed by Rimbaud and Sean Day). Shared by:
+ * Per-letter color palette for the synesthesia primitive. Shared by:
  *   - src/lib/primitives/synesthesia.ts (word-level on the "on me" bio)
  *   - src/lib/primitives/inertial-type.ts (letter-near-cursor reveal on
  *     elements marked with `data-color-letters`)
  *
- * Phase 5 (2026-05-19): two palettes ship side-by-side. The original
- * 26-letter table is tuned for the deep-walnut dark bg; a parallel
- * SYN_COLORS_LIGHT is darkened/deepened for legibility on the
- * parchment light bg (some letters in the dark-tuned table — `e`, `l`,
- * `h`, `s`, `y`, `c` — read as near-invisible against cream).
+ * ── ADR-030 (2026-05-31): perceptual rebuild ────────────────────────
+ * The inherited Rimbaud / Sean-Day hex tables (two hand-tuned palettes)
+ * are REPLACED by a single source of truth derived in OKLCH. The
+ * principle: each letter keeps a CONSTANT HUE (its identity); only
+ * LIGHTNESS / chroma adapt per theme for legibility.
  *
- * The `synColor(ch)` resolver picks the right palette based on the
- * current `data-theme`. SSR-safe: returns the dark palette when
- * document is unavailable.
+ *   - DARK  (walnut #1F1812): letters glow at L ≈ 0.74–0.78.
+ *   - LIGHT (parchment #F5EAD4): letters are deep ink at L ≈ 0.385–0.43.
  *
- * Letters not in the map (digits, punctuation) keep the inherited color.
+ * Hues are WARM-BIASED toward the site's aged-ink / sepia / walnut /
+ * terracotta / amber world — ~20 letters in the warm arc (reds→ambers→
+ * golds→warm-greens, 20–150°) and only 6 cool jewel accents (teal /
+ * blue / violet) for contrast. It reads like pigment on parchment:
+ * restrained, literary — yet spread enough that a hovered word's
+ * averaged tint is perceptible. (Supersedes the dual hand-tuned tables;
+ * the per-mode decision + generator constraints live in ADR-030.)
+ *
+ * The runtime ships STATIC hex literals (zero conversion cost/risk).
+ * The {h, c} source + the OKLCH→sRGB generator below document how the
+ * tables are reproduced; the authoritative, runnable generator +
+ * contrast verifier is `scripts/syn-palette-gen.mjs`.
+ *
+ * `synColor(ch)` resolves the right table from the current `data-theme`
+ * (SSR-safe: dark when document is unavailable). Letters not in the map
+ * (digits, punctuation) keep the inherited color. Values are guaranteed
+ * 6-digit hex — synesthesia.ts parses them with `parseInt(hex.slice…)`.
  *
  * Spec: [[Concept - Synesthesia Goals#letter palette]];
- *       [[decisions/ADR-010-synesthesia-dual-palette]].
+ *       [[decisions/ADR-030-synesthesia-perceptual-palette-rebuild]].
  */
 
-/** Dark-bg-tuned. Same values shipped through Phase 4. Optimized for
-    high-luminance letters glowing against #0A1620 (now mapped to the
-    new --bg-0 dark #1F1812 — still works well). */
-export const SYN_COLORS_DARK: Record<string, string> = {
-  a: '#332019', b: '#3956c9', c: '#e0a82a', d: '#664439',
-  e: '#e2dac6', f: '#dc7240', g: '#3b6e30', h: '#dbcb6e',
-  i: '#c83a3a', j: '#b14274', k: '#7e58c9', l: '#c8c4b8',
-  m: '#b04140', n: '#dc8a40', o: '#3a78c8', p: '#39a5dc',
-  q: '#8e44b0', r: '#c43030', s: '#dcc23b', t: '#3c8a8a',
-  u: '#56a55c', v: '#7e6dc0', w: '#6a40a4', x: '#5a5651',
-  y: '#dcae3b', z: '#3cb8c8',
+// ── Single source of truth: per-letter {h, c} ───────────────────────
+// Hue (OKLCH degrees) is the letter's fixed identity across both modes;
+// base chroma is a hint the per-theme renderer scales and the gamut
+// clamp trims. See ADR-030 / scripts/syn-palette-gen.mjs for the full
+// hue rationale. Warm arc ~20–150°; cool jewel accents ~188–332°;
+// e / l / x near-zero chroma (warm "unpigmented" greys) so the most
+// common letters don't oversaturate a word's averaged tint.
+export const SYN_HC: Record<string, { h: number; c: number }> = {
+  // warm reds / sienna
+  a: { h: 35, c: 0.085 }, r: { h: 28, c: 0.11 }, m: { h: 32, c: 0.105 }, i: { h: 40, c: 0.11 },
+  // oranges / terracotta
+  f: { h: 50, c: 0.115 }, n: { h: 58, c: 0.11 }, d: { h: 46, c: 0.075 },
+  // ambers / ochre / gold
+  c: { h: 78, c: 0.115 }, s: { h: 88, c: 0.115 }, y: { h: 82, c: 0.115 }, h: { h: 92, c: 0.1 },
+  // olive / warm yellow-green
+  g: { h: 128, c: 0.095 }, k: { h: 108, c: 0.1 },
+  // warm greens
+  u: { h: 145, c: 0.09 }, w: { h: 138, c: 0.085 },
+  // neutrals / warm taupe ink
+  e: { h: 70, c: 0.012 }, l: { h: 60, c: 0.018 }, x: { h: 40, c: 0.02 },
+  // soft cool slate
+  p: { h: 250, c: 0.055 },
+  // cool jewel accents (sparse)
+  t: { h: 195, c: 0.085 }, b: { h: 245, c: 0.105 }, o: { h: 258, c: 0.085 },
+  v: { h: 278, c: 0.095 }, q: { h: 300, c: 0.1 }, j: { h: 332, c: 0.1 }, z: { h: 188, c: 0.09 },
 };
 
-/** Light-bg-tuned. Darker / more saturated than the dark table so
-    every letter remains visible on parchment #F5EAD4. Hues are
-    preserved per letter so the synesthesia identity is consistent
-    across modes — only the lightness shifts. */
+// ── OKLCH → sRGB hex generator (Björn Ottosson matrices) ────────────
+// Kept here so the baked tables below are reproducible + documented.
+// Gamut-clamped: chroma is reduced (binary search) until the color sits
+// inside sRGB. Pure function, no DOM — safe to tree-shake; only used by
+// the offline generator, never on the hover hot path.
+function oklchToHex(L: number, c: number, hDeg: number): string {
+  const hr = (hDeg * Math.PI) / 180;
+  const lin = (cc: number): [number, number, number] => {
+    const a = cc * Math.cos(hr);
+    const b = cc * Math.sin(hr);
+    const l_ = L + 0.3963377774 * a + 0.2158037573 * b;
+    const m_ = L - 0.1055613458 * a - 0.0638541728 * b;
+    const s_ = L - 0.0894841775 * a - 1.291485548 * b;
+    const l = l_ ** 3, m = m_ ** 3, s = s_ ** 3;
+    return [
+      4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s,
+      -1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s,
+      -0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s,
+    ];
+  };
+  const eps = 1e-4;
+  const ok = ([r, g, b]: [number, number, number]): boolean =>
+    r >= -eps && r <= 1 + eps && g >= -eps && g <= 1 + eps && b >= -eps && b <= 1 + eps;
+  let best = c;
+  if (!ok(lin(c))) {
+    let lo = 0, hi = c;
+    best = 0;
+    for (let i = 0; i < 24; i++) {
+      const mid = (lo + hi) / 2;
+      if (ok(lin(mid))) { best = mid; lo = mid; } else { hi = mid; }
+    }
+  }
+  const xfer = (x: number): number =>
+    x <= 0.0031308 ? 12.92 * x : 1.055 * x ** (1 / 2.4) - 0.055;
+  const to255 = (x: number): number => Math.round(Math.min(1, Math.max(0, xfer(x))) * 255);
+  const [r, g, b] = lin(best).map(to255);
+  return '#' + [r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('');
+}
+// Referenced once so `noUnusedLocals` is satisfied while keeping the
+// generator inline + documented. (Runtime uses the baked literals.)
+void oklchToHex;
+
+// ── Baked tables (output of scripts/syn-palette-gen.mjs) ─────────────
+// DARK: rendered at L ≈ 0.74–0.78, chroma ×1.05. Glow on walnut
+// #1F1812 — every letter ≥ 7.2:1 contrast (target ≥ 3:1).
+export const SYN_COLORS_DARK: Record<string, string> = {
+  a: '#dd9785', b: '#77bdf8', c: '#d6a24b', d: '#d59c81',
+  e: '#b2aba4', f: '#e89362', g: '#9ab973', h: '#c4aa5a',
+  i: '#e99172', j: '#d292c8', k: '#b3b15f', l: '#b4a89f',
+  m: '#e8907f', n: '#e1985e', o: '#92b8ef', p: '#9ab9da',
+  q: '#c0a7ef', r: '#eb8e82', s: '#cca848', t: '#6ac8c7',
+  u: '#86bd87', v: '#a7b0f5', w: '#91ba83', x: '#b7a7a1',
+  y: '#d2a449', z: '#66c9c1',
+};
+
+// LIGHT: rendered at L ≈ 0.385–0.43, chroma ×1.12. Deep ink on
+// parchment #F5EAD4 — every letter ≥ 6.5:1 contrast (target ≥ 4.5:1).
+// Hue per letter is identical to the dark table; only L/chroma differ.
 export const SYN_COLORS_LIGHT: Record<string, string> = {
-  a: '#1A0F08', b: '#1F3998', c: '#8B5A14', d: '#3E2922',
-  e: '#5C4D36', f: '#A04A20', g: '#1F4818', h: '#5E4A14',
-  i: '#971F1F', j: '#7E2548', k: '#4D2E8A', l: '#5C5848',
-  m: '#7C2222', n: '#9C5418', o: '#1F4D8E', p: '#1B6A9C',
-  q: '#5E1E7C', r: '#911818', s: '#7A6418', t: '#1F5454',
-  u: '#256830', v: '#4A3E8A', w: '#3A1C7A', x: '#3A3631',
-  y: '#8C6618', z: '#1F7E8A',
+  a: '#753424', b: '#005487', c: '#5b3d00', d: '#6f3a20',
+  e: '#48433c', f: '#773400', g: '#395401', h: '#534200',
+  i: '#7f2b07', j: '#6c3065', k: '#484600', l: '#534840',
+  m: '#7e2b1d', n: '#713a00', o: '#2d5083', p: '#355270',
+  q: '#5a3f83', r: '#802821', s: '#554000', t: '#005c5c',
+  u: '#205825', v: '#434889', w: '#2e561f', x: '#564741',
+  y: '#593f00', z: '#005d57',
 };
 
 /** Backwards-compatible export — old code that imports SYN_COLORS gets
-    the dark-tuned table (matches Phase 4 behavior). Prefer `synColor()`
-    going forward — it resolves per-theme. */
+    the dark-tuned table. Prefer `synColor()` going forward — it resolves
+    per-theme. */
 export const SYN_COLORS = SYN_COLORS_DARK;
 
 function activePalette(): Record<string, string> {

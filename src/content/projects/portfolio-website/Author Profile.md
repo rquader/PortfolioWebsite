@@ -16,7 +16,7 @@ tags: [author, context, canonical]
 ## Education & work
 
 - **B.S. Computer Science**, San José State University (in progress).
-- **Undergraduate Research Assistant**, Reed Systems Group (SJSU).
+- **Research Assistant**, Reed Systems Group (SJSU), Sep 2025 – May 2026.
   - Working on the **Disconnected Data Distribution (DDD)** project.
   - Java-based backend infrastructure; bridging to a Kotlin Android client.
   - Server-to-client messaging logic.

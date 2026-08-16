@@ -4,7 +4,9 @@
 > Canonical vault docs: `Programming/Portfolio_Website/` in the Obsidian vault.
 > Live checklist: [AGENT_HANDOFF.md](AGENT_HANDOFF.md).
 
-**Last synced:** 2026-05-28 (design-handoff integration pass)
+**Last synced:** 2026-08-16 (resume PDF swap — Reed dates through May 2026)
+
+**Resume (2026-08-16):** `public/Rafan_Quader_Resume.pdf` from `Rafan_Quader_Resumé_Document.pdf`. Same public filename; button still on **on the trail**.
 
 ---
 

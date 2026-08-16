@@ -42,7 +42,7 @@
 
 | slug | sort | WIP | media |
 |------|------|-----|-------|
-| web-crossword-generator | 10 | yes | carousel: photo → gif |
+| web-crossword-generator | 10 | yes | carousel: screenshot JPEG → demo mp4 |
 | arabic-dialect-map | 20 | yes | stack: screenshot + gif |
 | adhkar-counter | 30 | no | carousel: photo → gif |
 | legendary-ui-ux | 40 | no | single gif |

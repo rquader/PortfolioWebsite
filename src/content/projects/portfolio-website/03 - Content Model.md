@@ -127,7 +127,7 @@ Also optional: `web_url`, `demo_url`, `wip`, `wip_note`.
 
 | slug | sort | WIP sticker | media mode | notes in repo |
 |---|---|---|---|---|
-| `web-crossword-generator` | 10 | yes | carousel (photo → gif) | no (private vault notes) |
+| `web-crossword-generator` | 10 | yes | carousel (screenshot JPEG → demo mp4) | no (private vault notes) |
 | `arabic-dialect-map` | 20 | yes | stack (screenshot + gif) | `field/overview.md` |
 | `adhkar-counter` | 30 | no | carousel (photo → gif) | `field/overview.md` |
 | `legendary-ui-ux` | 40 | no | single gif | `field/overview.md` |
@@ -193,7 +193,7 @@ The live parameter sliders are optional; if they're too expensive to ship, we sh
 
 **File:** `src/components/OnTheTrail.astro`
 
-Coursework + tools only (2026-05-27: **how I work** group removed per user). Resume is a prominent **resume (PDF)** button → `/Rafan_Quader_Resume.pdf` (source: `~/Downloads/Rafan_Quader_Resumé (1).pdf`).
+Coursework + tools only (2026-05-27: **how I work** group removed per user). Resume is a prominent **resume (PDF)** button on **on the trail** (not on me) → `/Rafan_Quader_Resume.pdf`.
 
 **Coursework list (current):** trimmed coursework per user.
 

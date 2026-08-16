@@ -481,27 +481,30 @@
   object-fit: contain;
 }
 
-/* Web Crossword Generator — screenshot fills viewport height; crop sides only */
+/* Web Crossword Generator — 2026-08-15 media:
+   screenshot 1400×1224 GENERATE UI (~8:7), demo 738×900 portrait PLAY.
+   One carousel frame sized to the default screenshot; contain so the
+   portrait demo letterboxes instead of cropping the phone UI. */
 .project-media-wrap[data-project-slug='web-crossword-generator'] .project-media-carousel-viewport {
-  aspect-ratio: 16 / 7;
+  aspect-ratio: 1400 / 1224;
   max-height: 72vh;
 }
 
 .project-media-wrap[data-project-slug='web-crossword-generator']
-  .project-media-carousel-slide[data-slide-index='0']
+  .project-media-carousel-slide
   .project-media-static,
 .project-media-wrap[data-project-slug='web-crossword-generator']
-  .project-media-carousel-slide[data-slide-index='0']
+  .project-media-carousel-slide
   .project-media-carousel-asset {
   width: 100%;
   height: 100%;
 }
 
 .project-media-wrap[data-project-slug='web-crossword-generator']
-  .project-media-carousel-slide[data-slide-index='0']
+  .project-media-carousel-slide
   .photo,
 .project-media-wrap[data-project-slug='web-crossword-generator']
-  .project-media-carousel-slide[data-slide-index='0']
+  .project-media-carousel-slide
   .photo-picture {
   width: 100%;
   height: 100%;
@@ -509,14 +512,16 @@
 }
 
 .project-media-wrap[data-project-slug='web-crossword-generator']
-  .project-media-carousel-slide[data-slide-index='0']
-  .photo-img {
-  width: auto;
+  .project-media-carousel-slide
+  .photo-img,
+.project-media-wrap[data-project-slug='web-crossword-generator']
+  .project-media-carousel-slide
+  .project-media-video {
+  width: 100%;
   height: 100%;
-  min-width: 100%;
-  max-width: none;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center center;
+  background: var(--bg-1);
 }
 
 /* Adhkar Counter — screenshot default; gif height-matched, crop from bottom */
@@ -627,7 +632,10 @@
   outline: none;
 }
 
-/* ─── the Notes button (primary affordance) ─── */
+/* Web Crossword Generator — notes stay private; never show the folio button. */
+.project-chapter[data-project-slug='web-crossword-generator'] .project-notes-btn {
+  display: none;
+}
 
 .project-notes-btn {
   align-self: flex-start;
@@ -784,22 +792,23 @@
     max-height: 65vh;
   }
 
-  /* Web Crossword Generator — screenshot is wide-ish; show centered
-     without an awkward portrait crop. */
+  /* Web Crossword Generator — nearly-square GENERATE screenshot is the
+     default slide; portrait PLAY demo letterboxes inside the same frame. */
   .project-media-wrap[data-project-slug='web-crossword-generator'] .project-media-carousel-viewport {
-    aspect-ratio: 16 / 9;
-    max-height: 58vh;
+    aspect-ratio: 1400 / 1224;
+    max-height: 62vh;
   }
   .project-media-wrap[data-project-slug='web-crossword-generator']
-    .project-media-carousel-slide[data-slide-index='0']
-    .photo-img {
-    /* The desktop rule sets width:auto/object-fit:cover so the image
-       scales to height and crops the sides. On mobile we'd rather see
-       the whole crossword — contain instead, centered. */
+    .project-media-carousel-slide
+    .photo-img,
+  .project-media-wrap[data-project-slug='web-crossword-generator']
+    .project-media-carousel-slide
+    .project-media-video {
     width: 100%;
     height: 100%;
     object-fit: contain;
     object-position: center center;
+    background: var(--bg-1);
   }
 
   /* Portfolio Website demo — show the WHOLE demo (no crop), not just

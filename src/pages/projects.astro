@@ -85,7 +85,9 @@ for (const s of allStories) {
           <div class="projects-list">
             {projects.map((p, i) => {
               const slug = slugFor(p.id);
-              const notesCount = (filesBySlug.get(slug) ?? []).length;
+              const notesCount = (filesBySlug.get(slug) ?? []).filter(
+                (f) => !f.id.endsWith('/story'),
+              ).length;
               const story = storyBySlug.get(slug) ?? null;
               return (
                 <ProjectChapter
@@ -133,9 +135,12 @@ for (const s of allStories) {
     /* One popup per project — SSR-rendered hidden, opened by the chapter's
        Notes button via `#notes/<slug>` hash. Controller in
        notes-popup-controller.ts wires open/close + tab/stepper state. */
-    projects.map((p) => (
-      <ProjectNotesPopup project={p} allFiles={filesBySlug.get(slugFor(p.id)) ?? []} />
-    ))
+    projects.map((p) => {
+      const slug = slugFor(p.id);
+      const files = filesBySlug.get(slug) ?? [];
+      if (p.data.notes === false || files.length === 0) return null;
+      return <ProjectNotesPopup project={p} allFiles={files} />;
+    })
   }
 
   <div

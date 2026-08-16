@@ -56,6 +56,10 @@ const projects = defineCollection({
     paper_url: z.string().url().optional(),
     wip: z.boolean().optional().default(false),
     wip_note: z.string().optional(),
+    // When false, never render the "open notes" button / popup even if
+    // leftover markdown would otherwise count as projectFiles.
+    // Crossword notes stay private between collaborators.
+    notes: z.boolean().optional(),
   }),
 });
 

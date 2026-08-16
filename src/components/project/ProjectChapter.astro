@@ -32,6 +32,7 @@ interface Props {
 const { project, story = null, notesCount, index, isLast = false } = Astro.props;
 const { Content: InfoContent } = await render(project);
 const StoryContent = story ? (await render(story)).Content : null;
+const showNotes = notesCount > 0 && project.data.notes !== false;
 
 function slugFor(id: string): string {
   return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
@@ -102,7 +103,7 @@ const flipped = index % 2 === 1;
     </div>
 
     {
-      notesCount > 0 && (
+      showNotes && (
         <a class="project-notes-btn" href={`#notes/${slug}`} data-notes-trigger={slug}>
           <span class="project-notes-btn-icon" aria-hidden="true">◰</span>
           <span class="project-notes-btn-label">open notes</span>

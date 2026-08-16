@@ -10,6 +10,13 @@
 # Usage:   ./scripts/encode-media.sh
 # Requires ffmpeg with libx264 + libvpx-vp9 (brew install ffmpeg).
 # Idempotent: re-encodes everything each run.
+#
+# Crossword GENERATE screenshot is a still, not in MAP. Re-encode with:
+#   SRC=~/Desktop/WebCrosswordGeneratorMedia/WebCrosswordGeneratorScreenshot.png
+#   OUT=src/content/projects/web-crossword-generator/images/web_crossword_generator_photo.jpg
+#   ffmpeg -y -i "$SRC" -vf "scale='min(1400,iw)':'min(1400,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2,format=yuvj444p" \
+#     -q:v 3 "$OUT"
+# 4:4:4 JPEG (not PNG): UI screenshot at 1400px was ~1.3 MB as PNG, ~197 KB as JPEG.
 
 set -uo pipefail
 
@@ -21,7 +28,9 @@ PROJ="$ROOT/src/content/projects"
 SCALE="scale='min(900,iw)':'min(900,ih)':force_original_aspect_ratio=decrease:force_divisible_by=2"
 FPS=30
 
-# "<source-file-in-SRC_DIR> | <project-slug>/images/<output-basename>"
+# "<source> | <project-slug>/images/<output-basename>"
+# Relative names resolve under SRC_DIR. Absolute paths are used as-is
+# (crossword demo was re-shot 2026-08-15 into a separate Desktop folder).
 MAP=(
   "01_recursive_tree.mp4|manim-wallpapers/images/01_recursive_tree"
   "02_falling_leaves.mp4|manim-wallpapers/images/02_falling_leaves"
@@ -38,7 +47,7 @@ MAP=(
   "instagram_demo_real.mov|insta-dm/images/instagram_demo_real"
   "arabic_dialect_map_demo.mov|arabic-dialect-map/images/arabic_dialect_map_demo"
   "adhkar_counter_demo.mov|adhkar-counter/images/adhkar_counter_demo"
-  "web_crossword_generator_demo.mov|web-crossword-generator/images/web_crossword_generator_demo"
+  "/Users/rafanquader/Desktop/WebCrosswordGeneratorMedia/WebCrosswordGeneratorVideo.mov|web-crossword-generator/images/web_crossword_generator_demo"
 )
 
 FF="ffmpeg -hide_banner -loglevel error -y"
@@ -69,9 +78,10 @@ encode() {
 
 for entry in "${MAP[@]}"; do
   src="${entry%%|*}"; out="${entry##*|}"
-  printf '>> %-32s -> %s\n' "$src" "$out"
-  if [ ! -f "$SRC_DIR/$src" ]; then echo "   MISSING SOURCE: $SRC_DIR/$src"; fail=$((fail+1)); continue; fi
-  if encode "$SRC_DIR/$src" "$out"; then ok=$((ok+1)); else echo "   FAILED: $src"; fail=$((fail+1)); fi
+  if [[ "$src" == /* ]]; then srcfile="$src"; else srcfile="$SRC_DIR/$src"; fi
+  printf '>> %-32s -> %s\n' "$(basename "$src")" "$out"
+  if [ ! -f "$srcfile" ]; then echo "   MISSING SOURCE: $srcfile"; fail=$((fail+1)); continue; fi
+  if encode "$srcfile" "$out"; then ok=$((ok+1)); else echo "   FAILED: $src"; fail=$((fail+1)); fi
 done
 
 echo ""

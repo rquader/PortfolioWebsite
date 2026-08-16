@@ -4,6 +4,7 @@ tagline: crosswords and word searches from your own word lists
 sort_order: 10
 status: active
 wip: true
+notes: false
 wip_note: >-
   Web Crossword Generator is a work in progress. We may further consider tradeoffs
   like whether to integrate local LLMs or some sort of AI, and whether it is worth
@@ -14,7 +15,7 @@ web_url: https://rquader.github.io/WebCrosswordGenerator/
 media_mode: carousel
 media_default: 0
 media_items:
-  - src: ./images/web_crossword_generator_photo.png
+  - src: ./images/web_crossword_generator_photo.jpg
     label: screenshot
   - src: ./images/web_crossword_generator_demo.mp4
     label: demo

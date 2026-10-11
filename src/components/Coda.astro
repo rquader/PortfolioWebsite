@@ -42,8 +42,8 @@ const links = [
   .coda .section-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem 2rem; flex-wrap: wrap; }
 
   .coda .tagline-primary {
-    font-family: var(--face-text);
-    font-weight: 400;
+    font-family: var(--face-display);
+    font-weight: 600;
     font-variation-settings: 'SOFT' 70, 'WONK' 0;
     font-size: var(--type-body);
     line-height: var(--leading-body);
@@ -58,4 +58,18 @@ const links = [
     gap: 0.45rem;
     margin-top: 0;
   }
+  .coda-links .chip {
+    background: var(--accent);
+    color: var(--bg-0);
+    border-color: var(--accent);
+    border-radius: 4px;
+    font-weight: 600;
+    padding: .5rem .75rem;
+    min-height: 44px;
+  }
+  .coda-links .chip:hover, .coda-links .chip:focus-visible {
+    background: color-mix(in srgb, var(--accent) 92%, var(--text-0));
+    color: var(--bg-0);
+  }
+  .coda-links .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 </style>

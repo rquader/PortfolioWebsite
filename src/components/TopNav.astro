@@ -10,10 +10,14 @@ const BASE_NO_SLASH = BASE_WITH_SLASH.replace(/\/$/, '');
 // (e.g. "/PortfolioWebsite/projects/"), so route checks must be base-aware.
 const projectsPath = `${BASE_NO_SLASH}/projects`;
 const onProjects = pathname === projectsPath || pathname.startsWith(`${projectsPath}/`);
+const blogPath = `${BASE_NO_SLASH}/blog`;
+const onBlog = pathname === blogPath || pathname.startsWith(`${blogPath}/`);
+const onHome = pathname === BASE_NO_SLASH || pathname === BASE_WITH_SLASH;
+const currentRoute = onProjects ? 'projects' : onBlog ? 'blog' : null;
 
 const withBase = (p: string) => `${BASE_WITH_SLASH}${p.replace(/^\//, '')}`;
 
-const homeHref = onProjects ? `${BASE_WITH_SLASH}#threshold` : '#threshold';
+const homeHref = !onHome ? `${BASE_WITH_SLASH}#threshold` : '#threshold';
 
 type NavLink = {
   slug: string;
@@ -23,12 +27,13 @@ type NavLink = {
 };
 
 const links: NavLink[] = [
-  { slug: 'on-me', label: 'on me', href: onProjects ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
-  { slug: 'on-the-work', label: 'on the work', href: onProjects ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
+  { slug: 'on-me', label: 'on me', href: !onHome ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
+  { slug: 'on-the-work', label: 'on the work', href: !onHome ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
   // Always include trailing slash so GitHub Pages serves /projects/index.html.
   { slug: 'projects', label: 'projects ↗', href: withBase('/projects/'), route: true },
-  { slug: 'on-the-trail', label: 'on the trail', href: onProjects ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
-  { slug: 'coda', label: 'on the web', href: onProjects ? `${BASE_WITH_SLASH}#coda` : '#coda' },
+  { slug: 'blog', label: 'blog ↗', href: withBase('/blog/'), route: true },
+  { slug: 'on-the-trail', label: 'on the trail', href: !onHome ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
+  { slug: 'coda', label: 'on the web', href: !onHome ? `${BASE_WITH_SLASH}#coda` : '#coda' },
 ];
 ---
 <div class="scroll-progress" aria-hidden="true" data-shell="desktop"></div>
@@ -41,8 +46,8 @@ const links: NavLink[] = [
           <a
             href={href}
             data-nav-link={slug}
-            class:list={{ 'is-current': route && onProjects }}
-            {...route && onProjects ? { 'aria-current': 'page' } : {}}
+            class:list={{ 'is-current': route && slug === currentRoute }}
+            {...route && slug === currentRoute ? { 'aria-current': 'page' } : {}}
           >
             {label}
           </a>
@@ -223,7 +228,7 @@ const links: NavLink[] = [
   :root[data-theme="light"] .theme-toggle .t-dark  { opacity: 0.45; }
   :root[data-theme="dark"]  .theme-toggle .t-light { opacity: 0.45; }
 
-  @media (min-width: 721px) and (max-width: 1100px) {
+  @media (min-width: 721px) and (max-width: 1200px) {
     .top-nav ul {
       justify-content: center;
       flex-wrap: wrap;

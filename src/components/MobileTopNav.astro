@@ -21,9 +21,13 @@ const BASE_NO_SLASH = BASE_WITH_SLASH.replace(/\/$/, '');
 
 const projectsPath = `${BASE_NO_SLASH}/projects`;
 const onProjects = pathname === projectsPath || pathname.startsWith(`${projectsPath}/`);
+const blogPath = `${BASE_NO_SLASH}/blog`;
+const onBlog = pathname === blogPath || pathname.startsWith(`${blogPath}/`);
+const onHome = pathname === BASE_NO_SLASH || pathname === BASE_WITH_SLASH;
+const currentRoute = onProjects ? 'projects' : onBlog ? 'blog' : null;
 
 const withBase = (p: string) => `${BASE_WITH_SLASH}${p.replace(/^\//, '')}`;
-const homeHref = onProjects ? `${BASE_WITH_SLASH}#threshold` : '#threshold';
+const homeHref = !onHome ? `${BASE_WITH_SLASH}#threshold` : '#threshold';
 
 type DrawerLink = {
   slug: string;
@@ -33,11 +37,12 @@ type DrawerLink = {
 };
 
 const drawerLinks: DrawerLink[] = [
-  { slug: 'on-me', label: 'on me', href: onProjects ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
-  { slug: 'on-the-work', label: 'on the work', href: onProjects ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
+  { slug: 'on-me', label: 'on me', href: !onHome ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
+  { slug: 'on-the-work', label: 'on the work', href: !onHome ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
   { slug: 'projects', label: 'projects', href: withBase('/projects/'), route: true },
-  { slug: 'on-the-trail', label: 'on the trail', href: onProjects ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
-  { slug: 'coda', label: 'on the web', href: onProjects ? `${BASE_WITH_SLASH}#coda` : '#coda' },
+  { slug: 'blog', label: 'blog', href: withBase('/blog/'), route: true },
+  { slug: 'on-the-trail', label: 'on the trail', href: !onHome ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
+  { slug: 'coda', label: 'on the web', href: !onHome ? `${BASE_WITH_SLASH}#coda` : '#coda' },
 ];
 ---
 <div class="scroll-progress" aria-hidden="true" data-shell="mobile"></div>
@@ -120,12 +125,12 @@ const drawerLinks: DrawerLink[] = [
       <a
         class:list={[
           'mobile-drawer-link',
-          { 'is-active': route && onProjects },
+          { 'is-active': route && slug === currentRoute },
         ]}
         href={href}
         data-nav-link={slug}
         data-drawer-link
-        {...route && onProjects ? { 'aria-current': 'page' } : {}}
+        {...route && slug === currentRoute ? { 'aria-current': 'page' } : {}}
       >
         <span>{label}</span>
         {route && <span class="mobile-drawer-link-arrow" aria-hidden="true">↗</span>}

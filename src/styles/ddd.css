@@ -39,7 +39,6 @@ details:not([open]) > summary .ddd-chevron { transform: rotate(-90deg); }
 .ddd-reverse .ddd-media { grid-column: 1; grid-row: 1; }
 .ddd-chapter-copy { max-width: 64ch; }
 .ddd-milestone { background: color-mix(in srgb, var(--accent-on-the-work) 12%, var(--bg-1)); border-left: 2px solid var(--accent-on-the-work); padding: .75rem .9rem; font-family: var(--face-display); font-size: 1.15rem; line-height: 1.38 !important; color: var(--text-0) !important; }
-.ddd-small-note { font-size: .89rem; color: var(--text-2) !important; }
 .ddd-prs { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1.15rem 0 1.3rem; }
 .ddd-prs > a { display: inline-block; position: relative; border: 1px solid var(--hair-strong); border-radius: 3px; padding: .33rem .55rem; font: .68rem var(--face-mono); color: var(--text-1) !important; background: var(--bg-1); text-decoration: none; }
 .ddd-prs > a:hover, .ddd-prs > a:focus-visible { border-color: var(--accent-on-the-work); }

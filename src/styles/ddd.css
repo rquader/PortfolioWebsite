@@ -98,3 +98,9 @@ details:not([open]) > summary .ddd-chevron { transform: rotate(-90deg); }
 .ddd-index a[aria-disabled="true"] { cursor: default; }
 .ddd-index a[aria-disabled="true"]:hover { background: transparent; }
 .ddd-chapters[hidden] { display: none; }
+
+/* Stack the pipeline screens beside the longer desktop narrative. */
+@media (min-width: 761px) {
+  .ddd-pipeline-phones { grid-template-columns: minmax(0, 1fr); gap: 1.15rem; }
+  .ddd-pipeline { max-width: 22rem; width: 100%; justify-self: center; }
+}

@@ -3,7 +3,6 @@ title: Manim Wallpapers
 tagline: animated wallpapers from Manim, built with Claude Code
 sort_order: 60
 status: shipped
-github_url: https://github.com/rquader/Manim_Wallpaper
 media_mode: carousel
 media_default: 4
 media_items:

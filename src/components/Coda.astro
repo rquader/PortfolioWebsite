@@ -14,9 +14,7 @@ const links = [
 <section class="section coda" id="coda" data-section-id="coda">
   <div class="section-inner">
     <p class="tagline tagline-primary">Computer Science @ SJSU</p>
-    <p class="tagline tagline-secondary">
-      Research · Claude Code · Education
-    </p>
+
     <div class="coda-links">
       {
         links.map(({ href, label, icon }) => (
@@ -51,16 +49,10 @@ const links = [
     margin: 0 0 0.3rem;
   }
 
-  .coda .tagline-secondary {
-    font-family: var(--face-text);
-    font-size: var(--type-small);
-    color: var(--text-2);
-    margin: 0 0 1.3rem;
-  }
-
   .coda-links {
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
+    margin-top: 1.2rem;
   }
 </style>

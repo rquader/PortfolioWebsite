@@ -1,10 +1,5 @@
 ---
-// On Me — bio with synesthesia hover-coloring on selected words.
-// ADR-021: adds a quiet field-card sidebar on the right at ≥880px
-// (education + focus / tools / club rows in JetBrains Mono). On phone
-// widths the Threshold photo is hidden and rendered here instead
-// (data-shell="mobile"), giving Threshold the full hero width.
-
+// On Me — original bio with interactive word emphasis.
 import Photo from './photo/Photo.astro';
 
 import fs from 'node:fs';
@@ -35,6 +30,7 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     </div>
 
     <div class="bio">
+      <p class="bio-education">2nd Year <span aria-hidden="true">|</span> B.S. <strong>Computer Science</strong>, San José State University</p>
       <p class="bio-lead">
         As a student beginning in <strong>Computer Science</strong>, one thing I can say in
         <em>high confidence</em>,
@@ -49,43 +45,13 @@ const hasPhoto = fs.existsSync(photoDiskPath);
       </p>
     </div>
 
-    {/* Quiet sidebar — quick facts, JetBrains Mono labels.
-        TODO (next session): move education / focus / tools / club into
-        the content collection so the user can edit without touching
-        components (see [[Mobile/Known Issue — Use real sanitized notes
-        (not placeholder)]] for the pattern). */}
-    <aside class="on-me-field" aria-label="quick facts">
-      <span class="on-me-field-eyebrow">at a glance</span>
-      <h3>field card</h3>
-      <p class="on-me-field-meta">
-        B.S. <strong>Computer Science</strong>, San José State University
-        (Aug 2025 &ndash; May 2029).
-      </p>
-      <div class="on-me-field-row"><span>focus</span><span>research · education · presentation</span></div>
-      <div class="on-me-field-row"><span>tools</span><span>java · git · claude code</span></div>
-      <div class="on-me-field-row"><span>club</span><span>SCE @ SJSU</span></div>
-    </aside>
+
   </div>
 </section>
 
 <style>
-  /* Two-column on wide viewports; bio + field card. The heading spans
-     both columns at the top. */
-  .on-me .section-inner {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 24rem);
-    gap: clamp(2rem, 5vw, 4rem);
-    /* The field card is the small companion artifact (ADR-015) — keep the
-       side-by-side duet, but center it against the taller bio so it isn't
-       stranded at the top with an empty gap below. (ADR-028.) */
-    align-items: center;
-  }
-  .on-me .section-heading { grid-column: 1 / -1; }
-  .on-me .on-me-photo { grid-column: 1 / -1; }
-  @media (max-width: 880px) {
-    .on-me .section-inner { grid-template-columns: 1fr; }
-  }
-
+  .on-me .section-inner { display: grid; gap: clamp(1.4rem, 3vw, 2.2rem); }
+  .on-me .section-heading { margin-bottom: 0; }
   /* Mobile photo wrapper — frame, 1:1 crop, caption pill at bottom-left
      (mirrors m/sections.css .on-me-photo-card). */
   .on-me-photo {
@@ -129,10 +95,25 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   }
 
   .on-me .bio {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-    max-width: 38rem;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem clamp(1.6rem, 4vw, 3rem);
+    padding: clamp(1.25rem, 2.7vw, 2rem);
+    border-left: 2px solid var(--accent-on-me);
+    border-radius: 0 4px 4px 0;
+    background: var(--bg-1);
+    box-shadow: var(--shadow-card);
+  }
+  .on-me .bio .bio-education {
+    grid-column: 1 / -1;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid var(--hair-strong);
+    font-size: var(--type-body);
+    color: var(--text-2);
+  }
+  .bio-education span { margin-inline: .35rem; }
+  @media (max-width: 760px) {
+    .on-me .bio { grid-template-columns: minmax(0, 1fr); }
   }
 
   .on-me .bio p {
@@ -163,56 +144,6 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     font-variation-settings: 'SOFT' 90;
     color: color-mix(in srgb, var(--text-0) 88%, var(--accent));
   }
-
-  /* Field card — quiet hairline border + half-tinted bg-1 panel,
-     mono labels separated by hairline dividers (last row no border). */
-  .on-me-field {
-    border: 1px solid var(--hair);
-    border-radius: 4px;
-    padding: 1.3rem 1.4rem;
-    background: color-mix(in srgb, var(--bg-1) 50%, transparent);
-    display: flex;
-    flex-direction: column;
-    gap: 0.85rem;
-  }
-  .on-me-field-eyebrow {
-    font-family: var(--face-mono);
-    font-size: var(--type-tiny);
-    letter-spacing: var(--tracking-eyebrow);
-    text-transform: lowercase;
-    color: var(--text-2);
-  }
-  .on-me-field h3 {
-    font-family: var(--face-display);
-    font-variation-settings: 'SOFT' 75, 'WONK' 0;
-    font-size: 1.1rem;
-    font-style: italic;
-    color: var(--text-0);
-    margin: 0;
-  }
-  .on-me-field-meta {
-    font-family: var(--face-text);
-    font-size: 0.94rem;
-    color: var(--text-1);
-    line-height: 1.6;
-    max-width: none;
-    margin: 0;
-  }
-  .on-me-field-meta strong { color: var(--text-0); font-weight: 600; }
-  .on-me-field-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.5rem;
-    font-family: var(--face-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.04em;
-    color: var(--text-2);
-    text-transform: lowercase;
-    padding: 0.25rem 0;
-    border-bottom: 1px solid var(--hair);
-  }
-  .on-me-field-row:last-child { border-bottom: 0; }
-  .on-me-field-row span:last-child { color: var(--text-1); }
 
   /* Word emphasis (portfolio synesthesia). Dark: warm glow on walnut.
      Light: sunlit slots (brighter accents on parchment) + soft marker wash.

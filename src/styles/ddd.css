@@ -91,3 +91,5 @@ details:not([open]) > summary .ddd-chevron { transform: rotate(-90deg); }
 @media (max-width: 760px) {
   .ddd-intro { grid-template-columns: minmax(0, 1fr); }
 }
+
+.ddd-milestone-aside { display: block; margin-top: .55rem; font-family: var(--face-text); font-size: 1rem; line-height: 1.6; }

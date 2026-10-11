@@ -52,12 +52,7 @@
   );
 }
 
-.projects-intro-notes {
-  margin-top: 1rem;
-  max-width: 38rem;
-  font-style: italic;
-  color: var(--text-2);
-}
+
 
 /* ─── mode-toggle row — centered between the intro prose and the first chapter
        Hairline rules flank the segmented control so it reads as a deliberate
@@ -1076,9 +1071,9 @@
 .project-chapter-progress { bottom: 0; }
 .projects-header { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 1.25rem; }
 .projects-eyebrow, .projects-title, .projects-toggle-row { grid-column: 1 / -1; }
-.projects-intro { max-width: 65ch; line-height: 1.6; margin: 0; }
+.projects-intro { max-width: none; font-size: clamp(1.1rem, 1.65vw, 1.35rem); line-height: 1.65; margin: 0; text-wrap: pretty; }
+.projects-intro strong { font-weight: 600; color: var(--text-0); }
 .projects-intro-rule { display: none; }
-.projects-intro-notes { margin: 0; padding: 1rem 1.25rem; border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; background: var(--bg-1); font-style: normal; color: var(--text-2); }
 .mode-toggle { border-radius: 4px; }
 .mode-toggle-btn { border-radius: 2px; min-height: 44px; }
 .project-link { min-height: 40px; }
@@ -1092,7 +1087,6 @@
 }
 @media (max-width: 760px) {
   .projects-header { grid-template-columns: minmax(0, 1fr); row-gap: 1rem; }
-  .projects-intro-notes { padding: 1rem; }
   .projects-title { margin-bottom: .4rem; }
 }
 
@@ -1107,4 +1101,19 @@
   border-bottom: 1px solid var(--hair);
   padding-bottom: .65rem;
   margin-bottom: .65rem;
+}
+
+/* Optional context stays close to the introduction without dominating it. */
+.projects-note { position: relative; justify-self: start; max-width: 100%; z-index: 3; }
+.projects-note summary { list-style: none; display: flex; align-items: center; gap: .55rem; min-height: 44px; width: fit-content; padding: .45rem .75rem; border: 1px solid var(--hair-strong); border-radius: 4px; font: .9rem/1.4 var(--face-text); color: var(--text-1); cursor: pointer; }
+.projects-note summary::-webkit-details-marker { display: none; }
+.projects-note summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.projects-note[open] summary, .projects-note summary:hover { border-color: var(--accent); background: var(--bg-1); }
+.projects-note-chevron { color: var(--accent); }
+.projects-note[open] .projects-note-chevron { transform: rotate(180deg); }
+.projects-note-panel { position: absolute; top: 100%; left: 0; width: min(34rem, calc(100vw - 2 * var(--gutter))); padding: 1.25rem; border: 1px solid var(--hair-strong); border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; background: var(--bg-1); box-shadow: var(--shadow-card); }
+.projects-note-panel p { margin: 0; max-width: none; color: var(--text-1); font: var(--type-body)/1.6 var(--face-text); }
+@media (max-width: 600px) {
+  .projects-note { justify-self: stretch; }
+  .projects-note-panel { position: static; width: 100%; margin-top: .5rem; }
 }

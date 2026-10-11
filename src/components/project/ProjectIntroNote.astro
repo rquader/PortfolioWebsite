@@ -1,0 +1,40 @@
+<details class="projects-note" data-project-intro-note>
+  <summary>
+    <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M15 3v5h4M8 12h8M8 16h6"/></svg>
+    <span>About the notes</span><span class="projects-note-chevron" aria-hidden="true">⌄</span>
+  </summary>
+  <div class="projects-note-panel">
+    <p>For most of these projects, you can also access sanitized versions of my primarily
+      (if not entirely) AI-generated Obsidian notes. I can use these notes to better
+      understand a project's architecture and as context for AI agents!</p>
+  </div>
+</details>
+
+<script>
+  const note = document.querySelector<HTMLDetailsElement>('[data-project-intro-note]');
+  const summary = note?.querySelector('summary');
+  if (note && summary) {
+    let pinned = false;
+    note.addEventListener('pointerenter', (event) => {
+      if (event.pointerType === 'mouse') note.open = true;
+    });
+    note.addEventListener('pointerleave', (event) => {
+      if (event.pointerType === 'mouse' && !pinned && !note.contains(document.activeElement)) note.open = false;
+    });
+    summary.addEventListener('click', (event) => {
+      event.preventDefault();
+      pinned = !pinned;
+      note.open = pinned;
+    });
+    note.addEventListener('focusin', () => { note.open = true; });
+    note.addEventListener('focusout', (event) => {
+      if (!pinned && !note.contains(event.relatedTarget as Node | null)) note.open = false;
+    });
+    note.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') { pinned = false; note.open = false; }
+    });
+    document.addEventListener('click', (event) => {
+      if (!note.contains(event.target as Node)) { pinned = false; note.open = false; }
+    });
+  }
+</script>

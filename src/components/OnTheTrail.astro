@@ -15,7 +15,7 @@ const completedCourses: Array<{ label: string; href: string }> = [
     href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=44161',
   },
   {
-    label: 'Talking Back to Research: Critical Skills for Leaders (EDLD 10)',
+    label: 'Talking Back to Research: Critical Skills for Leaders',
     href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=13&coid=122976',
   },
 ];
@@ -94,82 +94,49 @@ const skillGroups = [
       </div>
     </div>
 
+    <div class="trail-resume">
     <a class="btn-accent" href={resumeHref} download type="application/pdf">
       <span class="ico" aria-hidden="true">↓</span>
       <span>resume (PDF)</span>
     </a>
     </div>
+    </div>
   </div>
 </section>
 
 <style>
-  .on-the-trail .section-inner { display: grid; gap: clamp(1.4rem, 3vw, 2.2rem); }
+  .on-the-trail .section-inner { display: grid; gap: 1.4rem; }
   .on-the-trail .section-heading { margin-bottom: 0; }
-  .trail-panel {
-    padding: clamp(1.25rem, 2.7vw, 2rem);
-    border-left: 2px solid var(--accent-on-the-trail, var(--accent));
-    border-radius: 0 4px 4px 0;
-    background: var(--bg-1);
-    box-shadow: var(--shadow-card);
-    min-width: 0;
-  }
+  .trail-panel { min-width: 0; }
   .trail-education {
     max-width: none;
-    margin: 0 0 1.5rem;
-    padding-bottom: 1.2rem;
-    border-bottom: 1px solid var(--hair-strong);
-    color: var(--text-1);
-    font-size: var(--type-body);
-  }
-  .trail-education span:last-child {
-    display: inline-block;
-    margin-left: 0.5rem;
-    color: var(--text-2);
-  }
-  .trail-layout {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 2rem clamp(2rem, 5vw, 4rem);
-    margin-bottom: 2rem;
-  }
-  .trail-coursework { display: contents; }
-  .trail-layout .group { min-width: 0; }
-  .trail-layout h3 {
-    font-family: var(--face-display);
-    font-size: clamp(1.17rem, 2vw, 1.45rem);
-    margin-bottom: 0.75rem;
-  }
-  .trail-layout ul { list-style: none; padding: 0; margin: 0; }
-  .trail-coursework li {
-    padding: 0.7rem 0;
-    border-bottom: 1px solid var(--hair);
-    color: var(--text-1);
-    line-height: 1.4;
-  }
-  .trail-skills {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: minmax(0, .65fr) minmax(0, 1fr) minmax(0, 1.5fr);
-    gap: 1.5rem;
-    padding-top: 1.75rem;
-    border-top: 1px solid var(--hair);
-  }
-  .trail-skills li {
-    padding: 0.45rem 0;
-    border-bottom: 1px solid var(--hair);
+    margin: 0 0 1.25rem;
+    padding: .8rem 1rem;
+    border-left: 2px solid var(--accent-on-the-trail);
+    background: var(--bg-1);
     color: var(--text-1);
     font-size: var(--type-body);
     line-height: 1.5;
   }
-  .trail-link { color: inherit; text-decoration-color: var(--hair-strong); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  .trail-education span:last-child { display: inline-block; margin-left: .5rem; color: var(--text-2); }
+  .trail-layout { display: grid; gap: 1.25rem; }
+  .trail-coursework { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.25rem, 4vw, 3rem); }
+  .trail-layout .group { min-width: 0; }
+  .trail-layout h3 { font-family: var(--face-display); font-size: clamp(1.1rem, 1.8vw, 1.35rem); margin: 0 0 .5rem; font-weight: 500; }
+  .trail-layout ul { list-style: none; padding: 0; margin: 0; }
+  .trail-coursework li { border-bottom: 1px solid var(--hair); color: var(--text-1); line-height: 1.4; }
+  .trail-link { display: block; padding: .55rem 0; min-height: 44px; color: inherit; text-decoration-color: var(--hair-strong); text-underline-offset: .2em; }
   .trail-link:hover { color: var(--accent); text-decoration-color: currentColor; }
-  .trail-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+  .trail-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .trail-skills { border-top: 1px solid var(--hair-strong); border-bottom: 1px solid var(--hair-strong); }
+  .skill-group { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 1rem; align-items: baseline; padding: .65rem 0; }
+  .skill-group + .skill-group { border-top: 1px solid var(--hair); }
+  .trail-skills h3 { margin: 0; font-size: 1.05rem; }
+  .trail-skills ul { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; }
+  .trail-skills li { color: var(--text-1); font-size: var(--type-body); line-height: 1.5; }
+  .trail-resume { display: flex; justify-content: center; padding-top: 1.25rem; }
   @media (max-width: 760px) {
-    .trail-layout { grid-template-columns: 1fr; gap: 1.75rem; }
-    .trail-skills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .trail-skills .group:last-child { grid-column: 1 / -1; }
-  }
-  @media (max-width: 430px) {
-    .trail-skills { grid-template-columns: minmax(0, 1fr); }
+    .trail-coursework { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+    .skill-group { grid-template-columns: minmax(0, 1fr); gap: .4rem; }
   }
 </style>

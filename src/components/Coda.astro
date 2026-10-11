@@ -13,7 +13,7 @@ const links = [
 ---
 <section class="section coda" id="coda" data-section-id="coda">
   <div class="section-inner">
-    <p class="tagline tagline-primary">Computer Science @ SJSU</p>
+    <p class="tagline tagline-primary">Computer Science @ San José State University</p>
 
     <div class="coda-links">
       {
@@ -39,8 +39,11 @@ const links = [
     padding-bottom: clamp(6rem, 12vh, 10rem);
   }
 
+  .coda .section-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem 2rem; flex-wrap: wrap; }
+
   .coda .tagline-primary {
-    font-family: var(--face-display);
+    font-family: var(--face-text);
+    font-weight: 400;
     font-variation-settings: 'SOFT' 70, 'WONK' 0;
     font-size: var(--type-body);
     line-height: var(--leading-body);
@@ -53,6 +56,6 @@ const links = [
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
-    margin-top: 1.2rem;
+    margin-top: 0;
   }
 </style>

@@ -3,14 +3,17 @@
   "type": "module",
   "version": "0.0.1",
   "private": true,
-  "description": "Portfolio site for Rafan Quader. Canonical docs live in the Obsidian vault — see README.md.",
+  "description": "Portfolio site for Rafan Quader. Canonical docs live in the Obsidian vault \u2014 see README.md.",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "astro": "astro"
+    "astro": "astro",
+    "new:post": "node scripts/new-post.mjs",
+    "test:blog": "node --test scripts/new-post.test.mjs",
+    "test:blog-build": "node scripts/test-blog-build.mjs"
   },
   "dependencies": {
     "astro": "^5.0.0"

@@ -91,7 +91,6 @@ details:not([open]) > summary .ddd-chevron { transform: rotate(-90deg); }
   .ddd-intro { grid-template-columns: minmax(0, 1fr); }
 }
 
-.ddd-milestone-aside { display: block; margin-top: .55rem; font-family: var(--face-text); font-size: 1rem; line-height: 1.6; }
 
 .ddd-journey-toggle { width: 100%; border: 0; padding: 0; background: transparent; text-align: left; }
 .ddd-journey-toggle[aria-expanded="false"] .ddd-chevron { transform: rotate(-90deg); }

@@ -1,0 +1,56 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import TopNav from '../../components/TopNav.astro';
+import MobileTopNav from '../../components/MobileTopNav.astro';
+import { visiblePosts, formatPostDate } from '../../lib/blog';
+import '../../styles/blog.css';
+
+export async function getStaticPaths() {
+  const posts = visiblePosts(await getCollection('blog'), import.meta.env.DEV);
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+interface Props { post: CollectionEntry<'blog'> }
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const comingSoon = post.data.status === 'coming-soon';
+const contents = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.ceil(words / 220));
+---
+<Base title={`${post.data.title} — Rafan Quader`} description={post.data.description} mainId="article-main">
+  <TopNav />
+  <MobileTopNav />
+  <main id="article-main" class="blog-page blog-article-page">
+    <a class="blog-back" href={`${base}blog/`}>← All writing</a>
+    <article>
+      <header class="blog-article-header">
+        {post.data.status === 'draft' && <p class="blog-draft">Draft preview — this article is excluded from the published site.</p>}
+        <h1>{post.data.title}</h1>
+        <p class="blog-deck">{post.data.description}</p>
+        <div class="blog-meta">
+          <span>Rafan Quader</span>
+          {post.data.publishedAt && <time datetime={post.data.publishedAt}>{formatPostDate(post.data.publishedAt)}</time>}
+          {post.data.updatedAt && <span>Updated <time datetime={post.data.updatedAt}>{formatPostDate(post.data.updatedAt)}</time></span>}
+          {!comingSoon && <span>{minutes} min read</span>}
+        </div>
+        {post.data.tags.length > 0 && <ul class="blog-tags" aria-label="Topics">{post.data.tags.map((tag) => <li>{tag}</li>)}</ul>}
+      </header>
+      {comingSoon ? (
+        <div class="blog-coming-soon">
+          <p>to be written, keep posted</p>
+          {post.id === 'accidental-malware-and-ai-attacks' && <a href={`${base}#ddd-fall-2026`}>Explore the DDD Dropbox story</a>}
+        </div>
+      ) : (
+        <div class="blog-article-layout">
+          {contents.length > 1 && <aside class="blog-contents"><nav aria-label="Article contents">
+            <h2>In this article</h2>
+            <ol>{contents.map((heading) => <li class:list={{ nested: heading.depth === 3 }}><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ol>
+          </nav></aside>}
+          <div class="blog-prose"><Content /></div>
+        </div>
+      )}
+    </article>
+  </main>
+</Base>

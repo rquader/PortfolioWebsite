@@ -50,6 +50,7 @@ const LAYER_SIZE_RANGES: readonly (readonly [number, number])[] = [
 const LAYER_OPACITY = [0.28, 0.55, 0.82] as const;
 
 const SWAY_AMP = 0.34;
+const CANOPY_DENSITY = 1.4;
 const DEFAULT_LEAF_ATMOSPHERE: LeafAtmosphere = {
   densityMultiplier: 1,
   sizeMultiplier: 1,
@@ -167,7 +168,7 @@ export function mountFallingLeaves(
   let opacity = opts.opacity ?? 1.0;
   const seed = opts.seed ?? RNG_SEED;
   const count = opts.numLeaves ?? NUM_LEAVES;
-  const poolCount = Math.ceil(count * mapTreeAtmosphere({ depth: 9 }).densityMultiplier);
+  const poolCount = Math.ceil(count * mapTreeAtmosphere({ depth: 9 }).densityMultiplier * CANOPY_DENSITY);
   let atmosphere = { ...DEFAULT_LEAF_ATMOSPHERE };
   let targetAtmosphere = { ...atmosphere };
   if (opts.ariaHidden !== false) canvas.setAttribute('aria-hidden', 'true');
@@ -217,7 +218,7 @@ export function mountFallingLeaves(
     lastDrawTime = t;
     if (cssW < 2 || cssH < 2) return;
     ctx!.clearRect(0, 0, cssW, cssH);
-    const visibleCount = count * atmosphere.densityMultiplier;
+    const visibleCount = count * atmosphere.densityMultiplier * (leafSources.length ? CANOPY_DENSITY : 1);
     for (let leafIndex = 0; leafIndex < leaves.length; leafIndex++) {
       // A fractional last leaf fades in/out while the shared tick eases density.
       const visibility = Math.max(0, Math.min(1, visibleCount - leafIndex));
@@ -227,11 +228,13 @@ export function mountFallingLeaves(
       const y = topY - progress * span;
       const swayPeriod = DURATION / l.swayCycles;
       const x = l.baseX + SWAY_AMP * atmosphere.swayMultiplier * sinWave(t, swayPeriod, l.swayPhase);
-      const angle = l.tilt + 2 * Math.PI * l.rotCycles * (t / DURATION) + l.rotPhase;
+      const angle = l.tilt + 2 * Math.PI * l.rotCycles * (t / DURATION) + l.rotPhase
+        + (leafSources.length ? .28 * Math.sin(t * 1.7 + l.rotPhase) : 0);
 
       let cx = map.toX(x);
       let cy = map.toY(y);
       let pathOpacity = 1;
+      let canopyContrast = 1;
       const source = leafSources[Math.floor(((leafIndex * 0.61803398875) % 1) * leafSources.length)];
       if (source) {
         const fall = resolveTreeLeafFall(source, progress, {
@@ -244,15 +247,17 @@ export function mountFallingLeaves(
         cx = fall.x - window.scrollX - canvasLeft;
         cy = fall.y - window.scrollY - canvasTop;
         pathOpacity = fall.opacity;
+        // Make the release from the canopy legible, then soften into the page background.
+        canopyContrast = 1 + 2.4 * Math.exp(-(fall.y - source.y) / 440);
         if (cx < -50 || cx > cssW + 50 || cy < -50 || cy > cssH + 50) continue;
       }
-      const sizePx = l.size * map.u * atmosphere.sizeMultiplier * (source ? 0.8 : 1);
+      const sizePx = l.size * map.u * atmosphere.sizeMultiplier * (source ? 0.95 : 1);
       const verts = leafVerts(sizePx);
       const cos = Math.cos(angle);
       const sin = Math.sin(angle);
 
       const layerOpacity = source ? Math.max(0.55, l.opacity) : l.opacity;
-      ctx!.globalAlpha = layerOpacity * opacity * atmosphere.opacity * visibility * pathOpacity;
+      ctx!.globalAlpha = layerOpacity * opacity * atmosphere.opacity * visibility * pathOpacity * canopyContrast;
       ctx!.fillStyle = l.color;
       ctx!.beginPath();
       for (let i = 0; i < verts.length; i++) {

@@ -14,31 +14,36 @@ import '../styles/featured-work.css';
 
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
 const projects = await getCollection('projects');
+const stories = await getCollection('projectStories');
 const vroom = projects.find(project => project.id === 'vroomview/_index')!;
 const cross = projects.find(project => project.id === 'web-crossword-generator/_index')!;
 // Each shelf caption is copied verbatim from its project's Info or Story copy.
 const projectExcerpts = {
   // src/content/projects/vroomview/_index.md
   vroomview: 'VroomView is a social media app where users can share car concepts, new configurations, etc. then comment or hold discussions.',
-  // src/content/projects/web-crossword-generator/_index.md
-  'web-crossword-generator': 'Wonderfully, you can print the crossword for students (or play it on the site yourself!).',
+  // src/content/projects/web-crossword-generator/story.md
+  'web-crossword-generator': 'Web Crossword Generator is now a web-app meant to be used to generate crosswords or word searches, print them!',
   // src/content/projects/arabic-dialect-map/_index.md
   'arabic-dialect-map': 'Arabic Dialect Map is a clean application that maps how Arabic is connected.',
-  // src/content/projects/adhkar-counter/_index.md
-  'adhkar-counter': 'Adhkar Counter attempts to solve this, by putting the counter on the screen.',
+  // src/content/projects/adhkar-counter/story.md
+  'adhkar-counter': 'I wanted to put together this little Adhkar Counter app to have a little web-app on my laptop to persistently track as I did Adkhar.',
   // src/content/projects/legendary-ui-ux/_index.md
   'legendary-ui-ux': 'The product of Claude, a little bit of Cursor, and back and forth with me, a website that is simply beautiful, clean, and feature-filled.',
   // src/content/projects/insta-dm/_index.md
-  'insta-dm': 'This can allow you to stay connected to people via Instagram while keeping you off its addictive reels and distracting feed.',
+  'insta-dm': 'I developed InstaDM, a light-weight Swift macOS application, that will allow you access Instagram messages while blocking the rest of the app.',
   // src/content/projects/manim-wallpapers/_index.md
   'manim-wallpapers': 'Manim Wallpapers is basically an effort of utilizing the Manim library with Claude Code to see if it could put together high-quality animated outputs which could serve as laptop wallpapers.',
-  // src/content/projects/portfolio-website/_index.md
-  'portfolio-website': 'It’s meant to serve as a way to showcase what I’ve learned and to largely amalgamate them into a really clean UI that’s fresh, interesting, and effective.',
+  // src/content/projects/portfolio-website/story.md
+  'portfolio-website': 'Portfolio Website is put together in multiple steps, taking from the projects before.',
 } as const;
-// Fail the build if an excerpt drifts away from the authored description.
+const storyExcerpts = new Set(['web-crossword-generator', 'adhkar-counter', 'portfolio-website']);
+// Fail the build if an excerpt drifts away from its authored description.
 for (const [slug, excerpt] of Object.entries(projectExcerpts)) {
-  const body = (projects.find(project => project.id === `${slug}/_index`)?.body ?? '').replace(/\*\*/g, '');
-  if (!body.includes(excerpt)) throw new Error(`Featured excerpt must match authored Info text: ${slug}`);
+  const source = storyExcerpts.has(slug)
+    ? stories.find(story => story.id === `${slug}/story`)
+    : projects.find(project => project.id === `${slug}/_index`);
+  const body = (source?.body ?? '').replace(/\*\*/g, '');
+  if (!body.includes(excerpt)) throw new Error(`Featured excerpt must match authored project text: ${slug}`);
 }
 const remainingProjects = [
   { slug: 'arabic-dialect-map', image: arabicMap, alt: 'Arabic dialect map arranged around Modern Standard Arabic' },

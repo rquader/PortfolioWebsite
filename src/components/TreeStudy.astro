@@ -5,7 +5,6 @@
   <canvas class="tree-study-canvas" width="240" height="170" aria-hidden="true"></canvas>
   <details class="tree-editor">
   <summary aria-label="Adjust the tree and falling leaves">
-    <span class="tree-study-toggle" aria-hidden="true">+</span>
   </summary>
   <div class="tree-study-controls">
     <p>tree &amp; leaves</p>
@@ -94,10 +93,8 @@
   .tree-editor { position: static; }
   summary { z-index: 1; list-style: none; cursor: pointer; border-radius: 4px; }
   summary:focus-visible { outline: none; }
-  summary:focus-visible .tree-study-toggle { outline: 2px solid var(--accent); outline-offset: 4px; }
+  summary:focus-visible::after { content: "tree controls"; position: absolute; bottom: 14rem; right: 11rem; padding: .3rem .5rem; background: var(--bg-0); color: var(--text-0); font: .8rem var(--face-text); outline: 2px solid var(--accent); outline-offset: 3px; }
   summary::-webkit-details-marker { display: none; }
-  .tree-study-toggle { position: absolute; bottom: 14rem; right: 11rem; display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid var(--hair-strong); border-radius: 50%; font: 1.2rem var(--face-text); color: var(--text-1); background: var(--bg-0); }
-  [open] .tree-study-toggle { transform: rotate(45deg); }
   .tree-study-controls { position: relative; z-index: 2; display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)) auto; align-items: center; gap: 1.5rem; margin: 10rem var(--gutter) 1.5rem; padding: .8rem 1rem; background: var(--bg-0); border-block: 1px solid var(--hair-strong); }
   .tree-study-controls p { font-size: .95rem; margin: 0; color: var(--text-0); }
   label { display: grid; grid-template-columns: 3rem minmax(0, 1fr) 2.1rem; gap: .5rem; align-items: center; font-size: .8rem; color: var(--text-1); min-height: 44px; }
@@ -113,7 +110,7 @@
   @media (max-width: 720px) {
     .tree-study-canvas, summary { top: -2.5rem; right: -8rem; width: 460px; height: 360px; }
     .tree-study-canvas { width: 460px !important; height: 360px !important; opacity: .65; }
-    .tree-study-toggle { bottom: 8rem; right: 9.5rem; width: 30px; height: 30px; }
+    summary:focus-visible::after { bottom: 8rem; right: 9.5rem; }
     .tree-study-controls { grid-template-columns: 1fr auto; margin-top: 5rem; padding: .6rem 0; }
     .tree-study-controls p { grid-column: 1; }
     label { grid-column: 1 / -1; grid-template-columns: 3.4rem 1fr 2.1rem; font-size: .9rem; }

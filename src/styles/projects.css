@@ -1046,7 +1046,7 @@
 
 /* Full-length prose uses the same reading rhythm as the DDD chapters. */
 .project-chapter .project-story {
-  max-width: 65ch;
+  max-width: none;
   font-family: var(--face-text);
   font-size: var(--type-body);
   line-height: 1.6;

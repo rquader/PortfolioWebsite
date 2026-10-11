@@ -12,7 +12,7 @@
 .ddd-intro h3 { margin: .45rem 0 .6rem; font-size: clamp(1.5rem, 2.7vw, 2.25rem); line-height: 1.17; }
 .ddd-intro h3 abbr { text-decoration: none; }
 .ddd-role { font-size: var(--type-small); font-style: italic; color: var(--text-2) !important; }
-.ddd-intro-copy { max-width: 65ch; }
+.ddd-intro-copy { min-width: 0; }
 .ddd-intro-copy strong { font-weight: 600; color: var(--text-0); }
 .ddd-links { display: flex; gap: .45rem; flex-wrap: wrap; grid-column: 1 / -1; margin-top: 1rem; }
 
@@ -37,7 +37,7 @@ details:not([open]) > summary .ddd-chevron { transform: rotate(-90deg); }
 .ddd-chapter-body { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: clamp(1.4rem, 3.7vw, 2.8rem); align-items: start; padding: .6rem 0 clamp(1.7rem, 3vw, 2.4rem); }
 .ddd-reverse .ddd-chapter-copy { grid-column: 2; grid-row: 1; }
 .ddd-reverse .ddd-media { grid-column: 1; grid-row: 1; }
-.ddd-chapter-copy { max-width: 64ch; }
+.ddd-chapter-copy { min-width: 0; }
 .ddd-milestone { background: color-mix(in srgb, var(--accent-on-the-work) 12%, var(--bg-1)); border-left: 2px solid var(--accent-on-the-work); padding: .75rem .9rem; font-family: var(--face-display); font-size: 1.15rem; line-height: 1.38 !important; color: var(--text-0) !important; }
 .ddd-prs { display: flex; flex-wrap: wrap; gap: .4rem; margin: 1.15rem 0 1.3rem; }
 .ddd-prs > a { display: inline-block; position: relative; border: 1px solid var(--hair-strong); border-radius: 3px; padding: .33rem .55rem; font: .68rem var(--face-mono); color: var(--text-1) !important; background: var(--bg-1); text-decoration: none; }
@@ -58,7 +58,7 @@ details:not([open]) > summary .ddd-chevron { transform: rotate(-90deg); }
 .ddd-build-map .ddd-image-button img { max-height: 13rem; }
 .ddd-speaking .ddd-image-button img { max-height: 27rem; }
 .ddd-branch-link { margin-top: .5rem !important; font-size: .86rem; }
-.on-the-work .ddd-diagram { justify-self: start; }
+.on-the-work .ddd-diagram { justify-self: center; }
 @media (max-width: 760px) {
   .ddd-intro { grid-template-columns: 1fr; }
   .ddd-links { grid-column: 1; }

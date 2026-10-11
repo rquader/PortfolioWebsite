@@ -57,7 +57,6 @@ details:not([open]) > summary .ddd-chevron { transform: rotate(-90deg); }
 .ddd-dropbox-media { display: grid; gap: 1.25rem; }
 .ddd-build-map .ddd-image-button img { max-height: 13rem; }
 .ddd-speaking .ddd-image-button img { max-height: 27rem; }
-.ddd-coming-soon { white-space: nowrap; font: .7rem var(--face-mono); color: var(--text-2); }
 .ddd-branch-link { margin-top: .5rem !important; font-size: .86rem; }
 .on-the-work .ddd-diagram { justify-self: start; }
 @media (max-width: 760px) {

@@ -59,6 +59,22 @@ const links: NavLink[] = [
     >
       github ↗
     </a>
+    <a
+      class="top-nav-github"
+      href="https://www.linkedin.com/in/rafan-quader/"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      linkedin ↗
+    </a>
+    <a
+      class="top-nav-github"
+      href={withBase('/Rafan_Quader_Resume.pdf')}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      resume ↗
+    </a>
     <button
     class="theme-toggle"
     type="button"
@@ -206,6 +222,21 @@ const links: NavLink[] = [
   :root[data-theme="dark"]  .theme-toggle .t-dark  { color: var(--accent); }
   :root[data-theme="light"] .theme-toggle .t-dark  { opacity: 0.45; }
   :root[data-theme="dark"]  .theme-toggle .t-light { opacity: 0.45; }
+
+  @media (min-width: 721px) and (max-width: 1100px) {
+    .top-nav ul {
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.15rem 0.8rem;
+    }
+    .top-nav ul a {
+      white-space: nowrap;
+      font-size: 0.72rem;
+      line-height: 1.35;
+    }
+    .top-nav ul { line-height: 1.35; }
+    .top-nav-actions { gap: 0.35rem; }
+  }
 
   @media (max-width: 720px) {
     .top-nav ul { display: none; }

@@ -11,6 +11,7 @@
 import Base from '../layouts/Base.astro';
 // Home-page-specific: tree-hint sticker lives in Threshold (home only).
 import '../styles/tree-hint.css';
+import '../styles/home.css';
 import TopNav from '../components/TopNav.astro';
 import MobileTopNav from '../components/MobileTopNav.astro';
 import Threshold from '../components/Threshold.astro';
@@ -22,7 +23,7 @@ import Coda from '../components/Coda.astro';
 <Base>
   <TopNav />
   <MobileTopNav />
-  <main>
+  <main class="home-page">
     <Threshold />
     <OnMe />
     <OnTheWork />

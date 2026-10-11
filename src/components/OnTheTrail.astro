@@ -1,39 +1,45 @@
 ---
-// On The Trail — coursework, tools, resume.
-// ADR-021 — coursework items linked to SJSU catalog pages (new tab),
-// styled to be visually identical to plain list items: no underline at
-// rest, hover dotted-underline, focus accent. Resume button switches to
-// the shared .btn-accent utility.
+// On The Trail — coursework, skills, and resume.
 
 const BASE = import.meta.env.BASE_URL;
 const BASE_WITH_SLASH = BASE.endsWith('/') ? BASE : `${BASE}/`;
 const resumeHref = `${BASE_WITH_SLASH}Rafan_Quader_Resume.pdf`;
 
-// SJSU catalog URLs — verbatim from the design handoff's m/data.js
-// (Discrete Math + Intro to Data Structures share coid=44161; if that's
-// a paste error in the source, replace with the canonical Discrete Math
-// course URL next pass.)
-const courses: Array<{ label: string; href: string }> = [
+const completedCourses: Array<{ label: string; href: string }> = [
   {
     label: 'Data Structures & Algorithms',
     href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=42151',
   },
   {
-    label: 'Discrete Math',
+    label: 'Discrete Mathematics',
     href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=44161',
   },
   {
-    label: 'Intro to Data Structures',
-    href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=42140',
-  },
-  {
-    label: 'Talking Back to Research: Critical Skills for Leaders',
+    label: 'Talking Back to Research: Critical Skills for Leaders (EDLD 10)',
     href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=13&coid=122976',
   },
 ];
 
-const tools: string[] = ['Java', 'Git', 'Claude Code / Cursor', 'Obsidian'];
+const currentCourses = [
+  'Introduction to Artificial Intelligence',
+  'Introduction to Computer Systems',
+  'Linear Algebra I',
+];
+
+const skillGroups = [
+  { label: 'Languages', items: ['Java', 'Python'] },
+  { label: 'Development tools', items: ['Git', 'Claude Code', 'Codex', 'Cursor'] },
+  {
+    label: 'Practice',
+    items: [
+      'Software design & development',
+      'Software presentation & communication',
+      'Collaborative work',
+    ],
+  },
+];
 ---
+
 <section
   class="section on-the-trail"
   id="on-the-trail"
@@ -42,28 +48,46 @@ const tools: string[] = ['Java', 'Git', 'Claude Code / Cursor', 'Obsidian'];
   <div class="section-inner">
     <h2 class="section-heading" data-color-letters data-inertial-text>on the trail</h2>
 
-    <div class="trail-groups">
-      <div class="group">
-        <h3>coursework so far</h3>
-        <ul>
-          {courses.map(({ label, href }) => (
-            <li>
-              <a
-                class="trail-link"
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >{label}</a>
-            </li>
-          ))}
-        </ul>
+    <p class="trail-education">
+      B.S. Computer Science <span aria-hidden="true">·</span>
+      San José State University <span>2025–2029</span>
+    </p>
+
+    <div class="trail-layout">
+      <div class="trail-coursework">
+        <div class="group">
+          <h3>coursework completed</h3>
+          <ul>
+            {completedCourses.map(({ label, href }) => (
+              <li>
+                <a
+                  class="trail-link"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >{label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="group">
+          <h3>currently enrolled</h3>
+          <ul>
+            {currentCourses.map((course) => <li>{course}</li>)}
+          </ul>
+        </div>
       </div>
 
-      <div class="group">
-        <h3>tools</h3>
-        <ul>
-          {tools.map((t) => <li>{t}</li>)}
-        </ul>
+      <div class="trail-skills">
+        {skillGroups.map(({ label, items }) => (
+          <div class="group skill-group">
+            <h3>{label}</h3>
+            <ul>
+              {items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
 
@@ -75,43 +99,74 @@ const tools: string[] = ['Java', 'Git', 'Claude Code / Cursor', 'Obsidian'];
 </section>
 
 <style>
-  .trail-groups {
+  .trail-education {
+    margin: 0 0 2rem;
+    color: var(--text-1);
+    font-size: var(--type-body);
+  }
+
+  .trail-education span:last-child {
+    margin-left: 0.5rem;
+    color: var(--text-2);
+  }
+
+  .trail-layout {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-    max-width: 56rem;
+    grid-template-columns: minmax(0, 1.25fr) minmax(15rem, 0.75fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    max-width: 68rem;
     margin-bottom: 2rem;
   }
-  .trail-groups h3 {
+
+  .trail-coursework,
+  .trail-skills {
+    display: grid;
+    align-content: start;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  .trail-skills {
+    align-content: start;
+  }
+
+  .trail-skills .skill-group:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .trail-layout h3 {
     font-family: var(--face-display);
     font-variation-settings: 'SOFT' 70, 'WONK' 1;
     font-style: italic;
     font-size: 1.2rem;
     margin-bottom: 0.6rem;
   }
-  .trail-groups ul {
+
+  .trail-layout ul {
     list-style: none;
     padding: 0;
+    margin: 0;
   }
-  .trail-groups li {
-    padding: 0.45rem 0 0.45rem 1.1rem;
+
+  .trail-layout li {
+    padding: 0.45rem 0;
     color: var(--text-1);
     font-size: var(--type-body);
+    line-height: 1.45;
     border-bottom: 1px solid var(--hair);
     position: relative;
   }
-  .trail-groups li::before {
-    content: '·';
-    position: absolute;
-    left: 0.15rem;
-    top: 0.45rem;
-    color: var(--accent);
-    font-family: var(--face-mono);
-    font-weight: 500;
+
+  .trail-skills ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 1rem;
   }
 
-  /* Quietly-linked coursework items — same color/weight as plain text;
-     underline whispers on hover, accent-tinted on focus. */
+  .trail-skills li {
+    padding: 0.15rem 0;
+    border: 0;
+  }
+
   .trail-link {
     color: inherit;
     text-decoration: none;
@@ -120,13 +175,32 @@ const tools: string[] = ['Java', 'Git', 'Claude Code / Cursor', 'Obsidian'];
       color var(--d-fast) var(--ease-out),
       border-color var(--d-fast) var(--ease-out);
   }
+
   .trail-link:hover {
     color: var(--text-0);
     border-bottom-color: color-mix(in srgb, var(--accent) 50%, transparent);
   }
+
   .trail-link:focus-visible {
     color: var(--accent);
     border-bottom-color: var(--accent);
     outline: none;
+  }
+
+  @media (max-width: 760px) {
+    .trail-layout {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .trail-skills {
+      grid-template-columns: 1fr;
+    }
+
+    .trail-skills .skill-group:last-child {
+      grid-column: auto;
+    }
   }
 </style>

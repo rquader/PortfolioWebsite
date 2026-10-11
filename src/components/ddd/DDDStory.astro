@@ -49,8 +49,8 @@ const fall2026 = [
     <p class="ddd-intro-bridge"><strong>Working on DDD has been one of my most formative experiences as a developing software engineer.</strong> Over the last year, I’ve gotten to go from struggling to navigate a massive codebase to implement some warning text, to helping with a complex notification pipeline, to designing and working to implement/prototype a massive new application.</p>
   </header>
 
-  <details class="ddd-journey" open>
-    <summary>So here’s a little bit of that journey expressed here: <span class="ddd-chevron" aria-hidden="true">⌄</span></summary>
+  <div class="ddd-journey">
+    <button class="ddd-journey-toggle" type="button" aria-expanded="true" aria-controls="ddd-chapters">So here’s a little bit of that journey expressed here: <span class="ddd-chevron" aria-hidden="true">⌄</span></button>
     <nav class="ddd-index" aria-label="Jump to a DDD chapter">
       <a href="#ddd-fall-2025"><span>Fall 2025</span><small>first contributions</small></a>
       <a href="#ddd-early-spring-2026"><span>Early Spring 2026</span><small>notification pipeline</small></a>
@@ -58,7 +58,7 @@ const fall2026 = [
       <a href="#ddd-fall-2026"><span>Fall 2026</span><small>DDD Dropbox</small></a>
     </nav>
 
-    <div class="ddd-chapters">
+    <div class="ddd-chapters" id="ddd-chapters">
     <details class="ddd-chapter" id="ddd-fall-2025" open>
       <summary><span class="ddd-chapter-date">Fall 2025</span><span class="ddd-chapter-name">First contributions</span><span class="ddd-chevron" aria-hidden="true">⌄</span></summary>
       <div class="ddd-chapter-body">
@@ -132,10 +132,30 @@ const fall2026 = [
       </div>
     </details>
     </div>
-  </details>
+  </div>
 </article>
 
 <script>
+  const journeyToggle = document.querySelector<HTMLButtonElement>('.ddd-journey-toggle');
+  const chapters = document.getElementById('ddd-chapters');
+  const chapterLinks = document.querySelectorAll<HTMLAnchorElement>('.ddd-index a');
+  chapterLinks.forEach(link => { link.dataset.chapterHref = link.getAttribute('href') ?? ''; });
+  function setJourneyExpanded(expanded: boolean) {
+    journeyToggle?.setAttribute('aria-expanded', String(expanded));
+    if (chapters) chapters.hidden = !expanded;
+    chapterLinks.forEach(link => {
+      if (expanded) {
+        link.setAttribute('href', link.dataset.chapterHref ?? '');
+        link.removeAttribute('aria-disabled');
+      } else {
+        link.removeAttribute('href');
+        link.setAttribute('aria-disabled', 'true');
+      }
+    });
+  }
+  journeyToggle?.addEventListener('click', () => {
+    setJourneyExpanded(journeyToggle.getAttribute('aria-expanded') !== 'true');
+  });
   // Direct links remain useful even after someone has folded a chapter.
   function revealChapterFromHash(hash = window.location.hash) {
     let id: string;
@@ -147,6 +167,7 @@ const fall2026 = [
     if (!id) return;
     const target = document.getElementById(id);
     if (!target || !target.closest('.ddd-story')) return;
+    if (target.closest('.ddd-chapters')) setJourneyExpanded(true);
     if (target instanceof HTMLDetailsElement) target.open = true;
     let ancestor = target.parentElement?.closest('details');
     while (ancestor) {

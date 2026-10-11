@@ -10,8 +10,8 @@
  */
 
 .projects-page {
-  max-width: min(72rem, 100% - var(--gutter) * 2);
-  margin: clamp(5rem, 10vh, 8rem) auto clamp(4rem, 8vh, 6rem);
+  max-width: 84rem;
+  margin: calc(var(--nav-h) + clamp(2.5rem, 6vh, 4rem)) auto clamp(4rem, 8vh, 6rem);
   padding: 0 var(--gutter);
 }
 
@@ -23,8 +23,8 @@
 
 .projects-title {
   font-family: var(--face-display);
-  font-variation-settings: 'SOFT' 70, 'WONK' 1;
-  font-size: var(--type-h2);
+  font-variation-settings: 'SOFT' 70, 'WONK' 0;
+  font-size: clamp(2.3rem, 4.5vw, 3.5rem);
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
   margin-bottom: 1.2rem;
@@ -125,14 +125,19 @@
 
 .project-chapter {
   display: grid;
-  grid-template-columns: 1.05fr 1fr;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
   gap: clamp(1.5rem, 4vw, 2.5rem);
-  align-items: center;
-  scroll-margin-top: var(--nav-h);
+  align-items: start;
+  padding: clamp(1.1rem, 2.5vw, 2rem);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  background: var(--bg-1);
+  box-shadow: var(--shadow-card);
+  scroll-margin-top: calc(var(--nav-h) + 1.5rem);
 }
 
 .project-chapter-flip {
-  grid-template-columns: 1fr 1.05fr;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
 }
 
 .project-chapter-flip .project-chapter-media {
@@ -158,9 +163,9 @@
 
 .project-chapter-title {
   font-family: var(--face-display);
-  font-variation-settings: 'SOFT' 80, 'WONK' 1;
-  font-style: italic;
-  font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+  font-variation-settings: 'SOFT' 70, 'WONK' 0;
+  font-style: normal;
+  font-size: clamp(1.5rem, 2.7vw, 2.25rem);
   line-height: var(--leading-tight);
   letter-spacing: -0.02em;
   color: var(--text-0);
@@ -898,11 +903,11 @@
   grid-template-columns: minmax(0, 1fr);
   gap: clamp(2rem, 4vw, 3rem);
 }
-@media (min-width: 1100px) {
+@media (min-width: 1280px) {
   .projects-layout {
     /* ADR-021 follow-up: narrowed the rail column from --rail (18rem)
        to 13rem so the chapter content keeps more of the page. */
-    grid-template-columns: minmax(0, 1fr) 13rem;
+    grid-template-columns: minmax(0, 1fr) 10rem;
   }
 }
 
@@ -914,7 +919,7 @@
    itself stays at full color/opacity even when the rail is dimmed, so
    the "where am I" signal isn't lost. */
 .projects-rail { display: none; }
-@media (min-width: 1100px) {
+@media (min-width: 1280px) {
   .projects-rail {
     display: block;
     position: sticky;
@@ -927,7 +932,7 @@
     /* Drop the rail's resting opacity to a whisper — it should read
        as "there if you need it" rather than "look at me". Lifts to
        full on hover/focus-within. */
-    opacity: 0.32;
+    opacity: 1;
     transition: opacity var(--d-med) var(--ease-out);
   }
   .projects-rail:hover,
@@ -1052,39 +1057,41 @@
   .project-chapter-progress-bar { transition: none; }
 }
 
-/* Scrollable story region — caps story height so the prose never
-   outgrows the media column. Mask-fade is small so short stories
-   barely register the bottom fade; long ones get a clear "more below"
-   cue. Thin terracotta scrollbar. */
+/* Full-length prose uses the same reading rhythm as the DDD chapters. */
 .project-chapter .project-story {
-  max-height: 22rem;
-  overflow-y: auto;
-  padding-right: 0.65rem;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    black 0,
-    black calc(100% - 1.4rem),
-    transparent 100%
-  );
-          mask-image: linear-gradient(
-    to bottom,
-    black 0,
-    black calc(100% - 1.4rem),
-    transparent 100%
-  );
-  scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--accent) 40%, transparent) transparent;
+  max-width: 65ch;
+  font-family: var(--face-text);
+  font-size: var(--type-body);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
-.project-chapter .project-story::-webkit-scrollbar { width: 4px; }
-.project-chapter .project-story::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--accent) 40%, transparent);
-  border-radius: 2px;
+.project-chapter .project-story :is(h1,h2,h3,h4) { font-family: var(--face-display); }
+.project-chapter .project-story p { margin-bottom: 1rem; }
+.project-chapter .project-story p:last-child { margin-bottom: 0; }
+.project-chapter-head { padding-bottom: 1rem; border-bottom: 1px solid var(--hair-strong); gap: .6rem; }
+.project-tagline { font-size: var(--type-body); line-height: 1.5; color: var(--text-2); }
+.project-chapter-media { min-width: 0; }
+.project-media-wrap { border: 1px solid var(--hair-strong); padding: .35rem; border-radius: 3px; background: var(--bg-0); }
+.chapter-rule { display: none; }
+.project-chapter-progress { bottom: 0; }
+.projects-header { display: grid; grid-template-columns: minmax(0, 1fr); row-gap: 1.25rem; }
+.projects-eyebrow, .projects-title, .projects-toggle-row { grid-column: 1 / -1; }
+.projects-intro { max-width: 65ch; line-height: 1.6; margin: 0; }
+.projects-intro-rule { display: none; }
+.projects-intro-notes { margin: 0; padding: 1rem 1.25rem; border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; background: var(--bg-1); font-style: normal; color: var(--text-2); }
+.mode-toggle { border-radius: 4px; }
+.mode-toggle-btn { border-radius: 2px; min-height: 44px; }
+.project-link { min-height: 40px; }
+.project-media-carousel-btn { width: 2.75rem; height: 2.75rem; }
+.projects-rail-name { white-space: normal; overflow: visible; }
+.projects-rail-item { padding-block: .55rem; }
+@media (max-width: 900px) {
+  .project-chapter, .project-chapter-flip { grid-template-columns: minmax(0, 1fr); }
+  .project-chapter-flip .project-chapter-media { order: 0; }
+  .project-chapter-flip .project-chapter-text { order: 1; }
 }
-.project-chapter .project-story::-webkit-scrollbar-track {
-  background: transparent;
-}
-@media (max-width: 720px) {
-  .project-chapter .project-story {
-    max-height: 20rem;
-  }
+@media (max-width: 760px) {
+  .projects-header { grid-template-columns: minmax(0, 1fr); row-gap: 1rem; }
+  .projects-intro-notes { padding: 1rem; }
+  .projects-title { margin-bottom: .4rem; }
 }

@@ -4,9 +4,7 @@
     <span>About the notes</span><span class="projects-note-chevron" aria-hidden="true">⌄</span>
   </summary>
   <div class="projects-note-panel">
-    <p>For most of these projects, you can also access sanitized versions of my primarily
-      (if not entirely) AI-generated Obsidian notes. I can use these notes to better
-      understand a project's architecture and as context for AI agents!</p>
+    <p>For many of these projects, you will see an "open notes" section. These are sanitized versions of running notes I kept on my projects with AI. They were used for cross-session editable context for agents that I used, with the intent of also being human readable, so I could understand an architecture better or better understand how something worked.</p>
   </div>
 </details>
 
@@ -14,27 +12,8 @@
   const note = document.querySelector<HTMLDetailsElement>('[data-project-intro-note]');
   const summary = note?.querySelector('summary');
   if (note && summary) {
-    let pinned = false;
-    summary.addEventListener('pointerenter', (event) => {
-      if (event.pointerType === 'mouse') note.open = true;
-    });
-    note.addEventListener('pointerleave', (event) => {
-      if (event.pointerType === 'mouse' && !pinned && !note.contains(document.activeElement)) note.open = false;
-    });
-    summary.addEventListener('click', (event) => {
-      event.preventDefault();
-      pinned = !pinned;
-      note.open = pinned;
-    });
-    note.addEventListener('focusin', () => { note.open = true; });
-    note.addEventListener('focusout', (event) => {
-      if (!pinned && !note.contains(event.relatedTarget as Node | null)) note.open = false;
-    });
     note.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') { pinned = false; note.open = false; }
-    });
-    document.addEventListener('click', (event) => {
-      if (!note.contains(event.target as Node)) { pinned = false; note.open = false; }
+      if (event.key === 'Escape') { note.open = false; summary.focus(); }
     });
   }
 </script>

@@ -20,6 +20,7 @@ import '../styles/photo.css';
 interface Props {
   title?: string;
   description?: string;
+  mainId?: string;
 }
 
 const {
@@ -27,6 +28,7 @@ const {
   description =
     'Computer Science @ SJSU. Aspiring to participate in meaningful ' +
     'applications of Computer Science.',
+  mainId = 'on-me',
 } = Astro.props;
 
 const canonical = Astro.url.href;
@@ -117,7 +119,7 @@ const fontsHref = `${BASE_WITH_SLASH}fonts/fonts.css`;
         (which is z-index: -1 within its section). Spec:
         [[specs/2026-05-18-tree-leaves-folders-design#4.1]]. */}
     <canvas id="page-leaves" class="page-leaves-bg" aria-hidden="true"></canvas>
-    <a class="skip-link" href="#on-me">skip to content</a>
+    <a class="skip-link" href={`#${mainId}`}>skip to content</a>
     <div id="section-live" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
     <slot />
 

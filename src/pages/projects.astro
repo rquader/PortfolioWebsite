@@ -9,6 +9,7 @@ import '../styles/wip-dialog.css';
 import TopNav from '../components/TopNav.astro';
 import MobileTopNav from '../components/MobileTopNav.astro';
 import ProjectChapter from '../components/project/ProjectChapter.astro';
+import ProjectIntroNote from '../components/project/ProjectIntroNote.astro';
 import ProjectModeToggle from '../components/project/ProjectModeToggle.astro';
 import ProjectNotesPopup from '../components/project/ProjectNotesPopup.astro';
 import ProjectsRail from '../components/project/ProjectsRail.astro';
@@ -23,6 +24,8 @@ const allStories = await getCollection('projectStories');
 function slugFor(id: string): string {
   return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
 }
+const chapterNumbers = new Map(projects.filter((project) => slugFor(project.id) !== 'vroomview').map((project, index) => [project.id, index + 1]));
+
 function storySlug(id: string): string {
   return id.endsWith('/story') ? id.slice(0, -'/story'.length) : id;
 }
@@ -42,32 +45,26 @@ for (const s of allStories) {
 <Base
   title="Projects — Rafan Quader"
   description="The things I've built, with the working notes attached."
+  mainId="projects-main"
 >
   <TopNav />
   <MobileTopNav />
-  <main class="projects-page">
+  <main id="projects-main" class="projects-page">
     <header class="projects-header">
-      <span class="projects-eyebrow">essays · in chapters</span>
       <h1 class="projects-title" data-color-letters data-inertial-text>Projects</h1>
 
       {/* Page intro — shared in both modes; toggle only swaps chapter bodies + footer outro */}
       <p class="projects-intro">
-        Working on DDD, learning about Computer Science in school, and scrolling
+        Working on <strong>DDD</strong>, learning about <strong>Computer Science</strong> in school, and scrolling
         LinkedIn helped me gain a better understanding of the industry today and
         its often transactional nature. For me, beyond the impact of DDD, each of
         my projects from an Arabic Dialect Map to a message-only Instagram macOS
-        app, have been developed for a primary purpose for myself especially. You
+        app, have been developed for a <strong>primary purpose for myself especially.</strong> You
         can select <strong>info</strong> for information on each project straight
         and individually. You can select <strong>story</strong> to go through a story
         in the code.
       </p>
-      <div class="projects-intro-rule" aria-hidden="true"></div>
-
-      <p class="projects-intro projects-intro-notes">
-        For most of these projects, you can also access sanitized versions of my primarily
-        (if not entirely) AI-generated Obsidian notes. I can use these notes to better
-        understand a project's architecture and as context for AI agents!
-      </p>
+      <ProjectIntroNote />
 
       {/* Toggle moved here — centered below the intro on its own row, with a
          hairline rule above and below so it reads as a deliberate switch
@@ -95,12 +92,13 @@ for (const s of allStories) {
                   story={story}
                   notesCount={notesCount}
                   index={i}
+                  chapterNumber={chapterNumbers.get(p.id)}
                   isLast={i === projects.length - 1}
                 />
               );
             })}
           </div>
-          <ProjectsRail projects={projects} />
+          <ProjectsRail projects={projects} chapterNumbers={chapterNumbers} />
         </div>
       ) : (
         <p class="projects-empty">

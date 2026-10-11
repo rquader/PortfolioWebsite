@@ -1,30 +1,18 @@
 ---
-// On The Trail — coursework, tools, resume.
-// ADR-021 — coursework items linked to SJSU catalog pages (new tab),
-// styled to be visually identical to plain list items: no underline at
-// rest, hover dotted-underline, focus accent. Resume button switches to
-// the shared .btn-accent utility.
+// On The Trail — coursework, skills, and resume.
 
 const BASE = import.meta.env.BASE_URL;
 const BASE_WITH_SLASH = BASE.endsWith('/') ? BASE : `${BASE}/`;
 const resumeHref = `${BASE_WITH_SLASH}Rafan_Quader_Resume.pdf`;
 
-// SJSU catalog URLs — verbatim from the design handoff's m/data.js
-// (Discrete Math + Intro to Data Structures share coid=44161; if that's
-// a paste error in the source, replace with the canonical Discrete Math
-// course URL next pass.)
-const courses: Array<{ label: string; href: string }> = [
+const completedCourses: Array<{ label: string; href: string }> = [
   {
     label: 'Data Structures & Algorithms',
     href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=42151',
   },
   {
-    label: 'Discrete Math',
+    label: 'Discrete Mathematics',
     href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=44161',
-  },
-  {
-    label: 'Intro to Data Structures',
-    href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=42140',
   },
   {
     label: 'Talking Back to Research: Critical Skills for Leaders',
@@ -32,8 +20,26 @@ const courses: Array<{ label: string; href: string }> = [
   },
 ];
 
-const tools: string[] = ['Java', 'Git', 'Claude Code / Cursor', 'Obsidian'];
+const currentCourses = [
+  { label: 'Introduction to Artificial Intelligence', href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=42159' },
+  { label: 'Introduction to Computer Systems', href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=42150' },
+  { label: 'Linear Algebra I', href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=46030' },
+];
+
+const skillGroups = [
+  { label: 'Languages', items: ['Java', 'Python'] },
+  { label: 'Development Tools', items: ['Git', 'Claude Code', 'Codex', 'Cursor'] },
+  {
+    label: 'Professional Skills',
+    items: [
+      'Software Design & Development',
+      'Presentation & Communication',
+      'Collaborative Work',
+    ],
+  },
+];
 ---
+
 <section
   class="section on-the-trail"
   id="on-the-trail"
@@ -42,91 +48,94 @@ const tools: string[] = ['Java', 'Git', 'Claude Code / Cursor', 'Obsidian'];
   <div class="section-inner">
     <h2 class="section-heading" data-color-letters data-inertial-text>on the trail</h2>
 
-    <div class="trail-groups">
-      <div class="group">
-        <h3>coursework so far</h3>
-        <ul>
-          {courses.map(({ label, href }) => (
-            <li>
-              <a
-                class="trail-link"
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-              >{label}</a>
-            </li>
-          ))}
-        </ul>
+    <div class="trail-panel">
+    <p class="trail-education">
+      B.S. Computer Science <span aria-hidden="true">·</span>
+      San José State University
+    </p>
+
+    <div class="trail-layout">
+      <div class="trail-coursework">
+        <div class="group">
+          <h3>Completed Coursework</h3>
+          <ul>
+            {completedCourses.map(({ label, href }) => (
+              <li>
+                <a
+                  class="trail-link"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >{label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div class="group">
+          <h3>Current Coursework</h3>
+          <ul>
+            {currentCourses.map(({ label, href }) => (
+              <li><a class="trail-link" href={href} target="_blank" rel="noopener noreferrer">{label}</a></li>
+            ))}
+          </ul>
+        </div>
       </div>
 
-      <div class="group">
-        <h3>tools</h3>
-        <ul>
-          {tools.map((t) => <li>{t}</li>)}
-        </ul>
+      <div class="trail-skills">
+        {skillGroups.map(({ label, items }) => (
+          <div class="group skill-group">
+            <h3>{label}</h3>
+            <ul>
+              {items.map((item) => <li>{item}</li>)}
+            </ul>
+          </div>
+        ))}
       </div>
     </div>
 
+    <div class="trail-resume">
     <a class="btn-accent" href={resumeHref} download type="application/pdf">
       <span class="ico" aria-hidden="true">↓</span>
       <span>resume (PDF)</span>
     </a>
+    </div>
+    </div>
   </div>
 </section>
 
 <style>
-  .trail-groups {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-    max-width: 56rem;
-    margin-bottom: 2rem;
-  }
-  .trail-groups h3 {
-    font-family: var(--face-display);
-    font-variation-settings: 'SOFT' 70, 'WONK' 1;
-    font-style: italic;
-    font-size: 1.2rem;
-    margin-bottom: 0.6rem;
-  }
-  .trail-groups ul {
-    list-style: none;
-    padding: 0;
-  }
-  .trail-groups li {
-    padding: 0.45rem 0 0.45rem 1.1rem;
+  .on-the-trail .section-inner { display: grid; gap: 1.4rem; }
+  .on-the-trail .section-heading { margin-bottom: 0; }
+  .trail-panel { min-width: 0; }
+  .trail-education {
+    max-width: none;
+    margin: 0 0 1.25rem;
+    padding: .8rem 1rem;
+    border-left: 2px solid var(--accent-on-the-trail);
+    background: var(--bg-1);
     color: var(--text-1);
     font-size: var(--type-body);
-    border-bottom: 1px solid var(--hair);
-    position: relative;
+    line-height: 1.5;
   }
-  .trail-groups li::before {
-    content: '·';
-    position: absolute;
-    left: 0.15rem;
-    top: 0.45rem;
-    color: var(--accent);
-    font-family: var(--face-mono);
-    font-weight: 500;
-  }
-
-  /* Quietly-linked coursework items — same color/weight as plain text;
-     underline whispers on hover, accent-tinted on focus. */
-  .trail-link {
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition:
-      color var(--d-fast) var(--ease-out),
-      border-color var(--d-fast) var(--ease-out);
-  }
-  .trail-link:hover {
-    color: var(--text-0);
-    border-bottom-color: color-mix(in srgb, var(--accent) 50%, transparent);
-  }
-  .trail-link:focus-visible {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-    outline: none;
+  .trail-layout { display: grid; gap: 1.25rem; }
+  .trail-coursework { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1.25rem, 4vw, 3rem); }
+  .trail-layout .group { min-width: 0; }
+  .trail-layout h3 { font-family: var(--face-display); font-size: clamp(1.1rem, 1.8vw, 1.35rem); margin: 0 0 .5rem; font-weight: 500; }
+  .trail-layout ul { list-style: none; padding: 0; margin: 0; }
+  .trail-coursework li { border-bottom: 1px solid var(--hair); color: var(--text-1); line-height: 1.4; }
+  .trail-link { display: block; padding: .55rem 0; min-height: 44px; color: inherit; text-decoration-color: var(--hair-strong); text-underline-offset: .2em; }
+  .trail-link:hover { color: var(--accent); text-decoration-color: currentColor; }
+  .trail-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .trail-skills { border-top: 1px solid var(--hair-strong); border-bottom: 1px solid var(--hair-strong); }
+  .skill-group { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 1rem; align-items: baseline; padding: .65rem 0; }
+  .skill-group + .skill-group { border-top: 1px solid var(--hair); }
+  .trail-skills h3 { margin: 0; font-size: 1.05rem; }
+  .trail-skills ul { display: flex; flex-wrap: wrap; gap: .35rem 1.1rem; }
+  .trail-skills li { color: var(--text-1); font-size: var(--type-body); line-height: 1.5; }
+  .trail-resume { display: flex; justify-content: center; padding-top: 1.25rem; }
+  @media (max-width: 760px) {
+    .trail-coursework { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+    .skill-group { grid-template-columns: minmax(0, 1fr); gap: .4rem; }
   }
 </style>

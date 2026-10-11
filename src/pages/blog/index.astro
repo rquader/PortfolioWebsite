@@ -1,0 +1,47 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import BlogTitle from '../../components/BlogTitle.astro';
+import TopNav from '../../components/TopNav.astro';
+import MobileTopNav from '../../components/MobileTopNav.astro';
+import { visiblePosts, formatPostDate } from '../../lib/blog';
+import '../../styles/blog.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const posts = visiblePosts(await getCollection('blog'), import.meta.env.DEV);
+const groups = [
+  { title: 'Articles', posts: posts.filter((post) => post.data.status === 'published') },
+  { title: 'Coming soon (hopefully)', posts: posts.filter((post) => post.data.status === 'coming-soon') },
+  { title: 'Drafts · local preview only', posts: posts.filter((post) => post.data.status === 'draft') },
+];
+---
+<Base title="Blog — Rafan Quader" description="Writing by Rafan Quader on software, research, and learning through the work." mainId="blog-main">
+  <TopNav />
+  <MobileTopNav />
+  <main id="blog-main" class="blog-page">
+    <header class="blog-header">
+      <h1>Blog</h1>
+    </header>
+    {groups.map((group) => group.posts.length > 0 && (
+      <section class="blog-group" aria-label={group.title}>
+        <h2>{group.title}</h2>
+        <div class="blog-list">
+          {group.posts.map((post) => (
+            <article class="blog-entry">
+              <div class="blog-meta">
+                {post.data.publishedAt && <time datetime={post.data.publishedAt}>{formatPostDate(post.data.publishedAt)}</time>}
+                {post.data.status === 'coming-soon' && <span>keep posted, hope to start soon</span>}
+                {post.data.status === 'draft' && <span>Draft — not published</span>}
+              </div>
+              <div>
+                <h3><a href={`${base}blog/${post.id}/`}><BlogTitle title={post.data.title} aside={post.data.titleAside} /></a></h3>
+                {post.data.description && <p>{post.data.description}</p>}
+                {post.data.tags.length > 0 && <ul class="blog-tags" aria-label="Topics">{post.data.tags.map((tag) => <li>{tag}</li>)}</ul>}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+  </main>
+</Base>

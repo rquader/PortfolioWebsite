@@ -42,7 +42,8 @@ export function buildLeaves(
 
   for (let i = 0; i < branches.length; i++) {
     const b = branches[i] as Branch;
-    if (b.depth < consts.LEAF_DEPTH_MIN) continue;
+    // Keep a canopy on actual tips even when length pruning stops before the requested depth.
+    if (b.depth < consts.LEAF_DEPTH_MIN && !b.isTerminal) continue;
     out.push({
       branchIdx: i,
       size: rng.uniform(consts.LEAF_SIZE_MIN, consts.LEAF_SIZE_MAX),

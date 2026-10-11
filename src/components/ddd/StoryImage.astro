@@ -1,0 +1,27 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  image: ImageMetadata;
+  alt: string;
+  caption: string;
+  width?: number;
+  className?: string;
+}
+
+const { image, alt, caption, width = 900, className = '' } = Astro.props;
+---
+<figure class={`ddd-figure ${className}`}>
+  <button
+    class="ddd-image-button"
+    type="button"
+    aria-label={`Enlarge image: ${alt}`}
+    data-lightbox-trigger={image.src}
+    data-lightbox-alt={alt}
+  >
+    <Image src={image} alt={alt} width={Math.min(width, image.width)} loading="lazy" decoding="async" />
+    <span class="ddd-enlarge" aria-hidden="true">view larger ↗</span>
+  </button>
+  <figcaption>{caption}</figcaption>
+</figure>

@@ -132,6 +132,8 @@ export function buildBranches(rng: RNG, consts: TreeConstants = TREE_CONST): Bra
         (1 + rng.uniform(-consts.LENGTH_JITTER, consts.LENGTH_JITTER));
       recurse(thisIdx, lC, aC, depth + 1);
     }
+    // Short children can be pruned before MAX_DEPTH. Their parent is still a real canopy tip.
+    if (branches.length === thisIdx + 1) branches[thisIdx]!.isTerminal = true;
   }
 
   recurse(-1, consts.TRUNK_LENGTH, consts.INITIAL_ANGLE, 0);

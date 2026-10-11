@@ -2,13 +2,12 @@
 /**
  * MobileTopNav.astro
  *
- * Phone shell top-nav: brand + menu icon + slide-in drawer.
+ * Phone shell top-nav: brand, profile links, menu icon, and slide-in drawer.
  * Visible only at <=720px (gated by `data-shell="mobile"` on the
  * wrapper element). On desktop, the existing TopNav.astro renders.
  *
  * The drawer holds the same five home-page section anchors as the
- * desktop nav, plus a projects route link, theme toggle, and github
- * pill. Hash routes work identically across shells because the
+ * desktop nav, plus a projects route link and theme toggle. Hash routes work identically across shells because the
  * underlying section IDs are unchanged (#threshold, #on-me, etc.).
  *
  * Spec: [[decisions/ADR-021-desktop-overhaul-and-dual-shell-mobile]];
@@ -22,9 +21,13 @@ const BASE_NO_SLASH = BASE_WITH_SLASH.replace(/\/$/, '');
 
 const projectsPath = `${BASE_NO_SLASH}/projects`;
 const onProjects = pathname === projectsPath || pathname.startsWith(`${projectsPath}/`);
+const blogPath = `${BASE_NO_SLASH}/blog`;
+const onBlog = pathname === blogPath || pathname.startsWith(`${blogPath}/`);
+const onHome = pathname === BASE_NO_SLASH || pathname === BASE_WITH_SLASH;
+const currentRoute = onProjects ? 'projects' : onBlog ? 'blog' : null;
 
 const withBase = (p: string) => `${BASE_WITH_SLASH}${p.replace(/^\//, '')}`;
-const homeHref = onProjects ? `${BASE_WITH_SLASH}#threshold` : '#threshold';
+const homeHref = !onHome ? `${BASE_WITH_SLASH}#threshold` : '#threshold';
 
 type DrawerLink = {
   slug: string;
@@ -34,11 +37,11 @@ type DrawerLink = {
 };
 
 const drawerLinks: DrawerLink[] = [
-  { slug: 'on-me', label: 'on me', href: onProjects ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
-  { slug: 'on-the-work', label: 'on the work', href: onProjects ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
+  { slug: 'on-me', label: 'about', href: !onHome ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
+  { slug: 'on-the-work', label: 'research', href: !onHome ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
   { slug: 'projects', label: 'projects', href: withBase('/projects/'), route: true },
-  { slug: 'on-the-trail', label: 'on the trail', href: onProjects ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
-  { slug: 'coda', label: 'on the web', href: onProjects ? `${BASE_WITH_SLASH}#coda` : '#coda' },
+  { slug: 'blog', label: 'blog', href: withBase('/blog/'), route: true },
+  { slug: 'on-the-trail', label: 'coursework', href: !onHome ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
 ];
 ---
 <div class="scroll-progress" aria-hidden="true" data-shell="mobile"></div>
@@ -53,10 +56,30 @@ const drawerLinks: DrawerLink[] = [
     data-nav-link="threshold"
     aria-label="home"
   >rq</a>
-  <span class="mobile-top-nav-route" aria-hidden="true">
-    {onProjects ? 'projects' : ''}
-  </span>
+
   <div class="mobile-top-nav-actions">
+    <div class="mobile-top-nav-profile-links">
+      <a
+        class="mobile-top-nav-profile-link"
+        href="https://github.com/rquader"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        github ↗
+      </a>
+      <a
+        class="mobile-top-nav-profile-link"
+        href="https://www.linkedin.com/in/rafan-quader/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >linkedin ↗</a>
+      <a
+        class="mobile-top-nav-profile-link"
+        href={withBase('/Rafan_Quader_Resume.pdf')}
+        target="_blank"
+        rel="noopener noreferrer"
+      >resume ↗</a>
+    </div>
     <button
       class="mobile-top-nav-iconbtn"
       type="button"
@@ -101,12 +124,12 @@ const drawerLinks: DrawerLink[] = [
       <a
         class:list={[
           'mobile-drawer-link',
-          { 'is-active': route && onProjects },
+          { 'is-active': route && slug === currentRoute },
         ]}
         href={href}
         data-nav-link={slug}
         data-drawer-link
-        {...route && onProjects ? { 'aria-current': 'page' } : {}}
+        {...route && slug === currentRoute ? { 'aria-current': 'page' } : {}}
       >
         <span>{label}</span>
         {route && <span class="mobile-drawer-link-arrow" aria-hidden="true">↗</span>}
@@ -132,14 +155,6 @@ const drawerLinks: DrawerLink[] = [
         >dark</button>
       </div>
     </div>
-    <a
-      class="mobile-drawer-github"
-      href="https://github.com/rquader"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      github ↗
-    </a>
   </div>
 </aside>
 
@@ -149,7 +164,7 @@ const drawerLinks: DrawerLink[] = [
     top: 0; left: 0; right: 0;
     height: var(--nav-h);
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     align-items: center;
     padding: 0 var(--gutter);
     z-index: 50;
@@ -177,17 +192,11 @@ const drawerLinks: DrawerLink[] = [
     font-weight: 500;
   }
 
-  .mobile-top-nav-route {
-    justify-self: center;
-    font-family: var(--face-mono);
-    font-size: 0.74rem;
-    letter-spacing: var(--tracking-eyebrow);
-    color: var(--text-2);
-    text-transform: lowercase;
-  }
-
   .mobile-top-nav-actions {
     justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
   }
   .mobile-top-nav-iconbtn {
     width: var(--tap-min);
@@ -369,27 +378,34 @@ const drawerLinks: DrawerLink[] = [
     color: var(--bg-0);
   }
 
-  .mobile-drawer-github {
-    align-self: flex-start;
-    display: inline-flex;
+  .mobile-top-nav-profile-links {
+    display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.5rem 0.9rem;
-    background: var(--accent);
-    color: var(--bg-0);
-    border-radius: 4px;
+    gap: 0.35rem;
+  }
+  .mobile-top-nav-profile-link {
     font-family: var(--face-mono);
-    font-size: 0.7rem;
+    font-size: 0.62rem;
     letter-spacing: 0.04em;
     text-transform: lowercase;
+    color: var(--bg-0);
+    background: var(--accent);
     text-decoration: none;
-    transition: transform var(--d-fast) var(--ease-out), background var(--d-fast) var(--ease-out);
+    padding: 0.35rem 0.65rem;
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: transform 0.15s ease, background 0.15s ease;
   }
-  .mobile-drawer-github:hover,
-  .mobile-drawer-github:focus-visible {
+  .mobile-top-nav-profile-link:hover,
+  .mobile-top-nav-profile-link:focus-visible {
     transform: translateY(-1px);
     background: color-mix(in srgb, var(--accent) 92%, var(--text-0));
     outline: none;
+  }
+  @media (max-width: 380px) {
+    .mobile-top-nav-profile-link { padding-inline: 0.4rem; }
+    .mobile-top-nav-actions { gap: 0.15rem; }
+    .mobile-top-nav-profile-links { gap: 0.25rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {

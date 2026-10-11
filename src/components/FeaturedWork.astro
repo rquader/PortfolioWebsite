@@ -1,0 +1,113 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import dropbox from '../assets/ddd/DDD_Dropbox_1.png';
+import vroomview from '../content/projects/vroomview/images/vroomview_screenshot.png';
+import crossword from '../content/projects/web-crossword-generator/images/web_crossword_generator_photo.jpg';
+import arabicMap from '../content/projects/arabic-dialect-map/images/arabic_dialect_map_photo.png';
+import adhkarCounter from '../content/projects/adhkar-counter/images/adhkar_counter_photo.png';
+import legendaryUiUx from '../content/projects/legendary-ui-ux/images/legendary_ui_ux_demo.poster.jpg';
+import instaDm from '../content/projects/insta-dm/images/instagram_demo_real.poster.jpg';
+import manimWallpapers from '../content/projects/manim-wallpapers/images/05_recursive_tree_v2.poster.jpg';
+import portfolioWebsite from '../content/projects/portfolio-website/images/portfolio_website_demo.poster.jpg';
+import '../styles/featured-work.css';
+
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+const projects = await getCollection('projects');
+const stories = await getCollection('projectStories');
+const vroom = projects.find(project => project.id === 'vroomview/_index')!;
+const cross = projects.find(project => project.id === 'web-crossword-generator/_index')!;
+// Each shelf caption is copied verbatim from its project's Info or Story copy.
+const projectExcerpts = {
+  // src/content/projects/vroomview/_index.md
+  vroomview: 'VroomView is a social media app where users can share car concepts, new configurations, etc. then comment or hold discussions.',
+  // src/content/projects/web-crossword-generator/story.md
+  'web-crossword-generator': 'Web Crossword Generator is now a web-app meant to be used to generate crosswords or word searches, print them!',
+  // src/content/projects/arabic-dialect-map/_index.md
+  'arabic-dialect-map': 'Arabic Dialect Map is a clean application that maps how Arabic is connected.',
+  // src/content/projects/adhkar-counter/story.md
+  'adhkar-counter': 'I wanted to put together this little Adhkar Counter app to have a little web-app on my laptop to persistently track as I did Adkhar.',
+  // src/content/projects/legendary-ui-ux/_index.md
+  'legendary-ui-ux': 'The product of Claude, a little bit of Cursor, and back and forth with me, a website that is simply beautiful, clean, and feature-filled.',
+  // src/content/projects/insta-dm/_index.md
+  'insta-dm': 'I developed InstaDM, a light-weight Swift macOS application, that will allow you access Instagram messages while blocking the rest of the app.',
+  // src/content/projects/manim-wallpapers/_index.md
+  'manim-wallpapers': 'Manim Wallpapers is basically an effort of utilizing the Manim library with Claude Code to see if it could put together high-quality animated outputs which could serve as laptop wallpapers.',
+  // src/content/projects/portfolio-website/story.md
+  'portfolio-website': 'Portfolio Website is put together in multiple steps, taking from the projects before.',
+} as const;
+const storyExcerpts = new Set(['web-crossword-generator', 'adhkar-counter', 'portfolio-website']);
+// Fail the build if an excerpt drifts away from its authored description.
+for (const [slug, excerpt] of Object.entries(projectExcerpts)) {
+  const source = storyExcerpts.has(slug)
+    ? stories.find(story => story.id === `${slug}/story`)
+    : projects.find(project => project.id === `${slug}/_index`);
+  const body = (source?.body ?? '').replace(/\*\*/g, '');
+  if (!body.includes(excerpt)) throw new Error(`Featured excerpt must match authored project text: ${slug}`);
+}
+const remainingProjects = [
+  { slug: 'arabic-dialect-map', image: arabicMap, alt: 'Arabic dialect map arranged around Modern Standard Arabic' },
+  { slug: 'adhkar-counter', image: adhkarCounter, alt: 'Adhkar Counter app interface' },
+  { slug: 'legendary-ui-ux', image: legendaryUiUx, alt: 'Preview of the Legendary UI/UX project' },
+  { slug: 'insta-dm', image: instaDm, alt: 'Preview of the InstaDM messaging app' },
+  { slug: 'manim-wallpapers', image: manimWallpapers, alt: 'Recursive tree wallpaper made with Manim' },
+  { slug: 'portfolio-website', image: portfolioWebsite, alt: 'Preview of this portfolio website' },
+];
+---
+<section class="featured-work" aria-labelledby="featured-work-title" data-featured-work>
+  <div class="featured-heading">
+    <h2 id="featured-work-title">some of my work thus far</h2>
+  </div>
+  <div class="featured-viewport" id="featured-previews" tabindex="0" aria-label="Featured work previews" data-featured-viewport>
+    <a class="featured-card featured-ddd" href="#on-the-work" data-featured-card>
+      <div class="featured-ddd-body">
+        <div class="featured-ddd-title">
+          <span class="featured-monogram" aria-hidden="true">DDD</span>
+          <h3>Disconnected<br />Data Distribution</h3>
+          <span class="featured-destination">research <span aria-hidden="true">↗</span></span>
+        </div>
+        <Image src={dropbox} alt="DDD Dropbox prototype status screen" width={212} class="featured-phone" />
+      </div>
+      <p>Working on DDD has been one of my most formative experiences as a developing software engineer.</p>
+    </a>
+    <a class="featured-card featured-vroom" href={`${base}projects/?mode=info#vroomview`} data-featured-card>
+      <div class="featured-screen"><Image src={vroomview} alt="VroomView community page with car concepts" width={720} /></div>
+      <div class="featured-caption">
+        <h3>{vroom.data.title}<span aria-hidden="true">↗</span></h3>
+        <p>{projectExcerpts.vroomview}</p>
+      </div>
+    </a>
+    <a class="featured-card featured-crossword" href={`${base}projects/?mode=info#web-crossword-generator`} data-featured-card>
+      <div class="featured-screen"><Image src={crossword} alt="A generated crossword alongside its word list" width={600} /></div>
+      <div class="featured-caption">
+        <h3>{cross.data.title}<span aria-hidden="true">↗</span></h3>
+        <p>{projectExcerpts['web-crossword-generator']}</p>
+      </div>
+    </a>
+    {remainingProjects.map(({ slug, image, alt }) => {
+      const project = projects.find(entry => entry.id === `${slug}/_index`)!;
+      return (
+        <a class="featured-card featured-project" href={`${base}projects/?mode=info#${slug}`} data-featured-card>
+          <div class="featured-screen"><Image src={image} alt={alt} width={720} loading="lazy" /></div>
+          <div class="featured-caption">
+            <h3>{project.data.title}<span aria-hidden="true">↗</span></h3>
+            <p>{projectExcerpts[slug as keyof typeof projectExcerpts]}</p>
+          </div>
+        </a>
+      );
+    })}
+  </div>
+  <div class="featured-controls" data-featured-controls hidden>
+    <button type="button" data-featured-prev aria-label="Previous featured project" aria-controls="featured-previews">←</button>
+    <label class="featured-scrubber">
+      <span class="visually-hidden">Explore featured work</span>
+      <input type="range" min="0" max="1000" value="0" step="10" aria-controls="featured-previews" data-featured-range />
+    </label>
+    <button type="button" data-featured-next aria-label="Next featured project" aria-controls="featured-previews">→</button>
+  </div>
+</section>
+
+<script>
+  import { initFeaturedWork } from '../lib/primitives/featured-work';
+  initFeaturedWork();
+</script>

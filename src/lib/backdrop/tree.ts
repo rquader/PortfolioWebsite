@@ -24,6 +24,7 @@ import { isReducedMotion } from '../reduced-motion';
 import { FOREST, currentSepiaPalette, type Palette } from './palettes';
 import { mulberry32 } from './rng';
 import { THEME_EVENT } from '../theme-toggle';
+import type { TreeLeafSource } from './tree-atmosphere';
 import {
   TREE_CONST,
   buildBranches,
@@ -69,6 +70,8 @@ export interface TreeOptions {
   ariaHidden?: boolean;
   /** Override any subset of the tree constants (used by live-param UI). */
   overrideConst?: Partial<TreeConstants>;
+  /** Publish up to 64 terminal canopy positions in document CSS pixels. */
+  onLeafSources?: (points: TreeLeafSource[]) => void;
 }
 
 export interface TreeHandle {
@@ -141,11 +144,18 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
   let leaves: LeafSpec[] = [];
   let particles: ParticleSpec[] = [];
   let frame: ResolvedFrame = makeResolvedFrame(0);
+  let sourceLeafIndices: number[] = [];
+  let lastSourceEmission = -Infinity;
 
   function rebuildState(): void {
     const rng = mulberry32(seed);
     branches = buildBranches(rng, consts);
     leaves = buildLeaves(rng, branches, palette, consts);
+    const terminalLeaves = leaves.filter((leaf) => branches[leaf.branchIdx]?.isTerminal);
+    const sourceCount = Math.min(64, terminalLeaves.length);
+    sourceLeafIndices = Array.from({ length: sourceCount }, (_, i) =>
+      terminalLeaves[Math.floor(i * terminalLeaves.length / sourceCount)]!.branchIdx,
+    );
     const frameWidth = cssH > 0 ? (cssW / cssH) * frameHeightUnits : frameHeightUnits;
     particles = buildParticles(rng, frameWidth, numParticles);
     frame = makeResolvedFrame(branches.length);
@@ -166,7 +176,21 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
     map = makeCanvasMap(cssW, cssH, frameHeightUnits);
   }
 
-  function draw(tSeconds: number): void {
+  function publishLeafSources(force: boolean): void {
+    if (!opts.onLeafSources) return;
+    const now = performance.now();
+    if (!force && now - lastSourceEmission < 250) return;
+    lastSourceEmission = now;
+    const rect = canvas.getBoundingClientRect();
+    const left = rect.left + window.scrollX;
+    const top = rect.top + window.scrollY;
+    opts.onLeafSources(sourceLeafIndices.map((i) => ({
+      x: left + map.toX(frame.ends[i * 2] as number),
+      y: top + map.toY(frame.ends[i * 2 + 1] as number),
+    })));
+  }
+
+  function draw(tSeconds: number, forceSources = true): void {
     if (cssW < 2 || cssH < 2) return;
     resolveTree(branches, tSeconds, frame, swayScale, consts);
     const resolved = resolveParticles(particles, tSeconds, frameHeightUnits, consts);
@@ -176,6 +200,7 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
     drawParticles(ctx!, resolved, map, palette, opacity);
     drawBranches(ctx!, branches, frame, map, palette, opacity, consts);
     drawLeaves(ctx!, leaves, frame, map, opacity);
+    publishLeafSources(forceSources);
   }
 
   // Initial setup
@@ -219,7 +244,7 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
   const unregister = registerTick((_dt, t) => {
     if (isReducedMotion()) return;
     if (!canvasVisible) return;
-    draw(t / 1000);
+    draw(t / 1000, false);
   });
 
   // Theme swap → re-resolve palette + rebuild leaf colors (which were
@@ -285,6 +310,7 @@ export function mountTree(canvas: HTMLCanvasElement, opts: TreeOptions = {}): Tr
       ro?.disconnect();
       visibilityObserver?.disconnect();
       window.removeEventListener(THEME_EVENT, onThemeChange);
+      opts.onLeafSources?.([]);
     },
   };
 }

@@ -1,6 +1,5 @@
 ---
 title: Portfolio Website
-tagline: Rafan Quader's Portfolio Website
 sort_order: 70
 status: active
 wip: true

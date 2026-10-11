@@ -26,10 +26,11 @@ interface Props {
   story?: CollectionEntry<'projectStories'> | null;
   notesCount: number;
   index: number;
+  chapterNumber?: number;
   isLast?: boolean;
 }
 
-const { project, story = null, notesCount, index, isLast = false } = Astro.props;
+const { project, story = null, notesCount, index, chapterNumber, isLast = false } = Astro.props;
 const { Content: InfoContent } = await render(project);
 const StoryContent = story ? (await render(story)).Content : null;
 const showNotes = notesCount > 0 && project.data.notes !== false;
@@ -68,14 +69,13 @@ const flipped = index % 2 === 1;
     <header class="project-chapter-head">
       {/* Eyebrow: NN chapter · status. ADR-021 — visible in story mode
           only; CSS hides it when :root[data-page-mode="info"]. */}
-      <span class="project-chapter-eyebrow" aria-hidden="true">
-        <span class="project-chapter-num">{String(index + 1).padStart(2, '0')}</span>
+      {chapterNumber !== undefined && <span class="project-chapter-eyebrow" aria-hidden="true">
+        <span class="project-chapter-num">{String(chapterNumber).padStart(2, '0')}</span>
         <span>chapter · {project.data.status}</span>
-      </span>
+      </span>}
       <h2 class="project-chapter-title" data-color-letters data-inertial-text>
         {project.data.title}
       </h2>
-      <p class="project-tagline">{project.data.tagline}</p>
     </header>
 
     <div class="project-body">

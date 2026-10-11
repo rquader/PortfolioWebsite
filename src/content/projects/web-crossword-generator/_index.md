@@ -1,6 +1,5 @@
 ---
 title: Web Crossword Generator
-tagline: crosswords and word searches from your own word lists
 sort_order: 10
 status: active
 wip: true

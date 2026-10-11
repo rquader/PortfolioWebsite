@@ -1,0 +1,120 @@
+---
+// The original recursive tree, fitted to the hero. Its canopy feeds the falling leaves.
+---
+<div class="tree-study" data-tree-study>
+  <canvas class="tree-study-canvas" width="240" height="170" aria-hidden="true"></canvas>
+  <details class="tree-editor">
+  <summary aria-label="Adjust the tree and falling leaves">
+  </summary>
+  <div class="tree-study-controls">
+    <p>tree &amp; leaves</p>
+    <label>depth <input type="range" min="5" max="9" value="8" data-tree-setting="depth" /><output>8</output></label>
+    <label>spread <input type="range" min="18" max="38" value="27" data-tree-setting="spread" /><output>27°</output></label>
+    <label>taper <input type="range" min="60" max="76" value="74" data-tree-setting="taper" /><output>74%</output></label>
+    <button type="button" data-tree-reset>reset</button>
+  </div>
+  </details>
+</div>
+
+<script>
+  import { mountTree } from '../lib/backdrop/tree';
+  import { TREE_ATMOSPHERE_EVENT, TREE_LEAF_SOURCES_EVENT } from '../lib/backdrop/tree-atmosphere';
+
+  const study = document.querySelector<HTMLElement>('[data-tree-study]');
+  const canvas = study?.querySelector<HTMLCanvasElement>('canvas');
+  if (study && canvas) {
+    const intro = document.querySelector<HTMLElement>('.ddd-intro');
+    const tree = mountTree(canvas, {
+      palette: 'sepia', opacity: .35, swayScale: .6, numParticles: 0,
+      frameHeightUnits: 8,
+      // Preserve the original seeded branches, trunk, canopy, and gentle sway.
+      onLeafSources(points) {
+        const rect = intro?.getBoundingClientRect();
+        window.dispatchEvent(new CustomEvent(TREE_LEAF_SOURCES_EVENT, { detail: {
+          points,
+          fadeStartY: rect ? rect.top + window.scrollY : undefined,
+          fadeEndY: rect ? rect.bottom + window.scrollY + 100 : undefined,
+        } }));
+      },
+    });
+    const backdrop = document.getElementById('page-leaves');
+    let backdropFrame = 0;
+    const fadeBackdrop = () => {
+      backdropFrame = 0;
+      const remaining = intro ? intro.getBoundingClientRect().bottom / window.innerHeight : 1;
+      backdrop?.style.setProperty('--leaves-visibility', String(.5 * Math.max(.025, Math.min(1, remaining))));
+      backdrop?.style.setProperty('--leaves-top-fade', `${Math.max(0, (window.innerWidth <= 720 ? 60 : 80) - window.scrollY)}px`);
+    };
+    const scheduleFade = () => { if (!backdropFrame) backdropFrame = requestAnimationFrame(fadeBackdrop); };
+    window.addEventListener('scroll', scheduleFade, { passive: true });
+    window.addEventListener('resize', scheduleFade, { passive: true });
+    fadeBackdrop();
+    const inputs = [...study.querySelectorAll<HTMLInputElement>('[data-tree-setting]')];
+    const setting = (name: string) => Number(inputs.find(input => input.dataset.treeSetting === name)!.value);
+    const fitTree = () => {
+      const bounds = tree.getExtent();
+      const aspect = canvas.clientWidth / Math.max(1, canvas.clientHeight);
+      const size = Math.max(8, 2 * Math.max(Math.abs(bounds.minX), Math.abs(bounds.maxX)) / aspect + 1, 2 * Math.max(Math.abs(bounds.minY), Math.abs(bounds.maxY)) + .5);
+      if (Math.abs(size - tree.getFrameHeightUnits()) > .05) tree.setFrameHeightUnits(size);
+    };
+    const treeSize = new ResizeObserver(fitTree);
+    treeSize.observe(canvas);
+    const apply = () => {
+      const depth = setting('depth');
+      const spread = setting('spread');
+      const taper = setting('taper');
+      tree.setOverrides({ MAX_DEPTH: depth, LEAF_DEPTH_MIN: depth, BRANCH_ANGLE: spread * Math.PI / 180, LENGTH_RATIO: taper / 100 });
+      fitTree();
+      for (const input of inputs) {
+        const output = input.nextElementSibling;
+        if (output) output.textContent = input.value + (input.dataset.treeSetting === 'spread' ? '°' : input.dataset.treeSetting === 'taper' ? '%' : '');
+      }
+      window.dispatchEvent(new CustomEvent(TREE_ATMOSPHERE_EVENT, { detail: { depth, spread, taper } }));
+    };
+    for (const input of inputs) input.addEventListener('input', apply);
+    study.querySelector('[data-tree-reset]')?.addEventListener('click', () => {
+      for (const input of inputs) input.value = input.defaultValue;
+      apply();
+    });
+    study.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') { study.querySelector('details')!.open = false; study.querySelector('summary')?.focus(); }
+    });
+    // The shared page backdrop mounts from Base; wait until all module scripts ran.
+    if (document.readyState !== 'complete') document.addEventListener('DOMContentLoaded', apply, { once: true });
+    else apply();
+    document.addEventListener('astro:before-swap', () => { tree.stop(); treeSize.disconnect(); cancelAnimationFrame(backdropFrame); window.removeEventListener('scroll', scheduleFade); window.removeEventListener('resize', scheduleFade); }, { once: true });
+  }
+</script>
+
+<style>
+  .tree-study { position: static; }
+  .tree-study-canvas, summary { position: absolute; right: -8rem; top: -5rem; width: min(72vw, 1060px); height: 600px; }
+  .tree-study-canvas { z-index: 1; pointer-events: none; width: min(72vw, 1060px) !important; height: 600px !important; mask-image: linear-gradient(to bottom, transparent, black 24%, black 63%, transparent 96%); }
+  .tree-editor { position: static; }
+  summary { z-index: 1; list-style: none; cursor: pointer; border-radius: 4px; }
+  summary:focus-visible { outline: none; }
+  summary:focus-visible::after { content: "tree controls"; position: absolute; bottom: 14rem; right: 11rem; padding: .3rem .5rem; background: var(--bg-0); color: var(--text-0); font: .8rem var(--face-text); outline: 2px solid var(--accent); outline-offset: 3px; }
+  summary::-webkit-details-marker { display: none; }
+  .tree-study-controls { position: relative; z-index: 2; display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)) auto; align-items: center; gap: 1.5rem; margin: 10rem var(--gutter) 1.5rem; padding: .8rem 1rem; background: var(--bg-0); border-block: 1px solid var(--hair-strong); }
+  .tree-study-controls p { font-size: .95rem; margin: 0; color: var(--text-0); }
+  label { display: grid; grid-template-columns: 3rem minmax(0, 1fr) 2.1rem; gap: .5rem; align-items: center; font-size: .8rem; color: var(--text-1); min-height: 44px; }
+  input { width: 100%; min-width: 0; accent-color: var(--accent); cursor: pointer; }
+  output { text-align: right; font-variant-numeric: tabular-nums; }
+  button { padding: .35rem .6rem; border: 1px solid var(--hair-strong); border-radius: 3px; background: transparent; font-size: .8rem; cursor: pointer; }
+  @media (max-width: 1000px) {
+    .tree-study-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .25rem 1rem; }
+    .tree-study-controls p { grid-column: 1 / -1; }
+    button { grid-column: 3; justify-self: end; }
+    label { grid-template-columns: auto 1fr auto; gap: .3rem; }
+  }
+  @media (max-width: 720px) {
+    .tree-study-canvas, summary { top: -2.5rem; right: -8rem; width: 460px; height: 360px; }
+    .tree-study-canvas { width: 460px !important; height: 360px !important; opacity: .65; }
+    summary:focus-visible::after { bottom: 8rem; right: 9.5rem; }
+    .tree-study-controls { grid-template-columns: 1fr auto; margin-top: 5rem; padding: .6rem 0; }
+    .tree-study-controls p { grid-column: 1; }
+    label { grid-column: 1 / -1; grid-template-columns: 3.4rem 1fr 2.1rem; font-size: .9rem; }
+    button { grid-column: 2; grid-row: 1; }
+  }
+  @media print { .tree-study { display: none; } }
+</style>

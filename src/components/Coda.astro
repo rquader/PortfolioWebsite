@@ -13,10 +13,8 @@ const links = [
 ---
 <section class="section coda" id="coda" data-section-id="coda">
   <div class="section-inner">
-    <p class="tagline tagline-primary">Computer Science @ SJSU</p>
-    <p class="tagline tagline-secondary">
-      Research · Claude Code · Education
-    </p>
+    <p class="tagline tagline-primary">Computer Science @ San José State University</p>
+
     <div class="coda-links">
       {
         links.map(({ href, label, icon }) => (
@@ -41,26 +39,40 @@ const links = [
     padding-bottom: clamp(6rem, 12vh, 10rem);
   }
 
+  .coda .section-inner { display: flex; align-items: center; justify-content: space-between; gap: 1.25rem 2rem; flex-wrap: wrap; }
+
   .coda .tagline-primary {
     font-family: var(--face-display);
+    font-weight: 500;
     font-variation-settings: 'SOFT' 70, 'WONK' 0;
     font-size: var(--type-body);
     line-height: var(--leading-body);
     max-width: var(--max-content);
     color: var(--text-0);
-    margin: 0 0 0.3rem;
-  }
-
-  .coda .tagline-secondary {
-    font-family: var(--face-text);
-    font-size: var(--type-small);
-    color: var(--text-2);
-    margin: 0 0 1.3rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
   }
 
   .coda-links {
     display: flex;
     flex-wrap: wrap;
     gap: 0.45rem;
+    margin-top: 0;
   }
+  .coda-links .chip {
+    background: var(--accent);
+    color: var(--bg-0);
+    border-color: var(--accent);
+    border-radius: 4px;
+    font-weight: 400;
+    padding: .5rem .75rem;
+    min-height: 44px;
+  }
+  .coda-links .chip:hover, .coda-links .chip:focus-visible {
+    background: color-mix(in srgb, var(--accent) 92%, var(--text-0));
+    color: var(--bg-0);
+  }
+  .coda-links .chip:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 </style>

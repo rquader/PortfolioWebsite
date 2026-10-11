@@ -1,6 +1,5 @@
 ---
 title: InstaDM
-tagline: Instagram messages without the feed
 sort_order: 50
 status: active
 wip: true

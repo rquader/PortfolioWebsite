@@ -7,7 +7,8 @@
 .blog-header h1 {
   font-family: var(--face-display);
   font-size: var(--type-h1);
-  font-style: italic;
+  font-style: normal;
+  font-variation-settings: 'SOFT' 70, 'WONK' 0;
   margin-bottom: 1rem;
 }
 .blog-header p, .blog-empty { color: var(--text-2); }

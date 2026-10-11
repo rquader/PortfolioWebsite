@@ -96,7 +96,7 @@ const hasPhoto = fs.existsSync(photoDiskPath);
 
   .on-me .bio {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.5rem clamp(1.6rem, 4vw, 3rem);
     padding: clamp(1.25rem, 2.7vw, 2rem);
     border-left: 2px solid var(--accent-on-me);
@@ -112,25 +112,23 @@ const hasPhoto = fs.existsSync(photoDiskPath);
     color: var(--text-2);
   }
   .bio-education span { margin-inline: .35rem; }
-  @media (max-width: 760px) {
-    .on-me .bio { grid-template-columns: minmax(0, 1fr); }
-  }
+  .on-me .bio > p:not(.bio-education) { max-width: 68ch; }
 
   .on-me .bio p {
     margin: 0;
     font-family: var(--face-text);
-    font-size: clamp(1.05rem, 0.35vw + 1rem, 1.18rem);
-    line-height: 1.72;
-    letter-spacing: 0.01em;
+    font-size: var(--type-body);
+    line-height: 1.6;
+    letter-spacing: normal;
     color: var(--text-1);
     max-width: none;
   }
 
-  .on-me .bio-lead {
+  .on-me .bio .bio-lead {
     font-family: var(--face-display);
     font-variation-settings: 'SOFT' 75, 'WONK' 0;
-    font-size: clamp(1.15rem, 0.5vw + 1.05rem, 1.32rem);
-    line-height: 1.6;
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    line-height: 1.4;
     color: var(--text-0);
   }
 

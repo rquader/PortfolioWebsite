@@ -157,19 +157,16 @@ h1, h2, h3, h4, h5, h6 {
   max-width: 64rem;
   margin: 0 auto;
 }
-/* Section headings: Fraunces display face with WONK + soft italics.
-   The WONK axis adds gentle hand-written wobble to letterforms; italic
-   gives the script slant. This is where the "almost-handwritten" feel
-   lives (Phase 5 — ADR-008). */
+/* Section headings share the upright display treatment used by research chapters. */
 .section > h2,
 .section > .section-inner > h2 {
   font-family: var(--face-display);
-  font-variation-settings: 'SOFT' 80, 'WONK' 1;
-  font-style: italic;
+  font-variation-settings: 'SOFT' 70, 'WONK' 0;
+  font-style: normal;
   font-optical-sizing: auto;
-  font-size: var(--type-h2);
+  font-size: clamp(2rem, 4vw, 3.25rem);
   font-weight: 400;
-  letter-spacing: -0.005em;
+  letter-spacing: -0.025em;
   margin-bottom: clamp(1.5rem, 4vw, 3rem);
   color: var(--text-0);
 }
@@ -281,7 +278,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ---- ADR-021 shared utilities ----
    The d/ track introduces a few names the Astro components reach for:
-   - .section-heading : a styled h2 — Fraunces display + WONK + italic,
+   - .section-heading : a styled h2 — upright Fraunces display,
                        sized by --type-h2. Mirrors the existing
                        `.section > h2` rule but as a class so non-h2
                        headings (or h2s outside .section-inner) get the
@@ -295,12 +292,12 @@ h1, h2, h3, h4, h5, h6 {
 */
 .section-heading {
   font-family: var(--face-display);
-  font-variation-settings: 'SOFT' 80, 'WONK' 1;
-  font-style: italic;
+  font-variation-settings: 'SOFT' 70, 'WONK' 0;
+  font-style: normal;
   font-optical-sizing: auto;
-  font-size: var(--type-h2);
+  font-size: clamp(2rem, 4vw, 3.25rem);
   font-weight: 400;
-  letter-spacing: var(--tracking-display);
+  letter-spacing: -0.025em;
   color: var(--text-0);
   margin-bottom: clamp(1.4rem, 3vw, 2.4rem);
 }

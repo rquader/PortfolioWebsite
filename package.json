@@ -12,6 +12,7 @@
     "check": "astro check",
     "astro": "astro",
     "new:post": "node scripts/new-post.mjs",
+    "test:hero": "node --test scripts/featured-motion.test.mjs scripts/tree-atmosphere.test.mjs scripts/tree-canopy.test.mjs",
     "test:blog": "node --test scripts/new-post.test.mjs",
     "test:blog-build": "node scripts/test-blog-build.mjs"
   },

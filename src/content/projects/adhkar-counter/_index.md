@@ -1,6 +1,5 @@
 ---
 title: Adhkar Counter
-tagline: adhkar on your screen, one hotkey at a time
 sort_order: 30
 status: shipped
 github_url: https://github.com/rquader/AdhkarCounter

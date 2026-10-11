@@ -37,12 +37,11 @@ type DrawerLink = {
 };
 
 const drawerLinks: DrawerLink[] = [
-  { slug: 'on-me', label: 'on me', href: !onHome ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
-  { slug: 'on-the-work', label: 'on the work', href: !onHome ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
+  { slug: 'on-me', label: 'about', href: !onHome ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
+  { slug: 'on-the-work', label: 'research', href: !onHome ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
   { slug: 'projects', label: 'projects', href: withBase('/projects/'), route: true },
   { slug: 'blog', label: 'blog', href: withBase('/blog/'), route: true },
-  { slug: 'on-the-trail', label: 'on the trail', href: !onHome ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
-  { slug: 'coda', label: 'on the web', href: !onHome ? `${BASE_WITH_SLASH}#coda` : '#coda' },
+  { slug: 'on-the-trail', label: 'coursework', href: !onHome ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
 ];
 ---
 <div class="scroll-progress" aria-hidden="true" data-shell="mobile"></div>

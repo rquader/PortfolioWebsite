@@ -167,14 +167,6 @@
   margin: 0;
 }
 
-.project-tagline {
-  font-family: var(--face-text);
-  font-style: italic;
-  font-size: var(--type-small);
-  color: var(--text-1);
-  margin: 0;
-}
-
 /* ─── chapter body / story slots ─── */
 
 .project-body {
@@ -1064,7 +1056,6 @@
 .project-chapter .project-story p { margin-bottom: 1rem; }
 .project-chapter .project-story p:last-child { margin-bottom: 0; }
 .project-chapter-head { padding-bottom: 1rem; border-bottom: 1px solid var(--hair-strong); gap: .6rem; }
-.project-tagline { font-size: var(--type-body); line-height: 1.5; color: var(--text-2); }
 .project-chapter-media { min-width: 0; }
 .project-media-wrap { border: 1px solid var(--hair-strong); padding: .35rem; border-radius: 3px; background: var(--bg-0); }
 .chapter-rule { display: none; }

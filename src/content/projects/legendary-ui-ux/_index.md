@@ -1,6 +1,5 @@
 ---
 title: Legendary UI/UX
-tagline: a single-page site from Claude, Cursor, and back-and-forth with me
 sort_order: 40
 status: shipped
 github_url: https://github.com/rquader/Legendary-UI-UX

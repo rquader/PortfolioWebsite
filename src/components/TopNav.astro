@@ -27,13 +27,12 @@ type NavLink = {
 };
 
 const links: NavLink[] = [
-  { slug: 'on-me', label: 'on me', href: !onHome ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
-  { slug: 'on-the-work', label: 'on the work', href: !onHome ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
+  { slug: 'on-me', label: 'about', href: !onHome ? `${BASE_WITH_SLASH}#on-me` : '#on-me' },
+  { slug: 'on-the-work', label: 'research', href: !onHome ? `${BASE_WITH_SLASH}#on-the-work` : '#on-the-work' },
   // Always include trailing slash so GitHub Pages serves /projects/index.html.
-  { slug: 'projects', label: 'projects ↗', href: withBase('/projects/'), route: true },
-  { slug: 'blog', label: 'blog ↗', href: withBase('/blog/'), route: true },
-  { slug: 'on-the-trail', label: 'on the trail', href: !onHome ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
-  { slug: 'coda', label: 'on the web', href: !onHome ? `${BASE_WITH_SLASH}#coda` : '#coda' },
+  { slug: 'projects', label: 'projects', href: withBase('/projects/'), route: true },
+  { slug: 'blog', label: 'blog', href: withBase('/blog/'), route: true },
+  { slug: 'on-the-trail', label: 'coursework', href: !onHome ? `${BASE_WITH_SLASH}#on-the-trail` : '#on-the-trail' },
 ];
 ---
 <div class="scroll-progress" aria-hidden="true" data-shell="desktop"></div>
@@ -124,6 +123,11 @@ const links: NavLink[] = [
   .top-nav button {
     pointer-events: auto;
   }
+  .top-nav a:focus-visible,
+  .top-nav button:focus-visible {
+    outline: 2px solid var(--companion-color);
+    outline-offset: 4px;
+  }
 
   .top-nav-home {
     font-family: var(--face-display);
@@ -137,7 +141,7 @@ const links: NavLink[] = [
 
   .top-nav ul {
     display: flex;
-    gap: clamp(0.75rem, 2vw, 1.75rem);
+    gap: clamp(0.65rem, 1.4vw, 1.2rem);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -158,7 +162,6 @@ const links: NavLink[] = [
   .top-nav ul a:hover,
   .top-nav ul a:focus-visible {
     color: var(--text-0);
-    outline: none;
   }
   .top-nav ul a.is-current {
     color: var(--text-0);
@@ -190,7 +193,6 @@ const links: NavLink[] = [
   .top-nav-github:focus-visible {
     transform: translateY(-1px);
     background: color-mix(in srgb, var(--accent) 92%, var(--text-0));
-    outline: none;
   }
 
   .theme-toggle {
@@ -213,7 +215,6 @@ const links: NavLink[] = [
   .theme-toggle:hover,
   .theme-toggle:focus-visible {
     color: var(--text-0);
-    outline: none;
   }
   .theme-toggle .t-light,
   .theme-toggle .t-dark {

@@ -444,10 +444,8 @@ h1, h2, h3, h4, h5, h6 {
    tree, with chrome elements (top nav, drawer, fullscreen notes sheet,
    bottom-sheet tree mode) gated by CSS. Page-level content sections
    (Threshold, OnMe, OnTheWork, OnTheTrail, Coda) keep their canonical
-   IDs and adapt internally — except for the threshold author photo,
-   which is rendered TWICE: once in Threshold (visible on desktop /
-   tablet ≥768px), once in OnMe (visible on phone <768px) so the
-   composition can differ without duplicating section IDs.
+   IDs and adapt internally. The author photo is shared by both shells
+   in Threshold.
 
    Breakpoint: ≤720px is the phone-shell bracket; 768px is the
    tablet hybrid bracket (drawer nav stays, editorial layout returns).

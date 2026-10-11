@@ -1,6 +1,5 @@
 ---
 title: Arabic Dialect Map
-tagline: how Arabic dialects connect, on laptop and mobile
 sort_order: 20
 status: shipped
 wip: true

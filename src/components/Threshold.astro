@@ -1,10 +1,11 @@
 ---
-// Threshold — the opening section. Hero name + tagline + speaking photo
-// + recursive tree canvas + first-load tree click-hint sticker.
+// Threshold — portrait, name, and an interactive shelf of featured work.
 //
 // Spec: [[Concept - Threshold Hero]]; specs/2026-05-22-gallery-v2-photo-sticker-design.md
 
 import Photo from './photo/Photo.astro';
+import FeaturedWork from './FeaturedWork.astro';
+import TreeStudy from './TreeStudy.astro';
 import '../styles/threshold.css';
 
 import fs from 'node:fs';
@@ -23,231 +24,26 @@ const hasPhoto = fs.existsSync(photoDiskPath);
   data-section-id="threshold"
   aria-label="introduction"
 >
-  {/* The canvas lives in a wrapper that becomes a fixed vertical scroll
-      container in tree-mode (fit-first, scroll-as-backup — ADR-027). In
-      ambient mode the wrapper is just the absolute full-section layer. */}
-  <div class="threshold-tree-scroll">
-    <canvas
-      id="tree-threshold"
-      class="threshold-tree"
-      aria-hidden="true"
-      role="button"
-      tabindex="0"
-      aria-label="open the recursive tree"
-    ></canvas>
+  <div class="threshold-intro">
+    <div class="threshold-photo">
+      <Photo
+        src={`${BASE_WITH_SLASH}${(hasPhoto ? photoPublicPath : '/images/rafan-speaking-1.svg').replace(/^\//, '')}`}
+        alt="Rafan Quader speaking at an event"
+        treatment="print"
+        aspect="1/1"
+        loading="eager"
+      />
+    </div>
+    <div class="threshold-content">
+      <h1 class="name" data-color-letters>
+        <span class="name-line">rafan</span>
+        <span class="name-line">quader</span>
+      </h1>
+    </div>
   </div>
 
-  <div class="threshold-content">
-    <h1 class="name" data-color-letters>
-      <span class="name-line" data-inertial-text>rafan</span>
-      <span class="name-line" data-inertial-text>quader</span>
-    </h1>
-    <p class="tagline tagline-primary">Computer Science @ SJSU</p>
+  <TreeStudy />
+  <FeaturedWork />
 
-
-    {/* ADR-021 — moved inside the content stack so the hint sits with its
-        companions (name + tagline) instead of floating bottom-right. */}
-    <button
-      class="tree-hint"
-      type="button"
-      data-tree-open
-      aria-label="open the recursive tree"
-    >
-      <span class="tree-hint-leaf" aria-hidden="true"></span>
-      <span>click the tree</span>
-    </button>
-  </div>
-
-  {/* ADR-021 — desktop shell only. On phone widths the photo moves
-      into OnMe (rendered in OnMe.astro), giving Threshold the full
-      width for name + tagline + tree. */}
-  <div class="threshold-photo" data-shell="desktop">
-    <Photo
-      src={`${BASE_WITH_SLASH}${(hasPhoto ? photoPublicPath : '/images/rafan-speaking-1.svg').replace(/^\//, '')}`}
-      alt="Rafan Quader speaking at an event"
-      treatment="print"
-      aspect="1/1"
-      loading="eager"
-    />
-  </div>
-
-  <a class="scroll-cue" href="#on-me" aria-label="scroll to content">
-    <span aria-hidden="true">↓</span>
-  </a>
+  <a class="scroll-cue" href="#on-me">on me <span aria-hidden="true">↓</span></a>
 </section>
-
-<aside class="tree-mode-ui" data-shell="desktop" aria-hidden="true" aria-label="recursive tree controls">
-  <button class="tree-mode-close" type="button" aria-label="exit tree mode">×</button>
-  <span class="tree-mode-hint" aria-hidden="true">esc</span>
-
-  <div class="tree-mode-card" role="group" aria-label="tree parameters" data-label-mode="cs">
-    <button class="tree-mode-reset" type="button" aria-label="reset to defaults" title="reset">↺</button>
-    <label class="tree-mode-slider">
-      <span class="tree-mode-label">
-        <button
-          type="button"
-          class="tree-mode-label-toggle"
-          data-label
-          data-label-cs="depth"
-          data-label-bot="generations"
-          aria-label="click to switch between cs and botanical names"
-        >depth</button>
-         · <span data-value="depth">8</span>
-      </span>
-      <input class="tree-mode-range" type="range" min="5" max="10" step="1" value="8" data-knob="depth" aria-label="depth" />
-    </label>
-    <label class="tree-mode-slider">
-      <span class="tree-mode-label">
-        <button
-          type="button"
-          class="tree-mode-label-toggle"
-          data-label
-          data-label-cs="angle"
-          data-label-bot="spread"
-          aria-label="click to switch between cs and botanical names"
-        >angle</button>
-         · <span data-value="angle">27°</span>
-      </span>
-      <input class="tree-mode-range" type="range" min="14" max="40" step="1" value="27" data-knob="angle" aria-label="angle" />
-    </label>
-    <label class="tree-mode-slider">
-      <span class="tree-mode-label">
-        <button
-          type="button"
-          class="tree-mode-label-toggle"
-          data-label
-          data-label-cs="ratio"
-          data-label-bot="taper"
-          aria-label="click to switch between cs and botanical names"
-        >ratio</button>
-         · <span data-value="ratio">74%</span>
-      </span>
-      <input class="tree-mode-range" type="range" min="60" max="85" step="1" value="74" data-knob="ratio" aria-label="ratio" />
-    </label>
-  </div>
-</aside>
-
-{/* ADR-021 — mobile-shell tree mode UI. Bottom sheet (with pull-handle
-    drag-to-dismiss) + top pills (reset / close). Hidden on desktop by
-    `data-shell="mobile"`. Same canvas click enters tree mode via the
-    existing controller (which toggles body[data-tree-mode='on']); both
-    controllers observe that attribute and render their respective UI. */}
-<div class="m-tree-mode-top" data-shell="mobile" data-mtree-top aria-hidden="true">
-  <button
-    type="button"
-    class="m-tree-mode-pill"
-    data-mtree-reset
-    aria-label="reset tree parameters"
-  >
-    <span class="ico" aria-hidden="true">↺</span>
-    <span>reset</span>
-  </button>
-  <button
-    type="button"
-    class="m-tree-mode-pill"
-    data-mtree-close
-    aria-label="exit tree mode"
-  >
-    <span>close</span>
-    <span class="ico" aria-hidden="true">×</span>
-  </button>
-</div>
-
-<aside
-  class="m-tree-mode-sheet"
-  data-shell="mobile"
-  data-mtree-sheet
-  data-label-mode="cs"
-  aria-label="tree parameters"
-  aria-hidden="true"
->
-  <div class="m-tree-mode-handle" data-mtree-handle aria-hidden="true"></div>
-  <header class="m-tree-mode-sheet-head">
-    <span class="m-tree-mode-sheet-title">recursive tree</span>
-    <button
-      type="button"
-      class="m-tree-mode-sheet-toggle"
-      data-mtree-labels
-      aria-pressed="false"
-    >cs labels</button>
-  </header>
-  <label class="m-tree-knob">
-    <span class="m-tree-knob-label" data-label-cs="depth" data-label-bot="generations">depth</span>
-    <input
-      class="m-tree-knob-range"
-      type="range"
-      min="5" max="10" step="1" value="8"
-      data-mtree-knob="depth"
-      aria-label="depth"
-    />
-    <span class="m-tree-knob-value" data-mtree-value="depth">8</span>
-  </label>
-  <label class="m-tree-knob">
-    <span class="m-tree-knob-label" data-label-cs="angle" data-label-bot="spread">angle</span>
-    <input
-      class="m-tree-knob-range"
-      type="range"
-      min="14" max="40" step="1" value="27"
-      data-mtree-knob="angleDeg"
-      aria-label="angle"
-    />
-    <span class="m-tree-knob-value" data-mtree-value="angleDeg">27°</span>
-  </label>
-  <label class="m-tree-knob">
-    <span class="m-tree-knob-label" data-label-cs="ratio" data-label-bot="taper">ratio</span>
-    <input
-      class="m-tree-knob-range"
-      type="range"
-      min="60" max="85" step="1" value="64"
-      data-mtree-knob="ratio"
-      aria-label="ratio"
-    />
-    <span class="m-tree-knob-value" data-mtree-value="ratio">64%</span>
-  </label>
-</aside>
-
-<script>
-  import { mountTree } from '../lib/backdrop/tree';
-  import { initTreeMode } from '../lib/primitives/tree-mode';
-  import { initMobileTreeMode } from '../lib/primitives/mobile-tree-mode';
-
-  const canvas = document.getElementById('tree-threshold') as HTMLCanvasElement | null;
-  if (canvas) {
-    // ADR-026 — mobile-shrink. The tree fills its canvas in "units"
-    // (8 tall × proportional wide), so on a narrow phone viewport the
-    // canopy spreads close to the screen edges and the trunk sits
-    // nearly at the bottom. Shrink the trunk a touch and lift the
-    // anchor so the whole tree reads inside the visible frame.
-    // Desktop keeps the defaults from TREE_CONST.
-    const isPhoneShell = window.matchMedia('(max-width: 720px)').matches;
-    const handle = mountTree(canvas, {
-      palette: 'sepia',
-      // Render the same tree "smaller" on phones (more margin inside the
-      // canvas) without changing its underlying shape constants.
-      frameHeightUnits: isPhoneShell ? 9.5 : undefined,
-      // Phones also get a tighter taper (length-ratio 0.64 vs the desktop
-      // 0.74): each generation shrinks faster so the canopy fully fits the
-      // narrow viewport. Matches the mobile tree-mode knob/reset default
-      // (mobile-tree-mode.ts) so ambient + tree-mode read the same shape.
-      overrideConst: isPhoneShell ? { LENGTH_RATIO: 0.64 } : undefined,
-      // ADR-021 — baseline opacity raised from 0.05 to 0.35 so the tree
-      // reads as ambient texture, not a ghost. Tree mode still pushes
-      // this to 1 when active.
-      //
-      // Mobile gets a dimmer baseline (0.22): on a narrow phone viewport
-      // the canopy fills more of the screen and the desktop's
-      // photo-area clearing mask is removed (see threshold.css mobile
-      // block), so 0.35 ends up bleeding into the name + tagline. 0.22
-      // keeps the tree readable as texture without competing with text.
-      opacity: isPhoneShell ? 0.22 : 0.35,
-      swayScale: 0.6,
-      numParticles: 24,
-      // Keep the desktop constants on mobile; we scale the frame instead.
-    });
-    initTreeMode(canvas, handle);
-    // Mobile UI uses the same tree handle; the canvas click in
-    // initTreeMode still toggles body[data-tree-mode] which the
-    // mobile controller observes.
-    initMobileTreeMode(handle);
-  }
-</script>

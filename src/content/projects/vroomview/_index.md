@@ -1,6 +1,5 @@
 ---
 title: VroomView
-tagline: a social media app geared towards car enthusiasts
 sort_order: 0
 status: active
 wip: true

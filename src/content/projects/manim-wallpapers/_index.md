@@ -1,6 +1,5 @@
 ---
 title: Manim Wallpapers
-tagline: animated wallpapers from Manim, built with Claude Code
 sort_order: 60
 status: shipped
 media_mode: carousel

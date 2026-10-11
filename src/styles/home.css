@@ -1,5 +1,5 @@
 /* Keep the home page compact while preserving its existing section rhythm. */
-.home-page > .section:not(#threshold) {
+.home-page > .section:not(#threshold):not(.coda) {
   padding-block: clamp(3rem, 6vh, 5rem);
 }
 /* Explicit chapter anchors need stable layout throughout the long DDD story. */
@@ -7,5 +7,7 @@
   content-visibility: visible;
 }
 @media (max-width: 720px) {
-  .home-page > .section:not(#threshold) { padding-block: 2.6rem; }
+  .home-page > .section:not(#threshold):not(.coda) { padding-block: 2.6rem; }
 }
+
+.home-page > .coda { padding-block: 1.5rem; }

@@ -53,22 +53,11 @@
 .featured-destination span { margin-left: .35rem; }
 .featured-phone { width: 27%; height: auto; max-height: 11.5rem; object-fit: contain; border-radius: 5px; box-shadow: 0 5px 14px #0002; }
 .featured-ddd > p { max-width: 44ch; margin-top: 1rem; padding-top: .8rem; border-top: 1px solid var(--hair-strong); }
-.featured-vroom { width: min(33vw, 29rem); }
-.featured-crossword { width: min(27vw, 23rem); }
-.featured-screen { border-radius: 5px; overflow: hidden; border: 1px solid var(--hair-strong); box-shadow: var(--shadow-card); }
-.featured-screen img { display: block; width: 100%; height: 12.5rem; object-fit: contain; }
-.featured-vroom .featured-screen { background: #f5ecdf; }
-.featured-crossword .featured-screen { background: #201e17; }
-.featured-crossword .featured-screen img { height: 10.5rem; }
-.featured-caption { padding: .7rem .15rem 0; }
-.featured-caption h3 { display: flex; align-items: baseline; justify-content: space-between; gap: .8rem; font-size: clamp(1.35rem, 2vw, 1.8rem); }
-.featured-caption h3 span { font: 400 1.1rem var(--face-text); color: var(--accent); }
-.featured-crossword h3 { font-size: 1.35rem; }
-.featured-caption p { margin-top: .4rem; }
 .featured-card:hover h3 { color: var(--accent); }
 .featured-controls { display: flex; align-items: center; gap: .8rem; margin: .1rem var(--gutter) 0; }
 .featured-controls[hidden] { display: none; }
-.featured-controls button { flex-shrink: 0; width: 44px; height: 44px; border: 1px solid var(--hair-strong); border-radius: 3px; background: transparent; color: var(--text-0); font: 1.2rem var(--face-text); cursor: pointer; }
+.featured-controls button { flex-shrink: 0; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--hair-strong); border-radius: 3px; background: transparent; color: var(--text-0); cursor: pointer; }
+.featured-controls button svg { width: 1.35rem; height: 1.35rem; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .featured-controls button:disabled { opacity: .35; cursor: default; }
 .featured-scrubber { display: block; width: 11rem; }
 .featured-scrubber input { appearance: none; -webkit-appearance: none; display: block; width: 100%; height: 44px; background: transparent; cursor: ew-resize; touch-action: pan-y; }
@@ -78,21 +67,16 @@
 .featured-scrubber input::-moz-range-thumb { width: 52px; height: 18px; border-radius: 3px; background: var(--accent); border: 3px solid var(--bg-0); box-shadow: 0 3px 0 var(--hair-strong), 0 5px 8px #0002; }
 @media (max-width: 1000px) {
   .featured-ddd { width: 23rem; }
-  .featured-vroom { width: 23rem; }
-  .featured-crossword { width: 20rem; }
 }
 @media (max-width: 720px) {
   .featured-heading h2 { font-size: .95rem; }
   .featured-viewport { align-items: flex-start; scroll-snap-type: x mandatory; padding-top: 1rem; gap: 1rem; }
-  .featured-ddd, .featured-vroom { width: 82vw; }
-  .featured-crossword { width: 74vw; }
+  .featured-ddd { width: 82vw; }
   .featured-ddd { padding: 1.2rem; }
   .featured-monogram { font-size: 3.3rem; margin-bottom: .8rem; }
   .featured-ddd h3 { font-size: 1.28rem; }
   .featured-phone { width: 31%; }
   .featured-card p { font-size: 1rem; }
-  .featured-screen img { height: 12.5rem; }
-  .featured-crossword .featured-screen img { height: 10.5rem; }
   .featured-controls { justify-content: center; }
   .featured-scrubber { width: min(40vw, 11rem); }
 }
@@ -103,13 +87,69 @@
   .featured-controls { display: none; }
 }
 
-.featured-project { width: min(28vw, 24rem); }
-.featured-project .featured-screen { background: var(--bg-1); }
-.featured-project .featured-screen img { height: 12rem; }
-.featured-project h3 { font-size: 1.4rem; }
+.featured-project { width: min(36vw, 31rem); }
+.featured-frame {
+  overflow: hidden;
+  padding: .45rem .45rem 0;
+  border: 1px solid var(--hair-strong);
+  border-radius: 5px;
+  background: var(--bg-1);
+  box-shadow: var(--shadow-card);
+}
+.featured-screen {
+  overflow: hidden;
+  aspect-ratio: 8 / 5;
+  border: 1px solid color-mix(in srgb, var(--hair-strong) 72%, transparent);
+  border-radius: 2px;
+  background: var(--bg-0);
+}
+.featured-screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.featured-vroom .featured-screen img,
+.featured-crossword .featured-screen img { object-position: center top; }
+.featured-arabic-dialect-map .featured-screen img,
+.featured-manim-wallpapers .featured-screen img { object-fit: contain; }
+.featured-insta-dm .featured-screen img { object-position: right center; }
+.featured-vroom .featured-screen { background: #f5ecdf; }
+.featured-crossword .featured-screen,
+.featured-arabic-dialect-map .featured-screen,
+.featured-legendary-ui-ux .featured-screen,
+.featured-insta-dm .featured-screen,
+.featured-manim-wallpapers .featured-screen,
+.featured-portfolio-website .featured-screen { background: #171510; }
+.featured-caption { padding: .72rem .3rem .78rem; }
+.featured-caption h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: clamp(1.25rem, 1.75vw, 1.55rem);
+}
+.featured-arrow {
+  flex: 0 0 auto;
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.featured-excerpt { max-width: 48ch; padding-inline: .15rem; margin-top: .65rem; }
+.featured-project:hover .featured-frame { border-color: color-mix(in srgb, var(--accent) 55%, var(--hair-strong)); }
 .featured-viewport[data-settling] { scroll-snap-type: none; }
-@media (max-width: 1000px) { .featured-project { width: 22rem; } }
-@media (max-width: 720px) { .featured-project { width: 76vw; } }
+@media (max-width: 1000px) { .featured-project { width: 27rem; } }
+@media (max-width: 720px) {
+  .featured-project { width: min(88vw, 25rem); }
+  .featured-screen { aspect-ratio: 3 / 2; }
+  .featured-caption { padding: .65rem .2rem .7rem; }
+  .featured-caption h3 { font-size: clamp(1.18rem, 6vw, 1.4rem); }
+}
 
 /* The previews hang from the same visual line as the full-width pull control. */
 .featured-viewport::before { content: ''; position: absolute; left: var(--gutter); top: 38%; width: var(--featured-length, 100%); height: 1px; background: var(--hair-strong); pointer-events: none; }
@@ -119,6 +159,7 @@
 .featured-controls { gap: 1rem; }
 .featured-scrubber { width: auto; flex: 1; }
 .featured-controls button { border: 0; }
+.featured-controls button:hover:not(:disabled) { color: var(--accent); }
 @media (max-width: 720px) {
   .featured-controls { justify-content: stretch; gap: .5rem; }
   .featured-scrubber { width: auto; }

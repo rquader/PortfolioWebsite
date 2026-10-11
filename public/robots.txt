@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rafanquader.com/sitemap-index.xml
+Sitemap: https://rquader.github.io/PortfolioWebsite/sitemap-index.xml

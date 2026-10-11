@@ -14,7 +14,7 @@
   align-items: center;
   gap: clamp(1.5rem, 3vw, 3rem);
   max-width: 82rem;
-  margin: 0 auto 1.6rem;
+  margin: 0 auto clamp(2.6rem, 4.5vw, 4rem);
   padding-inline: var(--gutter);
 }
 .threshold-intro > * { pointer-events: auto; }
@@ -58,7 +58,7 @@
 .threshold :is(a, button, input):focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
 @media (max-width: 720px) {
   .threshold { padding-top: calc(var(--nav-h) + 1.8rem); }
-  .threshold-intro { gap: 1rem; margin-bottom: 1.45rem; grid-template-columns: auto 1fr; }
+  .threshold-intro { gap: 1rem; margin-bottom: 2.6rem; grid-template-columns: auto 1fr; }
   .threshold-photo { width: clamp(116px, 32vw, 180px); }
   .name { font-size: clamp(3.1rem, 11.5vw, 5.2rem); letter-spacing: -.035em; }
 }

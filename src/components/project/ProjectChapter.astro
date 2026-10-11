@@ -45,7 +45,19 @@ const flipped = index % 2 === 1;
   class:list={['project-chapter', { 'project-chapter-flip': flipped }]}
   id={slug}
   data-project-slug={slug}
+  aria-labelledby={`${slug}-title`}
 >
+  <header class="project-chapter-head">
+    {/* Eyebrow: NN chapter · status. ADR-021 — visible in story mode
+        only; CSS hides it when :root[data-page-mode="info"]. */}
+    {chapterNumber !== undefined && <span class="project-chapter-eyebrow" aria-hidden="true">
+      <span class="project-chapter-num">{String(chapterNumber).padStart(2, '0')}</span>
+      <span>chapter · {project.data.status}</span>
+    </span>}
+    <h2 id={`${slug}-title`} class="project-chapter-title" data-color-letters data-inertial-text>
+      {project.data.title}
+    </h2>
+  </header>
   <div class="project-chapter-media">
     {project.data.media_mode_mobile && project.data.media_mode_mobile !== project.data.media_mode ? (
       <>
@@ -66,18 +78,6 @@ const flipped = index % 2 === 1;
   </div>
 
   <div class="project-chapter-text">
-    <header class="project-chapter-head">
-      {/* Eyebrow: NN chapter · status. ADR-021 — visible in story mode
-          only; CSS hides it when :root[data-page-mode="info"]. */}
-      {chapterNumber !== undefined && <span class="project-chapter-eyebrow" aria-hidden="true">
-        <span class="project-chapter-num">{String(chapterNumber).padStart(2, '0')}</span>
-        <span>chapter · {project.data.status}</span>
-      </span>}
-      <h2 class="project-chapter-title" data-color-letters data-inertial-text>
-        {project.data.title}
-      </h2>
-    </header>
-
     <div class="project-body">
       <div class="project-body-slot" data-mode-content="info">
         <div class="rp-content project-story">

@@ -21,11 +21,13 @@ import { initTreeHint } from './primitives/tree-hint';
 import { initChapterProgress } from './primitives/chapter-progress';
 import { initNotesResize } from './primitives/notes-resize';
 import { initMobileDrawer } from './primitives/mobile-drawer';
+import { initAnchorNavigation } from './primitives/anchor-navigation';
 
 export function initSite(): void {
   startBoot();
 
   initThemeToggle();
+  initAnchorNavigation();
 
   const pageLeaves = document.getElementById('page-leaves');
   if (pageLeaves instanceof HTMLCanvasElement) {

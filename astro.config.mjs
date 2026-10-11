@@ -2,11 +2,9 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 
-// TBD — pick the canonical site URL when a custom domain is configured.
-// See [[Open Questions#Domain / hosting destination]]. Until then, the
-// GitHub Pages auto-URL works:
-//   https://<github-user>.github.io/<repo-name>/
-const SITE = 'https://rafanquader.com';
+// GitHub Pages is the current host. Set PUBLIC_SITE_URL when a custom
+// domain is actually connected; social image URLs must use a live origin.
+const SITE = process.env.PUBLIC_SITE_URL ?? 'https://rquader.github.io';
 
 // `base` is the URL path prefix the site is served from.
 // - GitHub Pages project page (https://user.github.io/repo/) → base = '/repo'

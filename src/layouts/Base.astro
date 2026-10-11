@@ -31,7 +31,7 @@ const {
   mainId = 'on-me',
 } = Astro.props;
 
-const canonical = Astro.url.href;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin).href;
 
 // ADR-025 — fonts.css lives in public/fonts/ (not src/styles/) so its
 // @font-face URLs can stay relative (`url(./<hash>.woff2)`) and resolve
@@ -43,6 +43,8 @@ const BASE_WITH_SLASH = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const fontsHref = `${BASE_WITH_SLASH}fonts/fonts.css`;
+const shareImage = new URL(`${BASE_WITH_SLASH}images/rafan-speaking-1.jpg`, Astro.site ?? Astro.url.origin).href;
+const shareImageAlt = 'Rafan Quader speaking at an event';
 ---
 <!doctype html>
 <html lang="en">
@@ -96,6 +98,26 @@ const fontsHref = `${BASE_WITH_SLASH}fonts/fonts.css`;
       })();
     </script>
 
+    {/* Resolve project mode before layout and keep an incoming fragment jump
+        instantaneous. The client controller removes the inline scroll override
+        after load, when the target's layout is stable. */}
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        if (/\/projects\/?$/.test(window.location.pathname)) {
+          var mode = new URL(window.location.href).searchParams.get('mode');
+          if (mode !== 'info' && mode !== 'story') {
+            try { mode = localStorage.getItem('rq-projects-mode'); } catch (_) { mode = null; }
+          }
+          root.setAttribute('data-page-mode', mode === 'story' ? 'story' : 'info');
+        }
+        if (window.location.hash) {
+          root.setAttribute('data-anchor-arrival', '');
+          root.style.scrollBehavior = 'auto';
+        }
+      })();
+    </script>
+
     {/* Inline SVG favicon — a single "rq" lowercase mark in the FOREST-accent tone. */}
     <link
       rel="icon"
@@ -108,9 +130,17 @@ const fontsHref = `${BASE_WITH_SLASH}fonts/fonts.css`;
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content="Rafan Quader — portfolio" />
+    <meta property="og:image" content={shareImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="819" />
+    <meta property="og:image:height" content="838" />
+    <meta property="og:image:alt" content={shareImageAlt} />
     <meta name="twitter:card" content="summary" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={shareImage} />
+    <meta name="twitter:image:alt" content={shareImageAlt} />
 
     <link rel="canonical" href={canonical} />
   </head>

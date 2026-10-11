@@ -46,7 +46,7 @@ for (const [slug, excerpt] of Object.entries(projectExcerpts)) {
   if (!body.includes(excerpt)) throw new Error(`Featured excerpt must match authored project text: ${slug}`);
 }
 const remainingProjects = [
-  { slug: 'arabic-dialect-map', image: arabicMap, alt: 'Arabic dialect map arranged around Modern Standard Arabic' },
+  { slug: 'arabic-dialect-map', image: arabicMap, alt: 'Egyptian Arabic connected to Cairo / Delta Egyptian and Sa’idi dialects' },
   { slug: 'adhkar-counter', image: adhkarCounter, alt: 'Adhkar Counter app interface' },
   { slug: 'legendary-ui-ux', image: legendaryUiUx, alt: 'Preview of the Legendary UI/UX project' },
   { slug: 'insta-dm', image: instaDm, alt: 'Preview of the InstaDM messaging app' },
@@ -70,40 +70,59 @@ const remainingProjects = [
       </div>
       <p>Working on DDD has been one of my most formative experiences as a developing software engineer.</p>
     </a>
-    <a class="featured-card featured-vroom" href={`${base}projects/?mode=info#vroomview`} data-featured-card>
-      <div class="featured-screen"><Image src={vroomview} alt="VroomView community page with car concepts" width={720} /></div>
-      <div class="featured-caption">
-        <h3>{vroom.data.title}<span aria-hidden="true">↗</span></h3>
-        <p>{projectExcerpts.vroomview}</p>
+    <a class="featured-card featured-project featured-vroom" href={`${base}projects/?mode=info#vroomview`} data-featured-card>
+      <div class="featured-frame">
+        <div class="featured-screen"><Image src={vroomview} alt="VroomView community page with car concepts" width={720} /></div>
+        <div class="featured-caption">
+          <h3>
+            {vroom.data.title}
+            <svg class="featured-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M8 5h7v7" /></svg>
+          </h3>
+        </div>
       </div>
+      <p class="featured-excerpt">{projectExcerpts.vroomview}</p>
     </a>
-    <a class="featured-card featured-crossword" href={`${base}projects/?mode=info#web-crossword-generator`} data-featured-card>
-      <div class="featured-screen"><Image src={crossword} alt="A generated crossword alongside its word list" width={600} /></div>
-      <div class="featured-caption">
-        <h3>{cross.data.title}<span aria-hidden="true">↗</span></h3>
-        <p>{projectExcerpts['web-crossword-generator']}</p>
+    <a class="featured-card featured-project featured-crossword" href={`${base}projects/?mode=info#web-crossword-generator`} data-featured-card>
+      <div class="featured-frame">
+        <div class="featured-screen"><Image src={crossword} alt="A generated crossword alongside its word list" width={600} /></div>
+        <div class="featured-caption">
+          <h3>
+            {cross.data.title}
+            <svg class="featured-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M8 5h7v7" /></svg>
+          </h3>
+        </div>
       </div>
+      <p class="featured-excerpt">{projectExcerpts['web-crossword-generator']}</p>
     </a>
     {remainingProjects.map(({ slug, image, alt }) => {
       const project = projects.find(entry => entry.id === `${slug}/_index`)!;
       return (
-        <a class="featured-card featured-project" href={`${base}projects/?mode=info#${slug}`} data-featured-card>
-          <div class="featured-screen"><Image src={image} alt={alt} width={720} loading="lazy" /></div>
-          <div class="featured-caption">
-            <h3>{project.data.title}<span aria-hidden="true">↗</span></h3>
-            <p>{projectExcerpts[slug as keyof typeof projectExcerpts]}</p>
+        <a class={`featured-card featured-project featured-${slug}`} href={`${base}projects/?mode=info#${slug}`} data-featured-card>
+          <div class="featured-frame">
+            <div class="featured-screen"><Image src={image} alt={alt} width={720} loading="lazy" /></div>
+            <div class="featured-caption">
+              <h3>
+                {project.data.title}
+                <svg class="featured-arrow" viewBox="0 0 20 20" aria-hidden="true"><path d="M5 15 15 5M8 5h7v7" /></svg>
+              </h3>
+            </div>
           </div>
+          <p class="featured-excerpt">{projectExcerpts[slug as keyof typeof projectExcerpts]}</p>
         </a>
       );
     })}
   </div>
   <div class="featured-controls" data-featured-controls hidden>
-    <button type="button" data-featured-prev aria-label="Previous featured project" aria-controls="featured-previews">←</button>
+    <button type="button" data-featured-prev aria-label="Previous featured project" aria-controls="featured-previews">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 6.5-5 5 5 5" /></svg>
+    </button>
     <label class="featured-scrubber">
       <span class="visually-hidden">Explore featured work</span>
       <input type="range" min="0" max="1000" value="0" step="10" aria-controls="featured-previews" data-featured-range />
     </label>
-    <button type="button" data-featured-next aria-label="Next featured project" aria-controls="featured-previews">→</button>
+    <button type="button" data-featured-next aria-label="Next featured project" aria-controls="featured-previews">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 6.5 5 5-5 5" /></svg>
+    </button>
   </div>
 </section>
 

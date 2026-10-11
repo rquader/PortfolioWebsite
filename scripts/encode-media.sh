@@ -32,6 +32,7 @@ FPS=30
 # Relative names resolve under SRC_DIR. Absolute paths are used as-is
 # (crossword demo was re-shot 2026-08-15 into a separate Desktop folder).
 MAP=(
+  "/Users/rafanquader/Desktop/VroomView_Video.mov|vroomview/images/vroomview_demo"
   "01_recursive_tree.mp4|manim-wallpapers/images/01_recursive_tree"
   "02_falling_leaves.mp4|manim-wallpapers/images/02_falling_leaves"
   "03_phyllotaxis.mp4|manim-wallpapers/images/03_phyllotaxis"

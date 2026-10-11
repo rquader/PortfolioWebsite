@@ -668,3 +668,17 @@
   font-size: 0.95rem;
   line-height: 1;
 }
+
+@media (max-width: 720px) {
+  .notes-tree-note, .notes-tree-folder-toggle {
+    min-height: 44px;
+    align-items: center;
+    padding-block: .65rem;
+    font-size: .78rem;
+  }
+  .notes-tree-note-label { white-space: normal; overflow-wrap: anywhere; }
+  .notes-popup-close, .notes-popup-back { min-width: 44px; height: 44px; top: calc(env(safe-area-inset-top, 0px) + .65rem); }
+  .notes-popup-head { padding-right: 3.6rem; }
+  .notes-popup-step { min-width: 44px; min-height: 44px; }
+  .notes-popup-folio[data-view='reader'] .notes-popup-head { padding-top: 3.6rem; }
+}

@@ -27,10 +27,22 @@ function wrapChars(strong: HTMLElement): void {
     const text = node.nodeValue ?? '';
     if (text.length === 0) continue;
     const frag = document.createDocumentFragment();
+    let word: HTMLElement | null = null;
+    function flushWord(): void {
+      if (word) {
+        frag.appendChild(word);
+        word = null;
+      }
+    }
     for (const ch of text) {
-      if (ch === ' ' || ch === '\t' || ch === '\n') {
+      if (ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r' || ch === '\u00A0') {
+        flushWord();
         frag.appendChild(document.createTextNode(ch));
       } else {
+        if (!word) {
+          word = document.createElement('span');
+          word.className = 'inertial-word';
+        }
         const span = document.createElement('span');
         // NOTE: deliberately NO `data-inertial` — we want the
         // flashlight color-reveal but not the spring physics. The
@@ -38,9 +50,10 @@ function wrapChars(strong: HTMLElement): void {
         // the `.syn-letter` class.
         span.className = 'inertial-letter syn-letter';
         span.textContent = ch;
-        frag.appendChild(span);
+        word.appendChild(span);
       }
     }
+    flushWord();
     node.parentNode?.replaceChild(frag, node);
   }
 }

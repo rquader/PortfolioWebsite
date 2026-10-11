@@ -21,14 +21,14 @@ const completedCourses: Array<{ label: string; href: string }> = [
 ];
 
 const currentCourses = [
-  'Introduction to Artificial Intelligence',
-  'Introduction to Computer Systems',
-  'Linear Algebra I',
+  { label: 'Introduction to Artificial Intelligence', href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=42159' },
+  { label: 'Introduction to Computer Systems', href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=42150' },
+  { label: 'Linear Algebra I', href: 'https://catalog.sjsu.edu/preview_course_nopop.php?catoid=10&coid=46030' },
 ];
 
 const skillGroups = [
   { label: 'Languages', items: ['Java', 'Python'] },
-  { label: 'Development tools', items: ['Git', 'Claude Code', 'Codex', 'Cursor'] },
+  { label: 'Development Tools', items: ['Git', 'Claude Code', 'Codex', 'Cursor'] },
   {
     label: 'Practice',
     items: [
@@ -56,7 +56,7 @@ const skillGroups = [
     <div class="trail-layout">
       <div class="trail-coursework">
         <div class="group">
-          <h3>coursework completed</h3>
+          <h3>Completed Coursework</h3>
           <ul>
             {completedCourses.map(({ label, href }) => (
               <li>
@@ -72,9 +72,11 @@ const skillGroups = [
         </div>
 
         <div class="group">
-          <h3>currently enrolled</h3>
+          <h3>Current Coursework</h3>
           <ul>
-            {currentCourses.map((course) => <li>{course}</li>)}
+            {currentCourses.map(({ label, href }) => (
+              <li><a class="trail-link" href={href} target="_blank" rel="noopener noreferrer">{label}</a></li>
+            ))}
           </ul>
         </div>
       </div>
@@ -100,107 +102,56 @@ const skillGroups = [
 
 <style>
   .trail-education {
+    max-width: none;
     margin: 0 0 2rem;
     color: var(--text-1);
     font-size: var(--type-body);
   }
-
   .trail-education span:last-child {
+    display: inline-block;
     margin-left: 0.5rem;
     color: var(--text-2);
   }
-
   .trail-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(15rem, 0.75fr);
-    gap: clamp(2rem, 5vw, 4.5rem);
-    max-width: 68rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem clamp(2rem, 5vw, 4rem);
     margin-bottom: 2rem;
   }
-
-  .trail-coursework,
-  .trail-skills {
-    display: grid;
-    align-content: start;
-    gap: clamp(1.5rem, 3vw, 2.25rem);
-  }
-
-  .trail-skills {
-    align-content: start;
-  }
-
-  .trail-skills .skill-group:last-child {
-    grid-column: 1 / -1;
-  }
-
+  .trail-coursework { display: contents; }
+  .trail-layout .group { min-width: 0; }
   .trail-layout h3 {
     font-family: var(--face-display);
-    font-variation-settings: 'SOFT' 70, 'WONK' 1;
-    font-style: italic;
-    font-size: 1.2rem;
-    margin-bottom: 0.6rem;
+    font-size: 1.12rem;
+    margin-bottom: 0.75rem;
   }
-
-  .trail-layout ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .trail-layout li {
-    padding: 0.45rem 0;
-    color: var(--text-1);
-    font-size: var(--type-body);
-    line-height: 1.45;
+  .trail-layout ul { list-style: none; padding: 0; margin: 0; }
+  .trail-coursework li {
+    padding: 0.7rem 0;
     border-bottom: 1px solid var(--hair);
-    position: relative;
+    color: var(--text-1);
+    line-height: 1.4;
   }
-
-  .trail-skills ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.2rem 1rem;
+  .trail-skills {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, .65fr) minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: 1.5rem;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--hair);
   }
-
   .trail-skills li {
     padding: 0.15rem 0;
-    border: 0;
+    color: var(--text-1);
+    font-size: var(--type-small);
+    line-height: 1.5;
   }
-
-  .trail-link {
-    color: inherit;
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition:
-      color var(--d-fast) var(--ease-out),
-      border-color var(--d-fast) var(--ease-out);
-  }
-
-  .trail-link:hover {
-    color: var(--text-0);
-    border-bottom-color: color-mix(in srgb, var(--accent) 50%, transparent);
-  }
-
-  .trail-link:focus-visible {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-    outline: none;
-  }
-
+  .trail-link { color: inherit; text-decoration-color: var(--hair-strong); text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+  .trail-link:hover { color: var(--accent); text-decoration-color: currentColor; }
+  .trail-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
   @media (max-width: 760px) {
-    .trail-layout {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .trail-skills {
-      grid-template-columns: 1fr;
-    }
-
-    .trail-skills .skill-group:last-child {
-      grid-column: auto;
-    }
+    .trail-layout { grid-template-columns: 1fr; gap: 1.75rem; }
+    .trail-skills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .trail-skills .group:last-child { grid-column: 1 / -1; }
   }
 </style>

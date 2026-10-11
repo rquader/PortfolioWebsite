@@ -15,7 +15,7 @@
   const summary = note?.querySelector('summary');
   if (note && summary) {
     let pinned = false;
-    note.addEventListener('pointerenter', (event) => {
+    summary.addEventListener('pointerenter', (event) => {
       if (event.pointerType === 'mouse') note.open = true;
     });
     note.addEventListener('pointerleave', (event) => {

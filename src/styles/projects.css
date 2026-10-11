@@ -1104,16 +1104,15 @@
 }
 
 /* Optional context stays close to the introduction without dominating it. */
-.projects-note { position: relative; justify-self: start; max-width: 100%; z-index: 3; }
+.projects-note { justify-self: stretch; min-width: 0; max-width: 100%; }
 .projects-note summary { list-style: none; display: flex; align-items: center; gap: .55rem; min-height: 44px; width: fit-content; padding: .45rem .75rem; border: 1px solid var(--hair-strong); border-radius: 4px; font: .9rem/1.4 var(--face-text); color: var(--text-1); cursor: pointer; }
 .projects-note summary::-webkit-details-marker { display: none; }
 .projects-note summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 .projects-note[open] summary, .projects-note summary:hover { border-color: var(--accent); background: var(--bg-1); }
 .projects-note-chevron { color: var(--accent); }
 .projects-note[open] .projects-note-chevron { transform: rotate(180deg); }
-.projects-note-panel { position: absolute; top: 100%; left: 0; width: min(34rem, calc(100vw - 2 * var(--gutter))); padding: 1.25rem; border: 1px solid var(--hair-strong); border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; background: var(--bg-1); box-shadow: var(--shadow-card); }
-.projects-note-panel p { margin: 0; max-width: none; color: var(--text-1); font: var(--type-body)/1.6 var(--face-text); }
+.projects-note-panel { width: 100%; margin-top: .65rem; padding: 1.25rem; border: 1px solid var(--hair-strong); border-left: 2px solid var(--accent); border-radius: 0 4px 4px 0; background: var(--bg-1); box-shadow: var(--shadow-card); }
+.projects-note-panel p { margin: 0; max-width: 85ch; color: var(--text-1); font: var(--type-body)/1.6 var(--face-text); }
 @media (max-width: 600px) {
-  .projects-note { justify-self: stretch; }
-  .projects-note-panel { position: static; width: 100%; margin-top: .5rem; }
+  .projects-note-panel { padding: 1rem; }
 }

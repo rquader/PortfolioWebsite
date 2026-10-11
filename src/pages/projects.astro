@@ -23,6 +23,8 @@ const allStories = await getCollection('projectStories');
 function slugFor(id: string): string {
   return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
 }
+const chapterNumbers = new Map(projects.filter((project) => slugFor(project.id) !== 'vroomview').map((project, index) => [project.id, index + 1]));
+
 function storySlug(id: string): string {
   return id.endsWith('/story') ? id.slice(0, -'/story'.length) : id;
 }
@@ -96,12 +98,13 @@ for (const s of allStories) {
                   story={story}
                   notesCount={notesCount}
                   index={i}
+                  chapterNumber={chapterNumbers.get(p.id)}
                   isLast={i === projects.length - 1}
                 />
               );
             })}
           </div>
-          <ProjectsRail projects={projects} />
+          <ProjectsRail projects={projects} chapterNumbers={chapterNumbers} />
         </div>
       ) : (
         <p class="projects-empty">

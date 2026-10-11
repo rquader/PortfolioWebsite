@@ -18,18 +18,19 @@ import type { CollectionEntry } from 'astro:content';
 
 interface Props {
   projects: CollectionEntry<'projects'>[];
+  chapterNumbers: Map<string, number>;
 }
 
 function slugFor(id: string): string {
   return id.endsWith('/_index') ? id.slice(0, -'/_index'.length) : id;
 }
 
-const { projects } = Astro.props;
+const { projects, chapterNumbers } = Astro.props;
 ---
 <aside class="projects-rail" aria-label="chapter index">
   <p class="projects-rail-eyebrow">chapters</p>
   <ol class="projects-rail-list">
-    {projects.map((p, i) => {
+    {projects.map((p) => {
       const slug = slugFor(p.id);
       return (
         <li>
@@ -38,7 +39,7 @@ const { projects } = Astro.props;
             data-rail-item={slug}
             href={`#${slug}`}
           >
-            <span class="projects-rail-num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="projects-rail-num">{chapterNumbers.has(p.id) ? String(chapterNumbers.get(p.id)).padStart(2, '0') : ''}</span>
             <span class="projects-rail-name">{p.data.title}</span>
           </a>
         </li>

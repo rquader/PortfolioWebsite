@@ -1095,3 +1095,16 @@
   .projects-intro-notes { padding: 1rem; }
   .projects-title { margin-bottom: .4rem; }
 }
+
+/* VroomView precedes the numbered story; a quiet rule marks that transition. */
+:root[data-page-mode='story'] .project-chapter[data-project-slug='vroomview'] + .chapter-rule {
+  display: block;
+  max-width: none;
+  border-top-color: var(--hair-strong);
+}
+.projects-rail-num { min-width: 1.25rem; }
+:root[data-page-mode='story'] .projects-rail-list > li:first-child:has([data-rail-item='vroomview']) {
+  border-bottom: 1px solid var(--hair);
+  padding-bottom: .65rem;
+  margin-bottom: .65rem;
+}

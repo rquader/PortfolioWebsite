@@ -1,0 +1,171 @@
+---
+import StoryImage from './StoryImage.astro';
+import DDDHopDiagram from './DDDHopDiagram.astro';
+import clientFlag from '../../assets/ddd/DDD_Client_Flag.png';
+import thunderbirdFlag from '../../assets/ddd/DDD_Thunderbird_Flag.png';
+import pipeline1 from '../../assets/ddd/notification_pipeline_1.png';
+import pipeline2 from '../../assets/ddd/notification_pipeline_2.png';
+import pipeline3 from '../../assets/ddd/notification_pipeline_3.png';
+import dropbox1 from '../../assets/ddd/DDD_Dropbox_1.png';
+import dropbox2 from '../../assets/ddd/DDD_Dropbox_2.png';
+import buildModules from '../../assets/ddd/ddd-pr878-modules.png';
+import buildFiles from '../../assets/ddd/ddd-pr878-files.png';
+
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const pr = (number: string, title: string, href: string) => ({ number, title, href });
+const fall2025 = [
+  pr('DDD #705', 'Shows Banner if K9-Mail is not Installed.', 'https://github.com/SJSU-CS-systems-group/DDD/pull/705'),
+  pr('Thunderbird #35', 'Implemented Error Screen Which Displays if BundleClient is Not Installed.', 'https://github.com/SJSU-CS-systems-group/DDD-thunderbird-android/pull/35'),
+];
+const earlySpring = [
+  pr('DDD #758', 'Updated Bundle Server CLI to Be Able to Prepare Messages as ADUs for Specific BundleClients.', 'https://github.com/SJSU-CS-systems-group/DDD/pull/758'),
+  pr('DDD #776', 'Rename ServerMessage proto fields and update server data model', 'https://github.com/SJSU-CS-systems-group/DDD/pull/776'),
+  pr('DDD #777', 'Update the UI for BundleClient and BundleTransport with Subject/Body Fields and Changing Time to use a Instant Objects', 'https://github.com/SJSU-CS-systems-group/DDD/pull/777'),
+  pr('DDD #781', 'Wires BundleTransport UI(Room Database) to the gRPC data (i.e. notifications sent via the CLI) to Complete the CLI to BundleTransport Notification Pipeline', 'https://github.com/SJSU-CS-systems-group/DDD/pull/781'),
+];
+const fall2026 = [
+  pr('DDD #874', 'DDD Dropbox Knowledge Site', 'https://github.com/SJSU-CS-systems-group/DDD/pull/874'),
+  pr('DDD #878', 'Updating the DDD Dropbox Knowledge Site with an Interactive Build Map', 'https://github.com/SJSU-CS-systems-group/DDD/pull/878'),
+];
+---
+<article class="ddd-story">
+  <header class="ddd-intro">
+    <div class="ddd-intro-heading">
+      <span class="ddd-eyebrow">research · undergraduate</span>
+      <h3>Disconnected Data Distribution <abbr title="Disconnected Data Distribution">(DDD)</abbr></h3>
+      <p class="ddd-role">Undergraduate Research Assistant · Reed Systems Group, SJSU · From Sept. 2025</p>
+    </div>
+    <div class="ddd-intro-copy">
+      <p>Over the last year, I’ve gotten to work with labmates and Dr. Ben Reed on the Disconnected Data Distribution project under the <a href="https://www.sjsu.edu/urop/" target="_blank" rel="noopener noreferrer">UROP program</a> which aims to utilize WiFi-Direct and create a system of internet where internet is gone whether due to natural disaster, war, etc. for free utilizing current infrastructure. Imagine a villager who wants to send a message, when he sends it with our system, that message is encrypted, uses WiFi-Direct to make it, to say a bus driver’s phone, and eventually when the bus driver gets somewhere with internet, sends and receives messages for the villager via the server.</p>
+      <nav class="ddd-links" aria-label="DDD project links">
+        <a class="chip" href="https://sjsu-cs-systems-group.github.io/discdd.net/index.html" target="_blank" rel="noopener noreferrer"><span class="chip-icon" aria-hidden="true">⊕</span><span>about</span></a>
+        <a class="chip" href="https://github.com/SJSU-CS-systems-group/DDD" target="_blank" rel="noopener noreferrer"><span class="chip-icon" aria-hidden="true">↗</span><span>github</span></a>
+      </nav>
+    </div>
+    <DDDHopDiagram />
+    <p class="ddd-intro-bridge"><strong>Working on DDD has been one of my most formative experiences as a developing software engineer.</strong> Over the last year, I’ve gotten to go from struggling to navigate a massive codebase to implement some warning text, to helping with a complex notification pipeline, to designing and working to implement/prototype a massive new application.</p>
+  </header>
+
+  <details class="ddd-journey" open>
+    <summary>So here’s a little bit of that journey expressed here: <span class="ddd-chevron" aria-hidden="true">⌄</span></summary>
+    <nav class="ddd-index" aria-label="Jump to a DDD chapter">
+      <a href="#ddd-fall-2025"><span>Fall 2025</span><small>first contributions</small></a>
+      <a href="#ddd-early-spring-2026"><span>Early Spring 2026</span><small>notification pipeline</small></a>
+      <a href="#ddd-late-spring-2026"><span>Late Spring 2026</span><small>presenting DDD</small></a>
+      <a href="#ddd-fall-2026"><span>Fall 2026</span><small>DDD Dropbox</small></a>
+    </nav>
+
+    <div class="ddd-chapters">
+    <details class="ddd-chapter" id="ddd-fall-2025" open>
+      <summary><span class="ddd-chapter-date">Fall 2025</span><span class="ddd-chapter-name">First contributions</span><span class="ddd-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ddd-chapter-body">
+        <div class="ddd-chapter-copy">
+          <p class="ddd-milestone">DDD was my first time working on a codebase as complex as this, so naturally the first days were a struggle.</p>
+          <p class="ddd-small-note">(especially the gruesome setup as anyone on the team will you and don’t get me started on the build times). Over the weeks, I’d learned how to work with developers senior to me as I sat in the lab, got help and learned from the many developers in our project and consistently Dr. Reed who would check in on our work and help us figure out what to work on.</p>
+          <p>From there, I shipped my first feature, parsing the codebase and understanding where to work, I shipped a <a href="https://github.com/SJSU-CS-systems-group/DDD/pull/705" target="_blank" rel="noopener noreferrer">feature</a> where the DDD Client app would flag if our K9-Mail fork, the DDD Thunderbird app, wasn’t downloaded on the phone and a <a href="https://github.com/SJSU-CS-systems-group/DDD-thunderbird-android/pull/35" target="_blank" rel="noopener noreferrer">feature</a> where the DDD Thunderbird app would flag the other way around. Although the feature was simple, it needed me to find whether the app was downloaded and mess with the code, one of my first contributions to the project, which was meaningful.</p>
+          <div class="ddd-prs" aria-label="Pull requests from Fall 2025">{fall2025.map(item => <a href={item.href} title={item.title} aria-label={`${item.number}: ${item.title}`} target="_blank" rel="noopener noreferrer">{item.number}<span class="ddd-pr-tooltip" aria-hidden="true">{item.title}</span></a>)}</div>
+        </div>
+        <div class="ddd-media ddd-media-pair">
+          <StoryImage image={clientFlag} alt="DDD Client banner warning that DDD Thunderbird is missing" caption="DDD Client flags the missing mail app." width={452} />
+          <StoryImage image={thunderbirdFlag} alt="DDD Thunderbird error screen when BundleClient is not installed" caption="DDD Thunderbird checks the other direction." width={364} />
+        </div>
+      </div>
+    </details>
+
+    <details class="ddd-chapter ddd-reverse" id="ddd-early-spring-2026" open>
+      <summary><span class="ddd-chapter-date">Early Spring 2026</span><span class="ddd-chapter-name">A message across the stack</span><span class="ddd-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ddd-chapter-body">
+        <div class="ddd-chapter-copy">
+          <p>At this point in the project, I began to feel more confident working in the lab and trying to push features. My workflow also around this time began to include AI agents, Claude Code, particularly. And suddenly parsing code, finding what to edit in the previously (well and continually) complex codebase became a lot easier.</p>
+          <p>Two labmates and I from UROP took on a much more difficult task than previously, <strong>navigating the whole codebase from the CLI through the server through to the apps</strong>, so that our team, from the server, could send messages to specific DDD Client and DDD transport applications. This project spanned Picocli, the protobuf, our Spring Boot server utilizing gRPC, and the Android apps with a Room database and such to store the messages.</p>
+          <p>We needed to use this existing infrastructure and complete a substantial task which we did. This may have been the first point I properly spent hours working and even made a PR so big once that Dr. Reed had to ask me to split it up (AI was great here for making that whole process much less of a pain, still had to push each PR individually and have them get through the build). At the time, this was my greatest contribution to the project and a codebase of this caliber.</p>
+          <div class="ddd-prs" aria-label="Notification pipeline pull requests">{earlySpring.map(item => <a href={item.href} title={item.title} aria-label={`${item.number}: ${item.title}`} target="_blank" rel="noopener noreferrer">{item.number}<span class="ddd-pr-tooltip" aria-hidden="true">{item.title}</span></a>)}</div>
+        </div>
+        <div class="ddd-media ddd-pipeline" aria-label="Notification pipeline shown in sequence">
+          <StoryImage image={pipeline1} alt="Terminal command sending a message through the DDD server" caption="1 · Send from the server CLI" width={1400} className="ddd-terminal" />
+          <div class="ddd-pipeline-phones">
+            <StoryImage image={pipeline2} alt="DDD Client notification list showing the received message" caption="2 · Receive in DDD Client" width={822} />
+            <StoryImage image={pipeline3} alt="Opened DDD Client notification with subject and body" caption="3 · Open the message" width={662} />
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="ddd-chapter" id="ddd-late-spring-2026" open>
+      <summary><span class="ddd-chapter-date">Late Spring 2026</span><span class="ddd-chapter-name">Taking DDD on stage</span><span class="ddd-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ddd-chapter-body">
+        <div class="ddd-chapter-copy">
+          <p>One of the greatest experiences I had was presenting DDD. We were selected under the UROP program to present and in May, my two UROP labmates, Dr. Reed, and I presented Disconnected Data Distribution in front of an interdisciplinary audience of maybe 200.</p>
+          <p>There were two primary questions, how do we present DDD to an audience largely out of our field and how do get an audience 8 presentations in to pay attention. Acting, of course. Our presentation was me narrating much like I did in this website, a high-level overview of our project with my labmates acting as the bus driver and villager, a way that really drilled in what our project was and what it meant.</p>
+          <p>Shaking on stage, presenting confidence and getting laughs from the audience explaining our “technical” problem was probably one of my favorite experiences!</p>
+        </div>
+        <div class="ddd-media"><figure class="ddd-figure ddd-speaking"><button class="ddd-image-button" type="button" aria-label="Enlarge photo of Rafan speaking" data-lightbox-trigger={`${base}images/rafan-speaking-1.jpg`} data-lightbox-alt="Rafan speaking on stage"><img src={`${base}images/rafan-speaking-1.jpg`} alt="Rafan speaking on stage" width="819" height="838" loading="lazy" decoding="async" /><span class="ddd-enlarge" aria-hidden="true">view larger ↗</span></button><figcaption>Rafan speaking on stage.</figcaption></figure></div>
+      </div>
+    </details>
+
+    <details class="ddd-chapter ddd-reverse" id="ddd-fall-2026" open>
+      <summary><span class="ddd-chapter-date">Fall 2026</span><span class="ddd-chapter-name">Designing DDD Dropbox</span><span class="ddd-chevron" aria-hidden="true">⌄</span></summary>
+      <div class="ddd-chapter-body">
+        <div class="ddd-chapter-copy">
+          <p>Returning this fall, I’m a veteran of the project (okay maybe not, but a lot of our past members have moved on so I helped with onboarding!).</p>
+          <p>Being a more senior of the project meant bigger responsibilities, thus welcome to my most ambitious work yet. For the much of the entire existence of DDD, the incredibly limited range and timing of WiFi-Direct has been a persisting problem, how can we be sure a DDD Client app and DDD Transport app can rendezvous at the very moment they need to. I’ve been working with Dr. Reed on a solution, <strong>designing DDD Dropbox.</strong></p>
+          <p>Working through understanding design, what we are building, and conveying it to an LLM has been much of what these weeks have looked like. I worked extensively on extending a knowledge site for the design I put together into a build map which was make working on dropbox much easier for new contributors, they would see exactly which files in the DDD repo as it is they would need to understand, what to build in DDD dropbox, and potential tests to work with. This build map is actually <a href="https://sjsu-cs-systems-group.github.io/DDD/dropbox/" target="_blank" rel="noopener noreferrer">available online!</a></p>
+          <div class="ddd-prs" aria-label="DDD Dropbox knowledge site pull requests">{fall2026.map(item => <a href={item.href} title={item.title} aria-label={`${item.number}: ${item.title}`} target="_blank" rel="noopener noreferrer">{item.number}<span class="ddd-pr-tooltip" aria-hidden="true">{item.title}</span></a>)}</div>
+          <p>From this build map, I wanted to try prototyping DDD Dropbox to see if the WiFi oscillation would work, a goal Dr. Reed encouraged.</p>
+          <p>So utilizing Claude Opus 5.5 with dynamic workflows along with sub-agent driven work with Codex Astra. It seems that yes, WiFi-Direct oscillation works and this I’ve gotten really deep with this prototype it’s almost a fully effective, not-yet human-audited version of the in-progress version of the DDD Dropbox app.</p>
+          <p>Through several design questions, working with the professor, and generating and answering some questions, it has gotten this far. It has been an interesting experience in developing a large-scale prototype with AI, (even if I might’ve accidentally developed malware for our app! → <a href={`${base}blog/accidental-malware-and-ai-attacks/`}>How I May Have Accidentally Developed Malware For My Project and My Thoughts on the Hugging Face incident and Ongoing AI Attacks <span class="ddd-coming-soon">to be written, keep posted</span></a>) I hope to have this prototype complete soon and work on finishing development and pushing DDD Dropbox going forward!</p>
+          <p class="ddd-branch-link"><a href="https://github.com/SJSU-CS-systems-group/DDD/tree/ddd_dropbox_prototype" target="_blank" rel="noopener noreferrer">DDD Dropbox Protoype branch ↗</a></p>
+        </div>
+        <div class="ddd-media ddd-dropbox-media">
+          <div class="ddd-build-map">
+            <StoryImage image={buildModules} alt="Interactive DDD Dropbox build map showing linked modules" caption="Build map · modules" width={1100} />
+            <StoryImage image={buildFiles} alt="DDD Dropbox build map detailing files contributors need to understand" caption="Build map · files" width={1100} />
+          </div>
+          <div class="ddd-media-pair">
+            <StoryImage image={dropbox1} alt="DDD Dropbox prototype Status screen waiting for its first transport visit" caption="DDD Dropbox prototype · Status" width={424} />
+            <StoryImage image={dropbox2} alt="DDD Dropbox prototype Settings screen with cycle timers and behavior controls" caption="DDD Dropbox prototype · Settings" width={418} />
+          </div>
+        </div>
+      </div>
+    </details>
+    </div>
+  </details>
+</article>
+
+<script>
+  // Direct links remain useful even after someone has folded a chapter.
+  function revealChapterFromHash(hash = window.location.hash) {
+    let id: string;
+    try {
+      id = decodeURIComponent(hash.replace(/^#/, ''));
+    } catch {
+      return;
+    }
+    if (!id) return;
+    const target = document.getElementById(id);
+    if (!target || !target.closest('.ddd-story')) return;
+    if (target instanceof HTMLDetailsElement) target.open = true;
+    let ancestor = target.parentElement?.closest('details');
+    while (ancestor) {
+      ancestor.open = true;
+      ancestor = ancestor.parentElement?.closest('details');
+    }
+  }
+  window.addEventListener('hashchange', () => revealChapterFromHash());
+  document.querySelectorAll<HTMLAnchorElement>('.ddd-index a[href^="#"]').forEach(link => {
+    link.addEventListener('click', () => revealChapterFromHash(link.hash));
+  });
+  document.querySelectorAll<HTMLAnchorElement>('.ddd-prs > a').forEach(link => {
+    const fitTooltip = () => {
+      const tooltip = link.querySelector<HTMLElement>('.ddd-pr-tooltip');
+      if (!tooltip) return;
+      tooltip.style.removeProperty('--ddd-tooltip-shift');
+      const bounds = tooltip.getBoundingClientRect();
+      const shift = Math.max(16 - bounds.left, Math.min(0, window.innerWidth - 16 - bounds.right));
+      tooltip.style.setProperty('--ddd-tooltip-shift', `${shift}px`);
+    };
+    link.addEventListener('mouseenter', fitTooltip);
+    link.addEventListener('focus', fitTooltip);
+  });
+  revealChapterFromHash();
+</script>

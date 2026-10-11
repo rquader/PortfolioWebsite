@@ -114,6 +114,7 @@ const blog = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/blog' }),
   schema: z.object({
     title: z.string().trim().min(1),
+    titleAside: z.string().optional(),
     description: z.string().default(''),
     status: z.enum(['draft', 'published', 'coming-soon']).default('draft'),
     publishedAt: calendarDate.optional(),

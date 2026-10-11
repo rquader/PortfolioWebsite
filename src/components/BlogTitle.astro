@@ -1,0 +1,16 @@
+---
+interface Props { title: string; aside?: string }
+const { title, aside } = Astro.props;
+---
+{title}{aside && <span class="blog-title-aside">{' '}{aside}</span>}
+<style>
+  .blog-title-aside {
+    display: block;
+    margin-top: .6em;
+    font-size: .72em;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--text-2);
+    overflow-wrap: anywhere;
+  }
+</style>

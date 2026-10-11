@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import BlogTitle from '../../components/BlogTitle.astro';
 import TopNav from '../../components/TopNav.astro';
 import MobileTopNav from '../../components/MobileTopNav.astro';
 import { visiblePosts, formatPostDate } from '../../lib/blog';
@@ -20,7 +21,6 @@ const groups = [
   <main id="blog-main" class="blog-page">
     <header class="blog-header">
       <h1>Blog</h1>
-      <p>Notes and reflections from the work.</p>
     </header>
     {groups.map((group) => group.posts.length > 0 && (
       <section class="blog-group" aria-label={group.title}>
@@ -30,12 +30,12 @@ const groups = [
             <article class="blog-entry">
               <div class="blog-meta">
                 {post.data.publishedAt && <time datetime={post.data.publishedAt}>{formatPostDate(post.data.publishedAt)}</time>}
-                {post.data.status === 'coming-soon' && <span>To be written</span>}
+                {post.data.status === 'coming-soon' && <span>keep posted, hope to start soon</span>}
                 {post.data.status === 'draft' && <span>Draft — not published</span>}
               </div>
               <div>
-                <h3><a href={`${base}blog/${post.id}/`}>{post.data.title}</a></h3>
-                <p>{post.data.description}</p>
+                <h3><a href={`${base}blog/${post.id}/`}><BlogTitle title={post.data.title} aside={post.data.titleAside} /></a></h3>
+                {post.data.description && <p>{post.data.description}</p>}
                 {post.data.tags.length > 0 && <ul class="blog-tags" aria-label="Topics">{post.data.tags.map((tag) => <li>{tag}</li>)}</ul>}
               </div>
             </article>
@@ -43,6 +43,5 @@ const groups = [
         </div>
       </section>
     ))}
-    {!posts.some((post) => post.data.status === 'published') && <p class="blog-empty">The first article is still taking shape. Keep posted.</p>}
   </main>
 </Base>

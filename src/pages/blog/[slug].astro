@@ -1,6 +1,7 @@
 ---
 import { getCollection, render, type CollectionEntry } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import BlogTitle from '../../components/BlogTitle.astro';
 import TopNav from '../../components/TopNav.astro';
 import MobileTopNav from '../../components/MobileTopNav.astro';
 import { visiblePosts, formatPostDate } from '../../lib/blog';
@@ -19,7 +20,7 @@ const contents = headings.filter((heading) => heading.depth === 2 || heading.dep
 const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
 const minutes = Math.max(1, Math.ceil(words / 220));
 ---
-<Base title={`${post.data.title} — Rafan Quader`} description={post.data.description} mainId="article-main">
+<Base title={`${post.data.title}${post.data.titleAside ? ` ${post.data.titleAside}` : ''} — Rafan Quader`} description={post.data.description} mainId="article-main">
   <TopNav />
   <MobileTopNav />
   <main id="article-main" class="blog-page blog-article-page">
@@ -27,8 +28,8 @@ const minutes = Math.max(1, Math.ceil(words / 220));
     <article>
       <header class="blog-article-header">
         {post.data.status === 'draft' && <p class="blog-draft">Draft preview — this article is excluded from the published site.</p>}
-        <h1>{post.data.title}</h1>
-        <p class="blog-deck">{post.data.description}</p>
+        <h1><BlogTitle title={post.data.title} aside={post.data.titleAside} /></h1>
+        {post.data.description && <p class="blog-deck">{post.data.description}</p>}
         <div class="blog-meta">
           <span>Rafan Quader</span>
           {post.data.publishedAt && <time datetime={post.data.publishedAt}>{formatPostDate(post.data.publishedAt)}</time>}
@@ -39,8 +40,8 @@ const minutes = Math.max(1, Math.ceil(words / 220));
       </header>
       {comingSoon ? (
         <div class="blog-coming-soon">
-          <p>to be written, keep posted</p>
-          {post.id === 'accidental-malware-and-ai-attacks' && <a href={`${base}#ddd-fall-2026`}>Explore the DDD Dropbox story</a>}
+          <p>keep posted, hope to start soon</p>
+          {post.id === 'accidental-malware-and-ai-attacks' && <a href={`${base}#ddd-fall-2026`}>Read on DDD Dropbox</a>}
         </div>
       ) : (
         <div class="blog-article-layout">

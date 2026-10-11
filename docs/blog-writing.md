@@ -34,6 +34,8 @@ tags: []
 ---
 ```
 
+For a quieter second line beneath a title, add an optional `titleAside` field (for example, a parenthetical). It is displayed smaller and muted on both the listing and article page. Leave `tags: []` to hide tags until you need them.
+
 `title`, `description`, and `tags` describe the article. The title is quoted
 as a JSON string by the scaffolder, which is also valid YAML and safely handles
 quotes and punctuation. Add tags as a YAML list, for example `tags: [design,

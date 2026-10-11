@@ -57,7 +57,7 @@ try {
   assert.ok(article.includes('alt="Example screenshot"'), 'Markdown image missing');
   assert.ok(!article.includes(`src="./images/${prefix}`), 'Markdown image was not processed');
   const upcoming = await readFile(path.join(dist, `blog/${prefix}-upcoming/index.html`), 'utf8');
-  assert.ok(upcoming.includes('to be written, keep posted'));
+  assert.ok(upcoming.includes('keep posted, hope to start soon'));
   console.log('Passed: draft privacy, upcoming-body privacy, published Markdown, table of contents, images, and base-aware navigation.');
 } finally {
   for (const file of created.reverse()) await unlink(file);

@@ -1,4 +1,6 @@
 ---
+import { getEntry } from 'astro:content';
+import BlogTitle from '../BlogTitle.astro';
 import StoryImage from './StoryImage.astro';
 import DDDHopDiagram from './DDDHopDiagram.astro';
 import clientFlag from '../../assets/ddd/DDD_Client_Flag.png';
@@ -11,6 +13,7 @@ import dropbox2 from '../../assets/ddd/DDD_Dropbox_2.png';
 import buildModules from '../../assets/ddd/ddd-pr878-modules.png';
 import buildFiles from '../../assets/ddd/ddd-pr878-files.png';
 
+const upcomingPost = (await getEntry('blog', 'accidental-malware-and-ai-attacks'))!;
 const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
 const pr = (number: string, title: string, href: string) => ({ number, title, href });
 const fall2025 = [
@@ -113,7 +116,7 @@ const fall2026 = [
           <div class="ddd-prs" aria-label="DDD Dropbox knowledge site pull requests">{fall2026.map(item => <a href={item.href} title={item.title} aria-label={`${item.number}: ${item.title}`} target="_blank" rel="noopener noreferrer">{item.number}<span class="ddd-pr-tooltip" aria-hidden="true">{item.title}</span></a>)}</div>
           <p>From this build map, I wanted to try prototyping DDD Dropbox to see if the WiFi oscillation would work, a goal Dr. Reed encouraged.</p>
           <p>So utilizing Claude Opus 5.5 with dynamic workflows along with sub-agent driven work with Codex Astra. It seems that yes, WiFi-Direct oscillation works and this I’ve gotten really deep with this prototype it’s almost a fully effective, not-yet human-audited version of the in-progress version of the DDD Dropbox app.</p>
-          <p>Through several design questions, working with the professor, and generating and answering some questions, it has gotten this far. It has been an interesting experience in developing a large-scale prototype with AI, (even if I might’ve accidentally developed malware for our app! → <a href={`${base}blog/accidental-malware-and-ai-attacks/`}>How I May Have Accidentally Developed Malware For My Project and My Thoughts on the Hugging Face incident and Ongoing AI Attacks <span class="ddd-coming-soon">to be written, keep posted</span></a>) I hope to have this prototype complete soon and work on finishing development and pushing DDD Dropbox going forward!</p>
+          <p>Through several design questions, working with the professor, and generating and answering some questions, it has gotten this far. It has been an interesting experience in developing a large-scale prototype with AI, (even if I might’ve accidentally developed malware for our app! → <a href={`${base}blog/accidental-malware-and-ai-attacks/`}><BlogTitle title={upcomingPost.data.title} aside={upcomingPost.data.titleAside} /> <span class="ddd-coming-soon">keep posted, hope to start soon</span></a>) I hope to have this prototype complete soon and work on finishing development and pushing DDD Dropbox going forward!</p>
           <p class="ddd-branch-link"><a href="https://github.com/SJSU-CS-systems-group/DDD/tree/ddd_dropbox_prototype" target="_blank" rel="noopener noreferrer">DDD Dropbox Protoype branch ↗</a></p>
         </div>
         <div class="ddd-media ddd-dropbox-media">

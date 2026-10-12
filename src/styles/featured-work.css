@@ -50,7 +50,7 @@
 .featured-monogram { display: block; font: 350 clamp(3.2rem, 5.2vw, 4.6rem)/1 var(--face-display); letter-spacing: -.08em; color: var(--accent); margin-bottom: .9rem; }
 .featured-ddd h3 { font-size: clamp(1.25rem, 1.7vw, 1.7rem); }
 .featured-destination { display: block; margin-top: 1rem; font-size: .95rem; color: var(--text-1); }
-.featured-destination span { margin-left: .35rem; }
+.featured-destination .featured-arrow { display: inline-block; margin-left: .35rem; vertical-align: -.15em; }
 .featured-phone { width: 27%; height: auto; max-height: 11.5rem; object-fit: contain; border-radius: 5px; box-shadow: 0 5px 14px #0002; }
 .featured-ddd > p { max-width: 44ch; margin-top: 1rem; padding-top: .8rem; border-top: 1px solid var(--hair-strong); }
 .featured-card:hover h3 { color: var(--accent); }
